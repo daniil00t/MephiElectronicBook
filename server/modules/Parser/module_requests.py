@@ -10,6 +10,6 @@ def Request(Link):
 	except ValueError as e:
 		print(e)
 		error = True
-		soup = {}
+		soup = bs.BeautifulSoup("<p>error</p>")
 
 	return {"data": soup, "error": error}

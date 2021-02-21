@@ -1,6 +1,6 @@
 from Parser.module_parser_get_linkers import Linkers
 import Parser.module_parser_list_learners
-import Parser.module_parser_schedule
+from Parser.module_parser_schedule import parseSchedule
 
 # interface: 
 # 	|- parse:
