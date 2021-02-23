@@ -1,11 +1,25 @@
+from flask import jsonify, render_template
 from server import app
 from .db import  *
 
 @app.route('/')
 def index():
+	return render_template("auth.html")
+
+
+@app.route('/__get_teachers')
+def __get_teachers():
 	with DB() as db:
-		pass
-	return 'Login page'
+		result =  db.get_teachers()
+
+	return jsonify({ "data" : result })
+
+	# return jsonify({ "data" : [
+	# 	{
+	# 		"id" : 1,
+	# 		"name" : "Фролов Игорь Владимирович"
+	# 	}
+	# ]})
 
 @app.route('/users/<int:user_id>')
 def user(user_id):

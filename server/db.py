@@ -20,37 +20,41 @@ class DB:
 		return self
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
-		#self.connection.commit()
+		self.connection.commit()
 		self.cursor.close()
 		self.connection.close()
 
 		return type is None
 
-	def __execute(self, statement):
-		self.cursor.execute(statement)
+	def __execute(self, cmd):
+		# add multiple commands executing
+		self.cursor.execute(cmd)
+		return self.cursor.fetchall()
 
 	def __execute_f(self, filename):
 		print("\n[INFO] Executing SQL script file: {}".format(filename))
 
-		statement = ""
+		cmd = ""
 		with open(filename) as f:
 			for line in f.readlines():
 				if re.match(r'--', line):
 					continue
 
-				statement += line
+				cmd += line
 				if re.search(r';$', line):
-					print("\n[INFO] Executing SQL statement:\n{}".format(statement))
-					self.__execute(statement)
-					statement = ""
-
-		self.connection.commit()
+					print("\n[INFO] Executing SQL statement:\n{}".format(cmd))
+					self.__execute(cmd)
+					cmd = ""
 
 	def init(self):
 		if(DB_CLEAR):
 			self.__execute_f(DB_CLEAR_SQL)
 		if(DB_TEST):
 			self.__execute_f(DB_TEST_SQL)
+
+	def get_teachers(self):
+		cmd = '''SELECT name FROM teachers'''
+		return self.__execute(cmd)
 
 	# def __execute(self, commands, data=[]):
 	# 	self.__open()
