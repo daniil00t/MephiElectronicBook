@@ -7,7 +7,7 @@ def Request(Link):
 		req = urllib.request.Request(Link, headers={'User-Agent': 'Mozilla/5.0'})
 		html = urllib.request.urlopen(req).read()
 		soup = bs.BeautifulSoup(html, features="html.parser")
-	except ValueError as e:
+	except Exception as e:
 		print(e)
 		error = True
 		soup = bs.BeautifulSoup("<p>error</p>")

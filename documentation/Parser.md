@@ -1,5 +1,5 @@
 # Parser
-#### Данная документация описывает все необходимые функции для модуля Parser. 
+### Данная документация описывает все необходимые функции для модуля Parser. 
 
 ---
 
@@ -7,6 +7,7 @@
 
 ```python
 from Parser import linkers
+from Parser import parseSchedule
 
 ###
 #============================ Здесь пишем код ================================#
@@ -85,3 +86,76 @@ from Parser import linkers
 	```
 	
 
+----- 
+
+### Функция парсинга и получения данных расписаний студента и преподавателя: **https://home.mephi.ru/study_groups/id/schedule** и **https://home.mephi.ru/tutors/id**
+
+#### **getLinkersScheduleLearner()**
+
+```python
+from Parser import parseSchedule
+
+print(parseSchedule(data = [
+	# ...
+	{
+		"name": "Б20-514",
+		"href": "https://home.mephi.ru/study_groups/11161/schedule"	
+	},
+	{
+		"name": "Б20-524",
+		"href": "https://home.mephi.ru/study_groups/11164/schedule"	
+	},
+	{
+		"name": "Б20-525",
+		"href": "https://home.mephi.ru/study_groups/11164/schedule"	
+	},
+	# ...
+], debug=False))
+```
+
+ - Input: 
+	- `data (array of dicts)` - данные, то есть список групп, для которых мы получаем расписание в виде Output
+	- `debug (boolean)` - опционально-специальный аргумент для дебагинга функции, в частности вывод ошибок от модуля Parser.module_requests и bs4
+- Output:
+	- array of arrays of dicts:
+	```json
+	[
+		...
+		[
+			...
+			{
+				"name": "Математический анализ", 
+				"type": "Пр", 
+				"time": "12:45 — 14:20", 
+				"teacher": "Фролов Н.П.", 
+				"place": "К-307"
+			}, 
+			{
+				"name": "Программирование (алгоритмы и структуры данных)", 
+				"type": "Лаб", 
+				"time": "14:30 — 17:00", 
+				"teacher": "Барыкин Л.Р.", 
+				"place": "ДОТ"
+			}
+			...
+		],
+		[
+			...
+			{
+				"name": "История", 
+				"type": "Пр", 
+				"time": "12:45 — 14:20", 
+				"teacher": "Мякинина Н.П.", 
+				"place": "ДОТ"}, 
+			{
+				"name": "Программирование (алгоритмы и структуры данных)", 
+				"type": "Лаб", 
+				"time": "14:30 — 17:00", 
+				"teacher": "Барыкин Л.Р.", 
+				"place": "ДОТ"
+			}
+			...
+		]
+		...
+	]
+	```
