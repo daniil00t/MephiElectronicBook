@@ -53,8 +53,15 @@ class DB:
 			self.__execute_f(DB_TEST_SQL)
 
 	def get_teachers(self):
-		cmd = '''SELECT name FROM teachers'''
-		return self.__execute(cmd)
+		cmd = '''SELECT id, name FROM teachers'''
+		result = self.__execute(cmd)
+
+		print(result)
+		result = [{
+			"id" : r[0],
+			"name" : r[1]
+			} for r in result]
+		return result
 
 	# def __execute(self, commands, data=[]):
 	# 	self.__open()

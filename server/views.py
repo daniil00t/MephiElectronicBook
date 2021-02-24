@@ -20,13 +20,6 @@ def __get_teachers():
 
 	return jsonify({ "data" : result })
 
-	# return jsonify({ "data" : [
-	# 	{
-	# 		"id" : 1,
-	# 		"name" : "Фролов Игорь Владимирович"
-	# 	}
-	# ]})
-
 @app.route('/users/<int:user_id>')
 def user(user_id):
 	return "User id: " + str(user_id)
