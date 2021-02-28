@@ -1,7 +1,8 @@
 from .config import *
-
+from .modules import Parser as parser
 import mysql.connector as mysql
 import re
+import json
 
 class DB:
 	def __init__(self):
@@ -46,22 +47,76 @@ class DB:
 					self.__execute(cmd)
 					cmd = ""
 
+	def print_json(self, data):
+		print(json.dumps(data, ensure_ascii=False, indent=4))
+
 	def init(self):
 		if(DB_CLEAR):
 			self.__execute_f(DB_CLEAR_SQL)
 		if(DB_TEST):
 			self.__execute_f(DB_TEST_SQL)
+		if(DB_FULL_UPDATE):
+			self.full_update()
 
 	def get_teachers(self):
 		cmd = '''SELECT id, name FROM teachers'''
 		result = self.__execute(cmd)
 
-		print(result)
 		result = [{
 			"id" : r[0],
 			"name" : r[1]
 			} for r in result]
 		return result
+
+	def full_update(self): # change it later for new parser
+		teachers = []
+		subjects = []
+		lessons = []
+
+		for group_link in parser.linkers.getLinkersScheduleLearner(selection=r"Б20-523"):
+			shedule = parser.parseSchedule(data = [group_link], debug=False)
+
+			for i, day in enumerate(shedule):
+				print("[INFO] DAY {}:".format(i))
+				self.print_json(day)
+				for j, lesson in enumerate(day):
+					teachers.append(lesson["teacher"])
+					subjects.append({
+						"name" : lesson["name"],
+						"duration" :lesson["duration"]
+					})
+
+		self.insert_teachers(teachers)
+		self.insert_subjects(subjects)
+		print("[INFO] Updated")
+
+	def insert_teachers(self, teachers):
+		args = []
+		for t in teachers:
+			if t == "":
+				continue
+			args.append("(\"{}\")".format(t))
+
+		cmd   = '''INSERT IGNORE INTO teachers (name)''' \
+				'''VALUES {}'''.format(",".join(args))
+		result = self.__execute(cmd)
+
+	def insert_subjects(self, subjects):
+		args = []
+		for s in subjects:
+		# 	args.append("(\"{}\")".format(t))
+
+		# cmd   = '''INSERT IGNORE INTO teachers (name)''' \
+		# 		'''VALUES {}'''.format(",".join(args))
+		# result = self.__execute(cmd)
+
+	def insert_classes(self, classes):
+		pass
+
+
+	# INSERT INTO bar (description, foo_id) VALUES
+ #    ( 'testing',     SELECT id from foo WHERE type='blue' ),
+ #    ( 'another row', SELECT id from foo WHERE type='red'  );
 
 	# def __execute(self, commands, data=[]):
 	# 	self.__open()

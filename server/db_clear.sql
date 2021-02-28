@@ -14,13 +14,16 @@ CREATE TABLE teachers (
 	user_id INT DEFAULT NULL,
 	name VARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
+	UNIQUE (name),
 	FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE subjects (
 	id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(100) NOT NULL,
-	PRIMARY KEY (id)
+	duration VARCHAR(100) DEFAULT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (name)
 );
 
 CREATE TABLE clocks (
