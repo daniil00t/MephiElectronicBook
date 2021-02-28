@@ -1,4 +1,4 @@
-import Parser.module_requests
+from . import __requests
 from urllib.parse import quote
 import bs4 as bs
 import re
@@ -43,7 +43,7 @@ class Linkers:
 		# ...
 		# "Б20-514" - "https://home.mephi.ru/study_groups/11161/schedule"
 		# ...
-		request = Parser.module_requests.Request(main_link)
+		request = module_requests.Request(main_link)
 		if request["error"]:
 			print("Error: href incorrect!")
 			return {}
@@ -83,24 +83,24 @@ class Linkers:
 		'''
 		res = []
 		chars = ['А','Б','В','Г','Д','Е','Ё','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Э','Ю','Я']
-		# request = Parser.module_requests.Request(main_link)
+		# request = module_requests.Request(main_link)
 		
-		if Parser.module_requests.Request(main_link)["error"]:
+		if module_requests.Request(main_link)["error"]:
 			print("Error: href incorrect!")
 			return []
 		else:
 			iteratorZ0 = 0
 			for i in chars:
-				countPages = len(Parser.module_requests.Request(f"{main_link}?char={quote(i)}")["data"].find_all("li", class_="page"))
+				countPages = len(module_requests.Request(f"{main_link}?char={quote(i)}")["data"].find_all("li", class_="page"))
 				if countPages > 4:
-					countPages = len(Parser.module_requests.Request(f"{main_link}?char={quote(i)}&page=5")["data"].find_all("li", class_="page"))
+					countPages = len(module_requests.Request(f"{main_link}?char={quote(i)}&page=5")["data"].find_all("li", class_="page"))
 
 				_res = []
 				iteratorZ0 += 1
 				iteratorZ1 = 0
 				for j in range(countPages):
 					
-					request = Parser.module_requests.Request(f"{main_link}?char={quote(i)}&page={j+1}")
+					request = module_requests.Request(f"{main_link}?char={quote(i)}&page={j+1}")
 					iteratorZ2 = 0
 					Teachers = self.__parseLinkersListTeacher(request["data"])
 					for k in Teachers:
@@ -115,7 +115,7 @@ class Linkers:
 							#================================== Testing module End ==================================#
 						###	
 						try:
-							link = Parser.module_requests.Request(k['href'])["data"].find("a", class_="btn btn-primary btn-block hidden-print").get("href")
+							link = module_requests.Request(k['href'])["data"].find("a", class_="btn btn-primary btn-block hidden-print").get("href")
 							if link != "":
 								_res.append({
 									"name": k["name"],

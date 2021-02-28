@@ -1,3 +1,7 @@
 # Нужно игнорировать __pycache__
 **/__pycache__
 /venv
+/tmp
+**/*.config
+/documentation/*.html
+server/modules/config.json

@@ -1,11 +1,6 @@
-from Parser.module_parser_get_linkers import Linkers
-import Parser.module_parser_list_learners
-from Parser.module_parser_schedule import parseSchedule
+from .get_linkers import Linkers
+from .get_list_learners import getListLearners
+from .get_schedule import getScheduleLearner
 
-# interface: 
-# 	|- parse:
-# 		|- schedule for learner
-# 		|- list of learners
-# 		|- list of teachers
 
 linkers = Linkers()
