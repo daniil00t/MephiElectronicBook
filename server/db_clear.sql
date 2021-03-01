@@ -49,7 +49,9 @@ CREATE TABLE classes (
 CREATE TABLE teams (
 	id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(50) NOT NULL,
-	PRIMARY KEY (id)
+	leader INT DEFAULT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (name)
 );
 
 CREATE TABLE students (

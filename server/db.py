@@ -1,4 +1,5 @@
 from .config import *
+from .config_auth import *
 from .modules import Parser as parser
 import mysql.connector as mysql
 import re
@@ -33,7 +34,7 @@ class DB:
 		return self.cursor.fetchall()
 
 	def __execute_f(self, filename):
-		print("\n[INFO] Executing SQL script file: {}".format(filename))
+		if VERBOSE: print("\n[INFO] Executing SQL script file: {}".format(filename))
 
 		cmd = ""
 		with open(filename) as f:
@@ -43,7 +44,7 @@ class DB:
 
 				cmd += line
 				if re.search(r';$', line):
-					print("\n[INFO] Executing SQL statement:\n{}".format(cmd))
+					if VERBOSE: print("\n[INFO] Executing SQL statement:\n{}".format(cmd))
 					self.__execute(cmd)
 					cmd = ""
 
@@ -68,27 +69,75 @@ class DB:
 			} for r in result]
 		return result
 
-	def full_update(self): # change it later for new parser
+	def full_update(self):
+		self.__execute_f(DB_CLEAR_SQL)
+
+		groups   = []
 		teachers = []
 		subjects = []
-		lessons = []
 
-		for group_link in parser.linkers.getLinkersScheduleLearner(selection=r"Б20-523"):
-			shedule = parser.parseSchedule(data = [group_link], debug=False)
+		linkers = parser.linkers.getLinkersScheduleLearner(
+			selection=DB_GROUPS)
+		shedule = parser.getScheduleLearner(data = linkers, debug=False)
+		
+		if VERBOSE: self.print_json(shedule)
 
-			for i, day in enumerate(shedule):
-				print("[INFO] DAY {}:".format(i))
-				self.print_json(day)
-				for j, lesson in enumerate(day):
-					teachers.append(lesson["teacher"])
+		#-----------/ Add groups, teachers and subjects /-----#
+
+		for group in shedule:
+			groups.append(group["name"])
+
+			for day in group["data"]:
+				for lesson in day:
+					teachers.extend(lesson["teachers"])
 					subjects.append({
 						"name" : lesson["name"],
-						"duration" :lesson["duration"]
+						"duration" : lesson["duration"]
 					})
 
+		self.insert_groups(groups)
 		self.insert_teachers(teachers)
 		self.insert_subjects(subjects)
-		print("[INFO] Updated")
+
+		#----------/ Add lessons /---------------------------#
+		for group in shedule:
+
+			for i, day in enumerate(group["data"]):
+				pass
+
+		#----------/ Add students into groups /--------------#
+		students = []
+
+		#if pickle.file exists - load it!
+
+		students_list = parser.getListLearners(linkers, {
+			"login"    : AUTH_LOGIN,
+			"password" : AUTH_PASS
+		})
+
+		# for linker, group_list in zip(linkers, students_list):
+		# 	for student in group_list:
+		# 		students.append({
+		# 			"group" : linker["name"],
+		# 			"name" : re.match(r"(?<='.')", student),
+		# 			"count" : re.match(r"(?='.')", student)
+		# 		})
+
+		# if VERBOSE: self.print_json(students)
+
+		if VERBOSE: print("[INFO] Database updated")
+
+	def insert_groups(self, groups):
+		args = []
+		for g in groups:
+			if g == "":
+				continue
+			args.append("(\"{}\")".format(g))
+
+		cmd   = '''INSERT IGNORE INTO teams (name)''' \
+				'''VALUES {}'''.format(",".join(args))
+		self.__execute(cmd)
+
 
 	def insert_teachers(self, teachers):
 		args = []
@@ -99,16 +148,23 @@ class DB:
 
 		cmd   = '''INSERT IGNORE INTO teachers (name)''' \
 				'''VALUES {}'''.format(",".join(args))
-		result = self.__execute(cmd)
+		self.__execute(cmd)
+
 
 	def insert_subjects(self, subjects):
 		args = []
 		for s in subjects:
-		# 	args.append("(\"{}\")".format(t))
+			if s["name"] == "":
+				continue
+			args.append("(\"{}\", \"{}\")".format(s["name"], s["duration"]))
 
-		# cmd   = '''INSERT IGNORE INTO teachers (name)''' \
-		# 		'''VALUES {}'''.format(",".join(args))
-		# result = self.__execute(cmd)
+		cmd   = '''INSERT IGNORE INTO subjects (name, duration)''' \
+				'''VALUES {}'''.format(",".join(args))
+		self.__execute(cmd)
+
+	def insert_students(self, students):
+		pass
+
 
 	def insert_classes(self, classes):
 		pass
