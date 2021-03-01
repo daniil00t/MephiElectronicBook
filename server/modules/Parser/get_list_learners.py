@@ -11,7 +11,10 @@ def parseList(html):
 	res = []
 	soup = bs.BeautifulSoup(html, features="html.parser")
 	for i in soup.find_all("div", class_="list-group-item"):
-		res.append(Filter(i.text))
+		res.append({
+			"id": int(Filter(i.text).split(".")[0]),
+			"name": Filter(i.text).split(".")[1]
+		})
 	return res
 
 # Inputs:
@@ -48,7 +51,10 @@ def getListLearners(links, user_data, debug = False):
 			proccess += 1
 			print(f"Proccess: {proccess / len(links) * 100}%")
 			br.get(i['href'][:-9])
-			groups.append(parseList(br.page_source))
+			groups.append({
+				"name": i['name'],
+				"data": parseList(br.page_source)
+			})
 	elif len(links) == 0 and debug:
 		print("Array of links is empty! Please enter array with non-empty data.")
 	return groups
