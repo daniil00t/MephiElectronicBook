@@ -1,12 +1,5 @@
 from Parser import *
-import json
 
-DATA_AUTH = {}
-
-# Config file is private and locate in local place
-with open('./config.json') as json_file:
-	data = json.load(json_file)
-	DATA_AUTH = data
 
 # print(
 # 	linkers.getLinkersListTeacher(

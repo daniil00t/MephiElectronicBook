@@ -9,15 +9,17 @@ def index():
 
 # Static files
 @app.route('/static/<path:path>')
-def send_js(path):
+def send_static(path):
 	print(path)
-	return send_from_directory("../client/", path)
+	# print(path)
+	return send_from_directory(app.static_folder, path)
+
+
 
 @app.route('/__get_teachers')
 def __get_teachers():
 	with DB() as db:
 		result =  db.get_teachers()
-
 	return jsonify({ "data" : result })
 
 @app.route('/users/<int:user_id>')

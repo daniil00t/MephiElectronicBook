@@ -4,4 +4,4 @@
 /tmp
 **/*.config
 /documentation/*.html
-server/modules/config.json
+server/config_auth.py
