@@ -154,7 +154,7 @@ print(getScheduleLearner(data = [
 						{ //lesson
 							"time": "12:44 — 14:21", 
 							"name": "Математический анализ", 
-							"teacher": "Фролов Н.П.", 
+							"teacher": ["Фролов Н.П."], 
 							"even": 0,
 							"type": "Пр", 
 							"duration": "(08.02.2021 — 22.03.2021)",
@@ -171,7 +171,7 @@ print(getScheduleLearner(data = [
 						{ //lesson
 							"time": "12:44 — 14:21", 
 							"name": "Математический анализ", 
-							"teacher": "Фролов Н.П.", 
+							"teacher": ["Фролов Н.П."], 
 							"even": 0,
 							"type": "Пр", 
 							"duration": "(08.02.2021 — 22.03.2021)",
