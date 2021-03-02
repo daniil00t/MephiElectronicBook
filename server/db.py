@@ -4,10 +4,17 @@ from .modules import Parser as parser
 import mysql.connector as mysql
 import re
 import json
+import os
+import pickle
+
+def print_json(data):
+	print(json.dumps(data, ensure_ascii=False, indent=4))
+
 
 class DB:
 	def __init__(self):
-		pass
+		self.__make_parser_cacheable()
+
 
 	def __enter__(self):
 		self.connection = mysql.connect(
@@ -21,6 +28,7 @@ class DB:
 
 		return self
 
+
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.connection.commit()
 		self.cursor.close()
@@ -28,10 +36,12 @@ class DB:
 
 		return type is None
 
+
 	def __execute(self, cmd):
-		# add multiple commands executing
+		# [FEATURE] add multiple commands executing
 		self.cursor.execute(cmd)
 		return self.cursor.fetchall()
+
 
 	def __execute_f(self, filename):
 		if VERBOSE: print("\n[INFO] Executing SQL script file: {}".format(filename))
@@ -48,8 +58,46 @@ class DB:
 					self.__execute(cmd)
 					cmd = ""
 
-	def print_json(self, data):
-		print(json.dumps(data, ensure_ascii=False, indent=4))
+
+	def __make_cacheable(self, filename, func):
+		# [FEATURE] pass arguments use_cache and save_cache into this function
+		# and use it separately for each parser function
+		def wrapper(*args, **kwargs):
+			path = DB_CACHE_FOLDER + filename + '.pkl'
+
+			cache_used = False
+
+			if DB_USE_CACHE and os.path.isfile(path):
+				with open(path, 'rb') as f:
+					result = pickle.load(f)
+				cache_used = True
+
+				print("[INFO] Using cached {}.".format(filename))
+			else:
+				result = func(*args, **kwargs)
+
+			if DB_SAVE_CACHE and not cache_used:
+				with open(path, 'wb') as f:
+					pickle.dump(result, f)
+
+				print("[INFO] {} cached.".format(filename))
+
+			return result
+
+		return wrapper
+
+	def __make_parser_cacheable(self):
+		parser.linkers.getLinkersScheduleLearner = self.__make_cacheable(
+			"groups_linkers", parser.linkers.getLinkersScheduleLearner)
+
+		parser.linkers.getLinkersListTeacher = self.__make_cacheable(
+			"teachers_linkers", parser.linkers.getLinkersListTeacher)
+
+		parser.getScheduleLearner = self.__make_cacheable(
+			"groups_shedules", parser.getScheduleLearner)
+
+		parser.getListLearners = self.__make_cacheable(
+			"students_list", parser.getListLearners)
 
 	def init(self):
 		if(DB_CLEAR):
@@ -63,28 +111,55 @@ class DB:
 		cmd = '''SELECT id, name FROM teachers'''
 		result = self.__execute(cmd)
 
-		result = [{
+		result_f = [{
 			"id" : r[0],
 			"name" : r[1]
 			} for r in result]
-		return result
+
+		return result_f
 
 	def full_update(self):
+		# [FEATURE] split this function, use separate flags, rename it to 'update'
 		self.__execute_f(DB_CLEAR_SQL)
+
+		#------------------------------------------------------------------------------------
+		#---------------------------/ ADD GROUPS, TEACHERS, SUBJECTS /-----------------------
+		#------------------------------------------------------------------------------------
 
 		groups   = []
 		teachers = []
 		subjects = []
 
-		linkers = parser.linkers.getLinkersScheduleLearner(
-			selection=DB_GROUPS)
-		shedule = parser.getScheduleLearner(data = linkers, debug=False)
+		groups_linkers = parser.linkers.getLinkersScheduleLearner(selection=DB_GROUPS_LIMIT)
+		groups_shedules = parser.getScheduleLearner(data = groups_linkers, debug=False)
+
+		for group in groups_shedules:
+			groups.append(group["name"])
+
+			for day in group["data"]:
+				for lesson in day:
+					teachers.extend(lesson["teachers"])
+					subjects.append({
+						"name" : lesson["name"],
+						"duration" : lesson["duration"]
+					})
 		
-		if VERBOSE: self.print_json(shedule)
+		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
 
-		#-----------/ Add groups, teachers and subjects /-----#
+		for tl in teachers_linkers:
+			teachers.append(tl["name"])
 
-		for group in shedule:
+
+		self.insert_groups(groups)
+		self.insert_teachers(teachers)
+		self.insert_subjects(subjects)
+
+		#------------------------------------------------------------------------------------
+		#--------------------------------/ ADD CLASSES /-------------------------------------
+		#------------------------------------------------------------------------------------
+
+		# [FEATURE] Do not use 'enumerate', use lesson["wday"]
+		for group in groups_shedules:
 			groups.append(group["name"])
 
 			for day in group["data"]:
@@ -95,37 +170,26 @@ class DB:
 						"duration" : lesson["duration"]
 					})
 
-		self.insert_groups(groups)
-		self.insert_teachers(teachers)
-		self.insert_subjects(subjects)
+		#------------------------------------------------------------------------------------
+		#--------------------------------/ ADD STUDENTS /------------------------------------
+		#------------------------------------------------------------------------------------
 
-		#----------/ Add lessons /---------------------------#
-		for group in shedule:
-
-			for i, day in enumerate(group["data"]):
-				pass
-
-		#----------/ Add students into groups /--------------#
 		students = []
 
-		#if pickle.file exists - load it!
-
-		students_list = parser.getListLearners(linkers, {
+		students_list = parser.getListLearners(groups_linkers, {
 			"login"    : AUTH_LOGIN,
 			"password" : AUTH_PASS
 		})
 
-		# for linker, group_list in zip(linkers, students_list):
-		# 	for student in group_list:
-		# 		students.append({
-		# 			"group" : linker["name"],
-		# 			"name" : re.match(r"(?<='.')", student),
-		# 			"count" : re.match(r"(?='.')", student)
-		# 		})
+		for group in students_list:
+			for student in group["data"]:
+				students.append({
+					"group" : group["name"],
+					"name"  : student["name"],
+					"count" : student["id"]
+				})
 
-		# if VERBOSE: self.print_json(students)
-
-		if VERBOSE: print("[INFO] Database updated")
+		self.insert_students(students)
 
 	def insert_groups(self, groups):
 		args = []
@@ -133,6 +197,9 @@ class DB:
 			if g == "":
 				continue
 			args.append("(\"{}\")".format(g))
+
+		if args == []:
+			return
 
 		cmd   = '''INSERT IGNORE INTO teams (name)''' \
 				'''VALUES {}'''.format(",".join(args))
@@ -146,6 +213,9 @@ class DB:
 				continue
 			args.append("(\"{}\")".format(t))
 
+		if args == []:
+			return
+
 		cmd   = '''INSERT IGNORE INTO teachers (name)''' \
 				'''VALUES {}'''.format(",".join(args))
 		self.__execute(cmd)
@@ -158,12 +228,29 @@ class DB:
 				continue
 			args.append("(\"{}\", \"{}\")".format(s["name"], s["duration"]))
 
+		if args == []:
+			return
+
 		cmd   = '''INSERT IGNORE INTO subjects (name, duration)''' \
 				'''VALUES {}'''.format(",".join(args))
 		self.__execute(cmd)
 
 	def insert_students(self, students):
-		pass
+		# [FEATURE] make this query more efficiency by using "SELECT id ..." once for each group
+		args = []
+		for s in students:
+			print(s)
+			if s["name"] == "":
+				continue
+			args.append("""(\"{}\", (SELECT id FROM teams WHERE name = \"{}\"), {})""".format(
+					s["name"], s["group"], s["count"]))
+
+		if args == []:
+			return
+
+		cmd   = '''INSERT IGNORE INTO students (name, team_id, count)''' \
+				'''VALUES {}'''.format(",".join(args))
+		self.__execute(cmd)
 
 
 	def insert_classes(self, classes):

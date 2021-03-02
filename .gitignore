@@ -8,3 +8,4 @@ server/modules/config.json
 
 server/config_auth.py
 show.sql
+/server/cache
