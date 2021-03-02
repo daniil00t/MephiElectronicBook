@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 DEBUG = False
 VERBOSE = False
->>>>>>> 87c6e73bd3df50248b68b1d99a3427c12bedbbe0
 
 #DATABASE
 DB_USER = 'server'
