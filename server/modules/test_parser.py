@@ -1,12 +1,5 @@
 from Parser import *
-import json
 
-DATA_AUTH = {}
-
-# Config file is private and locate in local place
-with open('./config.json') as json_file:
-	data = json.load(json_file)
-	DATA_AUTH = data
 
 # print(
 # 	linkers.getLinkersListTeacher(
@@ -37,15 +30,11 @@ with open('./config.json') as json_file:
 # 	# ...
 # ], debug=True))
 
-# print(getScheduleTeacher(data = [
-# 	# ...
-# 	{
-# 		"name": "Автушко Вера Павловна",
-# 		"href": "	"
-# 	},
-# 	{
-# 		"name": "Стёпин Евгений Викторович",
-# 		"href": "https://home.mephi.ru/tutors/18328"
-# 	}
-# 	# ...
-# ], debug=True))
+print(getScheduleTeacher(data = [
+	# ...
+	{
+		"name": "Трифоненков Владимир Петрович",
+		"href": "https://home.mephi.ru/tutors/18355"
+	}
+	# ...
+], debug=True))
