@@ -5,3 +5,4 @@
 **/*.config
 /documentation/*.html
 server/config_auth.py
+client-s/

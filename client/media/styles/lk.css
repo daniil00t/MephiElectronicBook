@@ -1,0 +1,150 @@
+/*setting for bootstrap*/
+nav {
+	padding: 8px 30px !important;
+}
+ul.navbar-nav.ml-auto{
+	margin-right: 50px;
+}
+ul.navbar-nav.ml-auto li a{
+	margin-right: 15px;
+}
+
+
+/*Styles fot lk page*/
+
+.mark-span{
+	color: #159f46;
+}
+
+main{
+
+}
+
+main .teacher-panel{
+	width: 100%;
+	/*height: 70px;*/
+	padding: 10px 30px;
+	margin-top: 15px;
+}
+main .teacher-panel .wrap-teacher-panel{
+	height: 70px;
+	background-color: #fff;
+	padding: 8px 20px;
+	border-radius: 8px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	/*justify-content: space-between;*/
+}
+/*.wrap-teacher-panel:first-of-type > a:last-child {
+	order: 2;
+}*/
+.wrap-teacher-panel .teacher-panel-name{
+	font-size: 1.4em;
+}
+.wrap-teacher-panel .link-homemephi{
+	margin-left: auto;
+	order: 2;
+}
+.techer-panel-mark{
+	padding: 3px 10px;
+	border-radius: 3px;
+	margin-left: 10px;
+	color: white;
+}
+
+.techer-panel-mark.mark-subject{
+	background-color: #ef7c06;
+}
+.techer-panel-mark.mark-groups{
+	background-color: #9323f9;
+}
+
+/*Schedule*/
+
+.schedule{
+	width: 100%;
+	padding: 10px 30px;
+	margin-top: 10px;
+	margin-top: 15px;
+}
+
+
+.schedule-wrap{
+	background-color: #fff;
+	padding: 35px 30px;
+	border-radius: 8px;
+}
+
+h4.schedule-name{
+	border-bottom: 2px solid #e9f0ff;
+}
+
+.schedule-days{
+	padding: 20px 0;
+}
+.schedule-day{
+	box-shadow: 0px 0px 19px 0px rgb(66 66 66 / 29%);
+	padding: 20px 15px;
+	border-radius: 5px;
+	margin: 20px 0 40px 0;
+}
+.schedule-day-name{
+}
+.schedule-day .lessons{
+
+}
+.schedule-day .lessons .lesson{
+	display: flex;
+	flex-direction: row;
+	border-radius: 5px;
+	/*box-shadow: 0px 0px 19px 0px rgb(66 66 66 / 29%);*/
+	border: 1px solid #0048a175;
+	padding: 8px 15px;
+	margin-top: 10px;
+}
+.lessons .lesson .time{
+	margin-right: 5px;
+}	
+
+.lessons .lesson .type{
+	margin: 0 5px;
+	width: 40px;
+	text-align: center;
+	color: #fff;
+	border-radius: 3px;
+}
+.type-practice{
+	background-color: #1919e9;
+}
+.type-lecture{
+	background-color: #0f690f;
+}
+.type-lab{
+	background-color: #9d11c0;
+}
+
+.lessons .lesson .name{
+	margin: 0 10px;
+	font-family: RobotoRegular;
+	min-width: 150px;
+}
+
+.lessons .lesson .groups{
+	max-width: 586px;
+	overflow-x: hidden;
+}
+
+
+.schedule-day .lessons .lesson .place{
+	margin-left: auto;
+	order: 2;
+	margin-right: 10px;
+	background-color: #f2992c;
+	color: white;
+	padding: 0 6px;
+	border-radius: 3px;
+}
+.link-group{
+	margin-right: 5px;
+}

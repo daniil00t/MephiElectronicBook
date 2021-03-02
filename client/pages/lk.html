@@ -3,10 +3,96 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<!-- <link rel="stylesheet" href="/static/media/libs/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/media/styles/main.css">
+	<link rel="stylesheet" href="/static/media/styles/fonts.css"> -->
+
+	<link rel="stylesheet" href="../media/libs/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../media/styles/main.css">
+	<link rel="stylesheet" href="../media/styles/lk.css">
+	<link rel="stylesheet" href="../media/styles/fonts.css">
 	<title>Личный кабинет</title>
-	<link rel="stylesheet" href="../">
 </head>
 <body>
-	hello there!
+
+
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#"><span class="mark-span">EL</span>Book</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Главная<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Мои группы</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Мои ведомости
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Ведомость оценок</a>
+          <a class="dropdown-item" href="#">Ведомость посещаемости</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Общая ведомость</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Помощь</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+
+	<main>
+
+		<!-- teacher-panel start -->
+
+		<div class="teacher-panel">
+			<div class="wrap-teacher-panel">
+				<div class="teacher-panel-name">
+				Трифоненков Владимир Петрович
+			</div>
+
+			<span class="techer-panel-mark mark-subject">
+				<span class="mark-subject-count">4</span> Предмета
+			</span>
+			<span class="techer-panel-mark mark-groups">
+				<span class="mark-groups-count">10</span> Групп
+			</span>
+
+			<a href="#" class="link-homemephi">
+				На страницу home.mephi.ru
+			</a>
+			</div>
+		</div>
+
+		<!-- teacher-panel end -->
+
+
+		<div class="schedule">
+			<div class="schedule-wrap">
+				<h4 class="schedule-name">Мое расписание</h4>
+
+				<div class="schedule-days">
+				</div>
+			</div>	
+		</div>
+	</main>
+
+	<script src="../media/libs/jQuery/jQuery.min.js"></script>
+	<script src="../media/libs/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../scripts/lk.js"></script>
 </body>
 </html>

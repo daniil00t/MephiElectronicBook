@@ -30,15 +30,11 @@ from Parser import *
 # 	# ...
 # ], debug=True))
 
-# print(getScheduleTeacher(data = [
-# 	# ...
-# 	{
-# 		"name": "Автушко Вера Павловна",
-# 		"href": "	"
-# 	},
-# 	{
-# 		"name": "Стёпин Евгений Викторович",
-# 		"href": "https://home.mephi.ru/tutors/18328"
-# 	}
-# 	# ...
-# ], debug=True))
+print(getScheduleTeacher(data = [
+	# ...
+	{
+		"name": "Трифоненков Владимир Петрович",
+		"href": "https://home.mephi.ru/tutors/18355"
+	}
+	# ...
+], debug=True))

@@ -1,6 +1,15 @@
 from . import reqs
 import bs4 as bs
 
+wday = [
+	"Понедельник",
+	"Вторник",
+	"Среда",
+	"Четверг",
+	"Пятница",
+	"Суббота"
+]
+
 def __filter(text):
 	# в виде исключения
 	if "Иностранный язык" in text:
@@ -121,7 +130,7 @@ def __filterForNameTeacher(variant):
 			for group in variant["groups"]:
 				name = name.replace(group, "")
 		elif i != "even":
-			name = name.replace(variant[i], "")
+			name = name.replace(variant[i], "").replace(",", "")
 	return name
 
 
@@ -131,7 +140,10 @@ def __parseScheduleTeacher(soup, name, debug):
 	scheduleGroupData = []
 	# start parse
 	daysSoup = soup.find_all("div", class_="list-group")
+	wDaySoup = soup.find_all("h3", class_="lesson-wday")
+	dayCounter = 0
 	for daySoup in daysSoup:
+		currentWDay = wday.index(__filter(wDaySoup[dayCounter].text))
 		lessonsSoup = daySoup.find_all("div", class_="list-group-item")
 		lessonsData = []
 		for lesson in lessonsSoup:
@@ -144,7 +156,6 @@ def __parseScheduleTeacher(soup, name, debug):
 				variant["type"] = __triedType(variantSoup, debug)
 				variant["duration"] = __triedDuration(variantSoup, debug)
 				variant["place"] = __filter(variantSoup.find("div", class_="pull-right").text)
-				
 				# parse groups
 				variant["groups"] = []
 				groupsSoup = variantSoup.find_all("a", class_="text-nowrap")
@@ -154,9 +165,11 @@ def __parseScheduleTeacher(soup, name, debug):
 				# parse name
 				variant["name"] = __filter(variantSoup.text)
 				variant["name"] = __filterForNameTeacher(variant)
+				variant["wday"] = currentWDay
 
 				lessonsData.append(variant)
 		scheduleGroupData.append(lessonsData)
+		dayCounter += 1
 
 	scheduleGroup["name"] = name
 	scheduleGroup["data"] = scheduleGroupData
