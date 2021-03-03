@@ -4,5 +4,7 @@
 /tmp
 **/*.config
 /documentation/*.html
-server/config_auth.py
-client-s/
+/server/modules/config.json
+/server/config_auth.py
+/server/cache
+show.sql
