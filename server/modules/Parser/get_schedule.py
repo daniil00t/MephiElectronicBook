@@ -183,6 +183,6 @@ def getScheduleTeacher(**itemsOfSchedule):
 	
 	for item in data:
 		print(item['name'])
-		scheduleGroups.append(__parseScheduleTeacher(reqs.Request(item["href"])["data"], item["name"], debug))
+		scheduleGroups.append(__parseScheduleTeacher(reqs.Request(item["link"])["data"], item["name"], debug))
 
 	return scheduleGroups

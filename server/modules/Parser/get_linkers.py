@@ -12,6 +12,9 @@ class Linkers:
 	def __init__(self):
 		pass
 
+	def getName(self, name):
+		arr = name.split(" ")
+		return f"{arr[0]} {arr[1][0]}.{arr[2][0]}."
 	###
 	#============================= Functions For Learner ========================#
 	###
@@ -95,7 +98,7 @@ class Linkers:
 				if countPages > 4:
 					countPages = len(reqs.Request(f"{main_link}?char={quote(i)}&page=5")["data"].find_all("li", class_="page"))
 
-				_res = []
+				res = []
 				iteratorZ0 += 1
 				iteratorZ1 = 0
 				for j in range(countPages):
@@ -117,17 +120,18 @@ class Linkers:
 						try:
 							link = reqs.Request(k['href'])["data"].find("a", class_="btn btn-primary btn-block hidden-print").get("href")
 							if link != "":
-								_res.append({
+								res.append({
+									# "name": self.getName(k["name"]),
 									"name": k["name"],
 									"href": k["href"],
 									"link": "https://home.mephi.ru" + link
 								})
 						except Exception as e:
 							print("Видимо, чел не преподает:(")
+
 						iteratorZ2 += 1
 					iteratorZ1+=1
 				print(_res) # Промежуточные данные
-				res += _res
 
 				
 		return res

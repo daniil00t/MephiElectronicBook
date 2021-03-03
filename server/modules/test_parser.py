@@ -1,10 +1,11 @@
 from Parser import *
 
 
+
 # print(
 # 	linkers.getLinkersListTeacher(
 # 		main_link = "https://home.mephi.ru/ru/people", 
-# 		endProccess=7
+# 		endProccess=5
 # 	)
 # )
 
@@ -12,8 +13,9 @@ from Parser import *
 # print(getListLearners([
 # 	{'name': 'Б20-101', 'href': 'https://home.mephi.ru/study_groups/11122/schedule'}, 
 # 	{'name': 'Б20-102', 'href': 'https://home.mephi.ru/study_groups/11123/schedule'}, 
+# 	# {'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'},
 # 	{'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'}
-# ], {"login": DATA_AUTH["LOGIN"], "password": DATA_AUTH["PASSWORD"]}, debug=True))
+# ], {"login": "sdm009", "password": "P101119767688"}, debug=True))
 
 
 
@@ -30,11 +32,13 @@ from Parser import *
 # 	# ...
 # ], debug=True))
 
-print(getScheduleTeacher(data = [
-	# ...
-	{
-		"name": "Трифоненков Владимир Петрович",
-		"href": "https://home.mephi.ru/tutors/18355"
-	}
-	# ...
-], debug=True))
+# print(linkers.getLinkersListTeacher(
+# 	main_link = "https://home.mephi.ru/ru/people", 
+# 	endProccess=3.90
+# ))
+
+
+# print(getScheduleTeacher(data = linkers.getLinkersListTeacher(
+# 	main_link = "https://home.mephi.ru/ru/people", 
+# 	endProccess=4
+# ), debug=True))
