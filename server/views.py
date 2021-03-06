@@ -22,6 +22,12 @@ def __get_teachers():
 		result =  db.get_teachers()
 	return jsonify({ "data" : result })
 
+@app.route('/__get_shedule/<int:id>')
+def __get_shedule(id):
+	with DB() as db:
+		result =  db.get_shedule(id)
+	return jsonify({ "data" : result })
+
 @app.route('/users/<int:user_id>')
 def user(user_id):
 	return "User id: " + str(user_id)

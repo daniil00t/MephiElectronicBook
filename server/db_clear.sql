@@ -9,6 +9,14 @@ CREATE TABLE users (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE teams (
+	id INT NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	leader INT DEFAULT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (name)
+);
+
 CREATE TABLE teachers (
 	id INT NOT NULL AUTO_INCREMENT,
 	user_id INT DEFAULT NULL,
@@ -20,36 +28,8 @@ CREATE TABLE teachers (
 
 CREATE TABLE subjects (
 	id INT NOT NULL AUTO_INCREMENT,
-	name VARCHAR(100) NOT NULL,
+	name VARCHAR(300) NOT NULL,
 	duration VARCHAR(100) DEFAULT NULL,
-	PRIMARY KEY (id),
-	UNIQUE (name)
-);
-
-CREATE TABLE clocks (
-	id INT NOT NULL AUTO_INCREMENT,
-	day INT NOT NULL,
-	clock VARCHAR(50) NOT NULL,
-	even INT NOT NULL,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE classes (
-	id INT NOT NULL AUTO_INCREMENT,
-	teacher_id INT NOT NULL,
-	subject_id INT NOT NULL,
-	clock_id INT NOT NULL,
-	type VARCHAR(10) NOT NULL,
-	PRIMARY KEY (id),
-	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
-	FOREIGN KEY (subject_id) REFERENCES subjects(id),
-	FOREIGN KEY (clock_id) REFERENCES clocks(id)
-);
-
-CREATE TABLE teams (
-	id INT NOT NULL AUTO_INCREMENT,
-	name VARCHAR(50) NOT NULL,
-	leader INT DEFAULT NULL,
 	PRIMARY KEY (id),
 	UNIQUE (name)
 );
@@ -63,12 +43,28 @@ CREATE TABLE students (
 	FOREIGN KEY (team_id) REFERENCES teams(id)
 );
 
-CREATE TABLE classes_teams (
-	class_id INT NOT NULL,
+CREATE TABLE lessons (
+	id INT NOT NULL AUTO_INCREMENT,
+	teacher_id INT NOT NULL,
+	subject_id INT NOT NULL,
+	wday INT,
+	clock VARCHAR(50),
+	even INT,
+	type VARCHAR(10),
+	place VARCHAR(20),
+	-- team_id INT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+	FOREIGN KEY (subject_id) REFERENCES subjects(id)
+	-- , FOREIGN KEY (team_id) REFERENCES teams(id)
+);
+
+CREATE TABLE lessons_teams (
+	lesson_id INT NOT NULL,
 	team_id INT NOT NULL,
-	PRIMARY KEY (class_id),
-	FOREIGN KEY (team_id) REFERENCES teams(id),
-	FOREIGN KEY (class_id) REFERENCES classes(id)
+	PRIMARY KEY (lesson_id, team_id),
+	FOREIGN KEY (lesson_id) REFERENCES lessons(id),
+	FOREIGN KEY (team_id) REFERENCES teams(id)
 );
 
 CREATE TABLE reports (
@@ -80,3 +76,25 @@ CREATE TABLE reports (
 	FOREIGN KEY (team_id) REFERENCES teams(id),
 	FOREIGN KEY (subject_id) REFERENCES subjects(id)
 );
+
+-- CREATE TABLE clocks (
+-- 	id INT NOT NULL AUTO_INCREMENT,
+-- 	day INT NOT NULL,
+-- 	clock VARCHAR(50) NOT NULL,
+-- 	even INT NOT NULL,
+-- 	PRIMARY KEY (id)
+-- );
+
+-- CREATE TABLE lessons (
+-- 	id INT NOT NULL AUTO_INCREMENT,
+-- 	teacher_id INT NOT NULL,
+-- 	subject_id INT NOT NULL,
+-- 	wday INT 
+-- 	clock VARCHAR(50),
+-- 	even INT,
+-- 	type VARCHAR(10),
+-- 	place VARCHAR(20),
+-- 	PRIMARY KEY (id),
+-- 	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+-- 	FOREIGN KEY (subject_id) REFERENCES subjects(id)
+-- );
