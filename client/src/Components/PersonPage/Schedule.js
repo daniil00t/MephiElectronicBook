@@ -17,7 +17,7 @@ export class Schedule extends React.Component {
 	}
 
 	Day(props){
-		let wday = [
+		const wday = [
 			"Понедельник",
 			"Вторник",
 			"Среда",
@@ -26,18 +26,24 @@ export class Schedule extends React.Component {
 			"Суббота"
 		];
 		let self = this;
-		return (
-			<div className="schedule-day">
-				<h5 className="schedule-day-name">{wday[props.data[0].wday]}</h5>
-				<div className="lessons">
-					{props.data.map(lesson => <props.This.Lesson data={lesson} /> )}
+		if(props.data.length  != 0){
+			return (
+				<div className="schedule-day">
+					<h5 className="schedule-day-name">{wday[props.wday]}</h5>
+					<div className="lessons">
+						{props.data.map(lesson => <props.This.Lesson data={lesson} /> )}
+					</div>
 				</div>
-			</div>
-		);
-	}
+			);
+		}
+		else{
+			return <div></div>;
+		}
+}
 
 
 	render() {
+		console.log(this.props.schedule);
 		return (
 			<div class="schedule">
 				<div class="schedule-wrap">
@@ -46,9 +52,7 @@ export class Schedule extends React.Component {
 					<div class="schedule-days">
 
 						{
-							this.props.schedule.data.map(day => 
-								<this.Day This={this} data={day}/>
-							)
+							this.props.schedule.map((day, iter) => <this.Day This={this} data={day} wday={iter} /> )
 						}
 					
 					</div>

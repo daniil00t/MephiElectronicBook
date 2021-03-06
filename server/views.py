@@ -11,22 +11,24 @@ def index():
 @app.route('/static/<path:path>')
 def send_static(path):
 	print(path)
-	# print(path)
 	return send_from_directory(app.static_folder, path)
 
 
 
 @app.route('/__get_teachers')
 def __get_teachers():
+	result = []
 	with DB() as db:
 		result =  db.get_teachers()
 	return jsonify({ "data" : result })
 
-@app.route('/__get_shedule/<int:id>')
+
+@app.route('/__get_schedule/<int:id>')
 def __get_shedule(id):
 	with DB() as db:
-		result =  db.get_shedule(id)
+		result = db.get_shedule(id)
 	return jsonify({ "data" : result })
+
 
 @app.route('/users/<int:user_id>')
 def user(user_id):

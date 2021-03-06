@@ -1,5 +1,5 @@
 from Parser import *
-
+import re
 
 
 # print(
@@ -10,12 +10,12 @@ from Parser import *
 # )
 
 
-# print(getListLearners([
-# 	{'name': 'Б20-101', 'href': 'https://home.mephi.ru/study_groups/11122/schedule'}, 
-# 	{'name': 'Б20-102', 'href': 'https://home.mephi.ru/study_groups/11123/schedule'}, 
-# 	# {'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'},
-# 	{'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'}
-# ], {"login": "sdm009", "password": "P101119767688"}, debug=True))
+print(getListLearners([
+	{'name': 'Б20-101', 'href': 'https://home.mephi.ru/study_groups/11122/schedule'}, 
+	{'name': 'Б20-102', 'href': 'https://home.mephi.ru/study_groups/11123/schedule'}, 
+	# {'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'},
+	{'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'}
+], {"login": "sdm009", "password": "P101119767688"}, debug=True))
 
 
 
@@ -23,11 +23,7 @@ from Parser import *
 # 	# ...
 # 	{
 # 		"name": "Б20-514",
-# 		"href": "https://home.mephi.ru/study_groups/11161/schedule"	
-# 	},
-# 	{
-# 		"name": "Б20-524",
-# 		"href": "https://home.mephi.ru/study_groups/11164/schedule"	
+# 		"href": "https://home.mephi.ru/study_groups/11051/schedule"	
 # 	}
 # 	# ...
 # ], debug=True))
@@ -42,3 +38,17 @@ from Parser import *
 # 	main_link = "https://home.mephi.ru/ru/people", 
 # 	endProccess=4
 # ), debug=True))
+
+
+def cutName(name):
+	reg = re.compile(r"([А-ЯA-Z][a-zа-я]+)([А-ЯA-Z]?\W)")
+	# reg.finditer("Физическая оптикаЗанятие будет проходить очно не ранее апреля 2021г. в ауд. Т-208")[1].group()
+
+	j=0
+	for i in reg.finditer(name):
+		# print(i.start(), i.group(), j)
+		if j == 1:
+			return name[:i.start()]
+		j+=1
+
+print(cutName("Физическая оптикаЗанятие будет проходить очно не ранее апреля 2021г. в ауд. Т-208"))
