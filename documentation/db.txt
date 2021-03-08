@@ -1,0 +1,59 @@
+ГОТОВЫЕ РЕШЕНИЯ:
+	Полностью обновить БД и кэш:
+		DB_CLEAR = True
+		DB_FULL_UPDATE = True
+		DB_NOT_USE_CACHE = True
+		DB_SAVE_CACHE = True
+
+	Полностью обновить БД, не трогая кэш:
+		DB_CLEAR = True
+		DB_FULL_UPDATE = True
+		DB_NOT_USE_CACHE = True
+		DB_NOT_SAVE_CACHE = True
+
+ПОДРОБНО:
+
+	удалить текущую БД и создать заново пустую:
+		DB_CLEAR = True
+
+	заново заполнить БД, не очищая ее:
+		DB_FULL_UPDATE = True 
+
+	очистить весь кэш парсера:
+		DB_CLEAR_CACHE = True
+
+	глобальные флаги для кэша:
+		DB_USE_CACHE = False		функции обновления(ФО) будут пытаться использовать кэш
+		DB_NOT_USE_CACHE = False	запретить ФО использовать кэш
+		DB_SAVE_CACHE = False		ФО будут сохранять новый кэш
+		DB_NOT_SAVE_CACHE = False	запретить ФО сохрнять кэш
+
+
+	флаги для каждой функции парсера, аналогично глобальным.
+	не работают, если соответствующие глобальные флаги выставлены в True:
+		#linkers for groups
+		DB_USE_CACHE_LG = True
+		DB_SAVE_CACHE_LG = False
+
+		#linkers for teachers
+		DB_USE_CACHE_LT = True
+		DB_SAVE_CACHE_LT = False
+
+		#shedules for groups
+		DB_USE_CACHE_SG = True
+		DB_SAVE_CACHE_SG = False
+
+		#shedules for teachers
+		DB_USE_CACHE_ST = True
+		DB_SAVE_CACHE_ST = False
+
+		#lists of students 
+		DB_USE_CACHE_L = True
+		DB_SAVE_CACHE_L = False
+
+
+	группы, которые будут добавлены в БД:
+		DB_GROUPS_LIMIT = r"Б20-5\d3"
+
+	процент учителей, которые будут добавлены в БД со страницы people:
+		DB_TEACHERS_LIMIT = 7
