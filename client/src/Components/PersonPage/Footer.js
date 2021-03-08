@@ -8,7 +8,9 @@ export class Footer extends React.Component {
 	render() {
 		return (
 			<footer>
-				this is footer!
+			<div className="wrap-footer">
+				<span><span className="markFooterGray">Front-end: Daniil Shenyagin</span> 2021&copy;All right reserved. <span className="markFooterGray">Back-end: Gleb Ryabets </span></span>
+			</div>
 			</footer>
 		);
 	}

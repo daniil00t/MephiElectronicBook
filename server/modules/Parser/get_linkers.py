@@ -131,7 +131,6 @@ class Linkers:
 
 						iteratorZ2 += 1
 					iteratorZ1+=1
-				print(_res) # Промежуточные данные
 
 				
 		return res

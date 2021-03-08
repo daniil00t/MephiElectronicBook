@@ -1,5 +1,16 @@
 from . import reqs
 import bs4 as bs
+import re
+
+def cutName(name):
+	reg = re.compile(r"([А-ЯA-Z][a-zа-я]+)([А-ЯA-Z]?\W)")
+	# reg.finditer("Физическая оптикаЗанятие будет проходить очно не ранее апреля 2021г. в ауд. Т-208")[1].group()
+	for i in reg.finditer(name):
+		# print(i.start(), i.group(), j)
+		_name = name[:i.start()]
+		print(name, _name)
+		if _name != "":
+			return _name
 
 wday = [
 	"Понедельник",
@@ -15,7 +26,7 @@ def __filter(text):
 	if "Иностранный язык" in text:
 		return "Иностранный язык"
 	# Убираем лишние символы из html
-	return text.replace("\xa0", " ").replace("\n", "")
+	return text.replace("\xa0", " ").replace("\n", "").replace("\"", "")
 
 def __filterForNameLearner(variant):
 	name = variant["name"]
@@ -26,7 +37,7 @@ def __filterForNameLearner(variant):
 				name = name.replace(teacher, "")
 		elif i != "even":
 			name = name.replace(variant[i], "")
-	return name
+	return cutName(name)
 
 def __triedDuration(soup, debug):
 	try:
@@ -121,6 +132,9 @@ def getScheduleLearner(**itemsOfSchedule):
 ###
 #================================= For Teacher ================================#
 ###
+
+
+
 def __filterForNameTeacher(variant):
 	name = variant["name"]
 	
@@ -130,8 +144,16 @@ def __filterForNameTeacher(variant):
 			for group in variant["groups"]:
 				name = name.replace(group, "")
 		elif i != "even":
-			name = name.replace(variant[i], "").replace(",", "")
-	return name
+			name = name.replace(variant[i], "").replace(",", "").replace("\"", "")
+
+	# Избавляемся от ненужных фиговин(спасибо разрабам сайта)
+	# Нужно взять и написать регулярку, основываясь на том, что название предмета - это
+	# Сначала заглавная буква, а потом последующие до [заглавных, скобок, запятых, ;, и прочих]
+	# в общем всех, которые не маленькие английские или русские буквы
+
+	# Не знаю.. совсем не уверен в работоспособности следующего кода, но суть понятна
+	# re.findall(r"([А-ЯA-Z][a-zа-я]+)([А-ЯA-Z]?\c)").groups[0]
+	return cutName(name)
 
 
 def __parseScheduleTeacher(soup, name, debug):

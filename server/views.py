@@ -3,12 +3,15 @@ from server import app
 from .db import  *
 
 
+
 @app.route('/__get_teachers')
 def __get_teachers():
+	result = []
 	with DB() as db:
 		result =  db.get_teachers()
 
 	return jsonify({ "data" : result })
+
 
 
 @app.route('/__get_shedule')
@@ -19,6 +22,7 @@ def __get_shedule():
 		result =  db.get_shedule(id)
 
 	return jsonify({ "data" : result })
+
 
 
 @app.route('/__get_students')

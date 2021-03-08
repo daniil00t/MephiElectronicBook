@@ -9,11 +9,11 @@ export class Header extends React.Component {
 	render() {
 		return (
 			<Navbar bg="light" expand="lg">
-			  <Navbar.Brand href="#home"><span className="mark-span">EL</span>Book</Navbar.Brand>
+			  <Navbar.Brand href="/"><span className="mark-span">EL</span>Book</Navbar.Brand>
 			  <Navbar.Toggle aria-controls="basic-navbar-nav" />
 			  <Navbar.Collapse id="basic-navbar-nav">
 			    <Nav className="ml-auto" style={{marginRight: "40px"}}>
-			      <Nav.Link href="#home">Главная</Nav.Link>
+			      <Nav.Link href="/">Главная</Nav.Link>
 			      <Nav.Link href="#link">Мои группы</Nav.Link>
 			      <NavDropdown title="Мои ведомости" id="basic-nav-dropdown">
 			        <NavDropdown.Item href="#action/3.1">Ведомость оценок</NavDropdown.Item>
