@@ -1,7 +1,6 @@
 import React from 'react';
 
-export class tableAttendance extends React.Component {
-
+export default class TableScore extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -9,7 +8,7 @@ export class tableAttendance extends React.Component {
 	render() {
 		return (
 			<div>
-				Ведомость посещаемости
+				Score
 			</div>
 		);
 	}

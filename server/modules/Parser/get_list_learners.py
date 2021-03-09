@@ -47,7 +47,7 @@ def getListLearners(links, user_data, debug = False):
 	groups = []
 	proccess = 0
 	if len(links) != 0:
-		for i in links[1:]:
+		for i in links:
 			proccess += 1
 			print(f"Proccess: {proccess / len(links) * 100}%")
 			br.get(i['href'][:-9])

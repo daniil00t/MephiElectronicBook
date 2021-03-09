@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 VERBOSE = False
 
 #----------------------/ DATABASE /----------------------------
@@ -12,12 +12,13 @@ DB_DATABASE = 'server_db'
 
 #DATABASE FLAGS AND SETTINGS
 DB_CLEAR = False
-DB_FULL_UPDATE = False
+DB_FULL_UPDATE = True
 
 #global (if true - it is true for all)
-DB_USE_CACHE = False
-DB_SAVE_CACHE = False
-DB_CLEAR_CACHE = False
+DB_USE_CACHE = True
+DB_SAVE_CACHE = True
+DB_CLEAR_CACHE = True
+
 
 #linkers for groups
 DB_USE_CACHE_LG = True
@@ -29,14 +30,14 @@ DB_SAVE_CACHE_LT = False
 DB_USE_CACHE_SG = True
 DB_SAVE_CACHE_SG = False
 #shedules for teachers
-DB_USE_CACHE_ST = True
-DB_SAVE_CACHE_ST = False
+DB_USE_CACHE_ST = False
+DB_SAVE_CACHE_ST = True
 #lists of students 
 DB_USE_CACHE_L = True
 DB_SAVE_CACHE_L = False
 
-DB_GROUPS_LIMIT = r"Б20-5\d3"
-DB_TEACHERS_LIMIT = 7
+DB_GROUPS_LIMIT = r"Б\d\d-\d\d\d"
+DB_TEACHERS_LIMIT = 10
 
 
 #DATABASE PATHES

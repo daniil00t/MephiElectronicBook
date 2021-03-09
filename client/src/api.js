@@ -1,13 +1,13 @@
 // данный модуль предполагает наличие всех необходимых функций для вд с api
 import $ from "jquery";
+import * as CONFIG from "./config.json";
 
-let sendRequest = (url, data, callback) => {
-	return $.getJSON(url, data, callback);
+let sendRequest = (url, data, callbackSuccess, callbackError) => {
+	return $.getJSON(url, data, callbackSuccess, callbackError);
 };
 
-
-let getScheduleTeacher = (id, callbackSuccess, callbackError) => {
-	sendRequest("http://localhost:5000/__get_schedule/" + id, {
+const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
+	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlScheduleTeacher + id, {
 		code: 200,
 		type: "teacher",
 		msg: "Hey, back! Give me teacher's schedule please"
@@ -15,7 +15,7 @@ let getScheduleTeacher = (id, callbackSuccess, callbackError) => {
 };
 
 let getListLearners = (callbackSuccess, callbackError) => {
-	sendRequest("__getListLearners", {
+	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlListLearners, {
 		code: 200,
 		type: "listLearners",
 		msg: "Hey, back! Give me list of learners please, main word - please so it will work!"
@@ -23,13 +23,12 @@ let getListLearners = (callbackSuccess, callbackError) => {
 };
 
 let getListTeachers = (callbackSuccess, callbackError) => {
-	sendRequest("http://localhost:5000/__get_teachers", {
+	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers, {
 		code: 200,
 		type: "listLearners",
 		msg: "Hey, back! Give me list of learners please, main word - please so it will work!"
 	}, callbackSuccess, callbackError);
 };
-
 
 
 export { getScheduleTeacher, getListLearners, getListTeachers };

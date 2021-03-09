@@ -16,6 +16,24 @@ ul.navbar-nav.ml-auto li a{
 	color: #159f46;
 }
 
+.right-floating{
+	margin-left: auto;
+	order: 2;
+}
+
+.right-floating a{
+	margin-right: 10px;
+}
+.right-floating a.logout{
+	background-color: #d71313;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 3px;
+	text-decoration: none;
+}
+
+
+
 main{
   flex-direction: column;
 
@@ -43,10 +61,10 @@ main .teacher-panel .wrap-teacher-panel{
 .wrap-teacher-panel .teacher-panel-name{
 	font-size: 1.4em;
 }
-.wrap-teacher-panel .link-homemephi{
+/*.wrap-teacher-panel .link-homemephi{
 	margin-left: auto;
 	order: 2;
-}
+}*/
 .techer-panel-mark{
 	padding: 3px 10px;
 	border-radius: 3px;

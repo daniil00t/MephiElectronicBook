@@ -115,7 +115,7 @@ class DB:
 	def __clear_cache(self):
 		files = glob.glob(DB_CACHE_FOLDER + "*")
 		for f in files:
-		    #os.remove(f)
+		    # os.remove(f)
 		    print("{} will be deleted next time :)".format(f))
 
 

@@ -20,6 +20,7 @@ def __get_teachers():
 	result = []
 	with DB() as db:
 		result =  db.get_teachers()
+		print(result)
 	return jsonify({ "data" : result })
 
 
