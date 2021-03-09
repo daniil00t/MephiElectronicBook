@@ -1,7 +1,7 @@
 {
 	"HOST": "http://localhost:5000/",
 	"URLS_API": {
-		"urlScheduleTeacher": "__get_schedule/",
+		"urlScheduleTeacher": "__get_schedule",
 		"urlListTeachers": "__get_teachers",
 		"urlListLearners": "__getListLearners"
 	}

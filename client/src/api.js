@@ -7,7 +7,8 @@ let sendRequest = (url, data, callbackSuccess, callbackError) => {
 };
 
 const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
-	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlScheduleTeacher + id, {
+	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlScheduleTeacher, {
+		id: id,
 		code: 200,
 		type: "teacher",
 		msg: "Hey, back! Give me teacher's schedule please"
@@ -23,10 +24,9 @@ let getListLearners = (callbackSuccess, callbackError) => {
 };
 
 let getListTeachers = (callbackSuccess, callbackError) => {
+	console.log(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers);
 	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers, {
-		code: 200,
-		type: "listLearners",
-		msg: "Hey, back! Give me list of learners please, main word - please so it will work!"
+		code: 200
 	}, callbackSuccess, callbackError);
 };
 
