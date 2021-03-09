@@ -1,8 +1,9 @@
 ГОТОВЫЕ РЕШЕНИЯ:
+	!!! DEBUG = False
 	Полностью обновить БД и кэш:
 		DB_CLEAR = True
 		DB_FULL_UPDATE = True
-		DB_NOT_USE_CACHE = True
+		DB_CLEAR_CACHE = True
 		DB_SAVE_CACHE = True
 
 	Полностью обновить БД, не трогая кэш:

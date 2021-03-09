@@ -76,10 +76,11 @@ class DB:
 				with open(path, 'rb') as f:
 					result = pickle.load(f)
 				cache_used = True
-
 				print("[INFO] Using cached {}.".format(filename))
 			else:
 				result = func(*args, **kwargs)
+
+			print_json(result)
 
 			if (not DB_NOT_SAVE_CACHE) and (DB_SAVE_CACHE or save) and not cache_used:
 				with open(path, 'wb') as f:
@@ -101,11 +102,11 @@ class DB:
 			parser.linkers.getLinkersListTeacher)
 
 		parser.getScheduleLearner = self.__make_cacheable(
-			"groups_shedules", DB_USE_CACHE_SG, DB_SAVE_CACHE_SG,
+			"groups_schedules", DB_USE_CACHE_SG, DB_SAVE_CACHE_SG,
 			parser.getScheduleLearner)
 
 		parser.getScheduleTeacher = self.__make_cacheable(
-			"teachers_shedules", DB_USE_CACHE_ST, DB_SAVE_CACHE_ST,
+			"teachers_schedules", DB_USE_CACHE_ST, DB_SAVE_CACHE_ST,
 			parser.getScheduleTeacher)
 
 		parser.getListLearners = self.__make_cacheable(
@@ -115,8 +116,8 @@ class DB:
 	def __clear_cache(self):
 		files = glob.glob(DB_CACHE_FOLDER + "*")
 		for f in files:
-		    #os.remove(f)
-		    print("{} will be deleted next time :)".format(f))
+		    os.remove(f)
+		    #print("{} will be deleted next time :)".format(f))
 
 
 	#-------------------/ INSERTION /----------------------------------------------------------------------------------
@@ -260,20 +261,24 @@ class DB:
 
 	def update_teachers(self):
 		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
+		print("!!!")
+		print(teachers_linkers)
 
 		teachers = []
 		for tl in teachers_linkers:
 			teachers.append(tl["name"])
+
+		print_json(teachers)
 
 		self.insert_teachers(teachers)
 
 		
 	def update_subjects(self):
 		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-		teachers_shedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
+		teachers_schedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
 
 		subjects = []
-		for teacher in teachers_shedules:
+		for teacher in teachers_schedules:
 			for day in teacher["data"]:
 				for lesson in day:
 					subjects.append({
@@ -305,10 +310,10 @@ class DB:
 
 	def update_lessons(self):
 		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-		teachers_shedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
+		teachers_schedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
 		
 		lessons = []
-		for teacher in teachers_shedules:
+		for teacher in teachers_schedules:
 			for day in teacher["data"]:
 				for lesson in day:
 					lessons.append({ # don't use lesson directly
@@ -339,12 +344,12 @@ class DB:
 		return result
 
 
-	def get_shedule(self, teacher_id):
+	def get_schedule(self, teacher_id):
 		# 1) get teacher_name
 		cmd = '''SELECT name FROM teachers WHERE id = {}'''.format(teacher_id)		
 		teacher_name = self.__execute(cmd)[0][0]
 
-		shedule = [{
+		schedule = [{
 			"name" : teacher_name,
 			"data" : [
 				[],
@@ -390,10 +395,10 @@ class DB:
 			if len(groups) != 0:
 				l_dict["groups"] = groups[0]
 
-			shedule[0]["data"][l_dict["wday"]].append(l_dict)
+			schedule[0]["data"][l_dict["wday"]].append(l_dict)
 
-		print_json(shedule)
-		return(shedule)
+		print_json(schedule)
+		return(schedule)
 
 	def get_students(self, group_name):
 		cmd   = '''SELECT count, name FROM students WHERE team_id=''' \

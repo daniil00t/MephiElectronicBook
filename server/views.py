@@ -19,7 +19,7 @@ def __get_schedule():
 	id = int(request.args.get('id'))
 
 	with DB() as db:
-		result =  db.get_shedule(id)
+		result =  db.get_schedule(id)
 
 	return jsonify({ "data" : result })
 
