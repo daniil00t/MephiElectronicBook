@@ -40,7 +40,7 @@ class DB:
 		return type is None
 
 
-	#-------------------/ EXECUTION /--------------------
+	#-------------------/ EXECUTION /----------------------------------------------------------------------------------
 
 	def __execute(self, cmd):
 		# [FEATURE] add multiple commands executing
@@ -64,7 +64,7 @@ class DB:
 					cmd = ""
 
 
-	#-------------------/ CACHE /--------------------
+	#-------------------/ CACHE /--------------------------------------------------------------------------------------
 
 	def __make_cacheable(self, filename, use, save, func):
 		def wrapper(*args, **kwargs):
@@ -72,7 +72,7 @@ class DB:
 
 			cache_used = False
 
-			if (DB_USE_CACHE or use) and os.path.isfile(path):
+			if (not DB_NOT_USE_CACHE) and (DB_USE_CACHE or use) and os.path.isfile(path):
 				with open(path, 'rb') as f:
 					result = pickle.load(f)
 				cache_used = True
@@ -81,7 +81,7 @@ class DB:
 			else:
 				result = func(*args, **kwargs)
 
-			if (DB_SAVE_CACHE or save) and not cache_used:
+			if (not DB_NOT_SAVE_CACHE) and (DB_SAVE_CACHE or save) and not cache_used:
 				with open(path, 'wb') as f:
 					pickle.dump(result, f)
 
@@ -115,11 +115,11 @@ class DB:
 	def __clear_cache(self):
 		files = glob.glob(DB_CACHE_FOLDER + "*")
 		for f in files:
-		    # os.remove(f)
+		    #os.remove(f)
 		    print("{} will be deleted next time :)".format(f))
 
 
-	#-------------------/ INSERTION /--------------------
+	#-------------------/ INSERTION /----------------------------------------------------------------------------------
 
 
 	def insert_groups(self, groups):
@@ -244,7 +244,7 @@ class DB:
 				'''VALUES {}'''.format(",".join(args))
 		self.__execute(cmd)
 
-	#-------------------/ UPDATE /--------------------
+	#-------------------/ UPDATE /-------------------------------------------------------------------------------------
 
 
 	def update_groups(self):
@@ -325,7 +325,7 @@ class DB:
 		self.insert_lessons(lessons)
 
 
-	#-------------------/ GET /--------------------
+	#-------------------/ GET /----------------------------------------------------------------------------------------
 
 	def get_teachers(self):
 		cmd = '''SELECT id, name FROM teachers'''
@@ -395,8 +395,21 @@ class DB:
 		print_json(shedule)
 		return(shedule)
 
+	def get_students(self, group_name):
+		cmd   = '''SELECT count, name FROM students WHERE team_id=''' \
+				'''(SELECT id FROM teams WHERE name=\"{}\")'''.format(group_name)
+		result = self.__execute(cmd)
 
-	#-------------------/ MANAGE /--------------------
+		students = [{
+			"id"   : r[0],
+			"name" : r[1]
+		} for r in result]
+
+		students_list = {"name" : group_name, "data" : students}
+		return students_list
+
+
+	#-------------------/ MANAGE /-------------------------------------------------------------------------------------
 
 	def full_update(self):
 		if DB_CLEAR:
@@ -414,202 +427,3 @@ class DB:
 	def init(self):
 		if(DB_FULL_UPDATE):
 			self.full_update()
-
-#----------------------------------------/ OLD full_update() /---------------------------------------------
-	# def full_update(self):
-		# self.__execute_f(DB_CLEAR_SQL)
-
-		# the order matters
-
-		#------------------------------------------------------------------------------------
-		#---------------------------/ ADD GROUPS, TEACHERS, SUBJECTS /-----------------------
-		#------------------------------------------------------------------------------------
-
-		# groups   = []
-		# teachers = []
-		# subjects = []
-
-		# groups_linkers = parser.linkers.getLinkersScheduleLearner(selection=DB_GROUPS_LIMIT)
-		# groups_shedules = parser.getScheduleLearner(data = groups_linkers, debug=False)
-
-		# for group in groups_shedules:
-		# 	groups.append(group["name"])
-
-		# 	for day in group["data"]:
-		# 		for lesson in day:
-		# 			teachers.extend(lesson["teachers"])
-		# 			subjects.append({
-		# 				"name" : lesson["name"],
-		# 				"duration" : lesson["duration"]
-		# 			})
-		
-		# teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-
-		# for tl in teachers_linkers:
-		# 	teachers.append(tl["name"])
-
-
-		# self.insert_groups(groups)
-		# self.insert_teachers(teachers)
-		# self.insert_subjects(subjects)
-
-
-		#------------------------------------------------------------------------------------
-		#--------------------------------/ ADD CLASSES /-------------------------------------
-		#------------------------------------------------------------------------------------
-
-		# [FEATURE] Do not use 'enumerate', use lesson["wday"]
-
-		# teachers_shedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
-		
-		# for teacher in teachers_shedules:
-		# 	for day in teacher["data"]:
-		# 		for lesson in day:
-					
-
-		# lessons = []
-
-		# for group in groups_shedules:
-		# 	for day in group["data"]:
-		# 		for lesson in day:
-		# 			for teacher in lesson["teachers"]:
-		# 				lessons.append({
-		# 					"teacher" : teacher,
-		# 					"subject" : lesson["name"],
-		# 					"wday"    : lesson["wday"],
-		# 					"time"    : lesson["time"],
-		# 					"type"    : lesson["type"],
-		# 					"place"   : lesson["place"],
-		# 					"even"    : lesson["even"],
-		# 					"group"   : group["name"]
-		# 				})
-
-		#self.insert_classes_with_groups(lessons)
-
-		#------------------------------------------------------------------------------------
-		#--------------------------------/ ADD STUDENTS /------------------------------------
-		#------------------------------------------------------------------------------------
-
-		# students = []
-
-		# students_list = parser.getListLearners(groups_linkers, {
-		# 	"login"    : AUTH_LOGIN,
-		# 	"password" : AUTH_PASS
-		# })
-
-		# for group in students_list:
-		# 	for student in group["data"]:
-		# 		students.append({
-		# 			"group" : group["name"],
-		# 			"name"  : student["name"],
-		# 			"count" : student["id"]
-		# 		})
-
-		# self.insert_students(students)
-
-#------------------------------------------------------------------------------------------------------
-
-
-
-
-
-	# INSERT INTO bar (description, foo_id) VALUES
- #    ( 'testing',     SELECT id from foo WHERE type='blue' ),
- #    ( 'another row', SELECT id from foo WHERE type='red'  );
-
-	# def __execute(self, commands, data=[]):
-	# 	self.__open()
-
-	# 	for c in commands:
-	# 		result = self.cursor.execute(c)
-	# 		print(result.fetchall())
-
-	# 	self.connection.commit()
-		# self.__close()
-
-		# self.cursor.execute(tuple, args)
-
-		# if commit == True:
-		#     connection.commit()
-		# else:
-		#     if single == True:
-		#         return cursor.fetchone()
-		#     else:
-		#         return cursor.fetchall()
-
-
-	# def __execute_f(self, filename):
-	# 	with open(filename) as f:
-	# 		commands = re.split(';[\s+]', f.read())
-
-	# 		self.__open()
-	# 		for c in commands:
-	# 			self.cursor.execute(c)
-
-	# 		self.cursor.execute('''INSERT INTO teachers (teacher_name) VALUES ("Shvedenko")''')
-
-	# 		self.connection.commit()
-	# 		self.__close()
-
-#-----------/ executing sql file / ---
-
-
-# ----------/ DB CLASS /--------------
-
-# def get_bad_words():
-#     sql = ("SELECT word FROM word_blacklist")
-#     results = execute(sql)
-#     return results
-
-# def get_moderation_method():
-#     sql = ("SELECT var_value FROM settings "
-#     "WHERE var_key = %(key)s")
-#     results = execute(sql, True, {'key':'moderation_method'})
-#     return results[0]
-
-# def current_events():
-#     sql = ("SELECT count(id) FROM events WHERE event_date >= DATE_SUB(NOW(), INTERVAL 2 hour) AND event_date <= DATE_ADD(NOW(), INTERVAL 5 hour)")
-#     results = execute(sql, True)
-#     return results[0]
-
-# def insert_social_post(channel, filter_type, post_id, validate, user_name, user_id, user_profile_picture, text, post_date, image_url, state):
-#     try:
-#         san_user_name = html_parser.unescape(user_name.encode('utf-8').strip()).decode("utf8").encode('ascii','ignore')
-#     except:
-#         san_user_name = html_parser.unescape(user_name.strip())
-#     try:
-#         san_text = html_parser.unescape(text.encode('utf-8').strip()).decode("utf8").encode('ascii','ignore')
-#     except:
-#         san_text = html_parser.unescape(text.strip())
-
-#     insert_post = ("INSERT IGNORE INTO social_posts "
-#         "(channel, filter_type, post_id, validate, user_name, user_id, user_profile_picture, text, post_date, image_url, state)"
-#         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
-#     execute(insert_post, False, [channel, filter_type, str(post_id), validate,
-#         san_user_name.strip(), user_id, user_profile_picture, san_text.strip(), post_date, image_url, state], True)
-
-# def delete_posts(ids):
-#     fmt = ','.join(['%s'] * len(ids))
-#     cursor.execute("DELETE FROM `social_posts` WHERE id IN (%s)" % fmt,
-#                     tuple(ids))
-#     connection.commit()
-
-# def update_campaigns(campaigns):
-#     sql = ("UPDATE social_campaigns "
-#         "SET last_updated = NOW()"
-#         "WHERE id IN ("+(','.join(str(c) for c in campaigns))+")")
-#     execute(sql, False, None, True)
-
-# def execute(tuple, single = False, args = {}, commit = False):
-#     cursor.execute(tuple, args)
-
-#     if commit == True:
-#         connection.commit()
-#     else:
-#         if single == True:
-#             return cursor.fetchone()
-#         else:
-#             return cursor.fetchall()
-
-# def close():
-#     connection.close()
