@@ -39,9 +39,16 @@ export default class App extends React.Component {
 	        <Route path="/auth">
 	          <AuthPanel/>
 	        </Route>
-	        <Route path="/personalPage">
-          	<PersonPage id={this.state.id}/>
+	        <Route path="/personalPage/tables/att">
+          	<PersonPage id={this.state.id} match={"table-att"}/>
 	        </Route>
+	        <Route path="/personalPage/tables/score">
+          	<PersonPage id={this.state.id} match={"table-score"}/>
+	        </Route>
+	        <Route path="/personalPage">
+          	<PersonPage id={this.state.id} match={"main"}/>
+	        </Route>
+
 	        <Route path="/">
 	          <Home />
 	        </Route>

@@ -74,7 +74,7 @@ class Linkers:
 	# def __filterLinkersTeacher(self, obj):
 	# 	enableTypesTeachers = ['профессор', 'доцент', "инженер", "преподаватель", "заведующий"]
 
-	def getLinkersListTeacher(self, main_link = "https://home.mephi.ru/ru/people", endProccess=7):
+	def getLinkersListTeacher(self, main_link = "https://home.mephi.ru/ru/people", endProccess=100):
 		''' Пример данных - массив словарей:
 		 ...
 		 {

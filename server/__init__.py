@@ -8,6 +8,7 @@ app = Flask(__name__, template_folder="../client/pages", static_folder='../clien
 CORS(app)
 # for normal get json
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+app.config['JSON_AS_ASCII'] = False
 
 with DB() as db:
 	db.init()

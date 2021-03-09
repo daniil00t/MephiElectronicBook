@@ -1,4 +1,4 @@
-from flask import jsonify, render_template, send_from_directory
+from flask import jsonify, render_template, send_from_directory, request
 from server import app
 from .db import  *
 
@@ -14,9 +14,9 @@ def __get_teachers():
 
 
 
-@app.route('/__get_shedule')
-def __get_shedule():
-	id = request.args.get('id', type=int)
+@app.route('/__get_schedule')
+def __get_schedule():
+	id = int(request.args.get('id'))
 
 	with DB() as db:
 		result =  db.get_shedule(id)
