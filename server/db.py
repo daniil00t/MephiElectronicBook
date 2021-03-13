@@ -1,6 +1,7 @@
 from .config import *
 from .config_auth import *
 from .modules import Parser as parser
+from .modules import Reports as reports
 
 import mysql.connector as mysql
 
@@ -16,8 +17,7 @@ def print_json(data):
 
 class DB:
 	def __init__(self):
-		self.__make_parser_cacheable()
-
+		pass
 
 	def __enter__(self):
 		self.connection = mysql.connect(
@@ -66,62 +66,45 @@ class DB:
 
 	#-------------------/ CACHE /--------------------------------------------------------------------------------------
 
-	def __make_cacheable(self, filename, use, save, func):
-		def wrapper(*args, **kwargs):
-			path = DB_CACHE_FOLDER + filename + '.pkl'
+	def __cache_save(self, filename, cache):
+		path = DB_CACHE_FOLDER + filename + '.pkl'
 
-			cache_used = False
+		with open(path, 'wb') as f:
+			pickle.dump(cache, f)
 
-			if (not DB_NOT_USE_CACHE) and (DB_USE_CACHE or use) and os.path.isfile(path):
-				with open(path, 'rb') as f:
-					result = pickle.load(f)
-				cache_used = True
-				print("[INFO] Using cached {}.".format(filename))
-			else:
-				result = func(*args, **kwargs)
+		print("[INFO] {} cached".format(filename))
 
-			print_json(result)
 
-			if (not DB_NOT_SAVE_CACHE) and (DB_SAVE_CACHE or save) and not cache_used:
-				with open(path, 'wb') as f:
-					pickle.dump(result, f)
+	def __cache_use(self, filename):
+		path = DB_CACHE_FOLDER + filename + '.pkl'
 
-				print("[INFO] {} cached.".format(filename))
+		with open(path, 'rb') as f:
+			cache = pickle.load(f)
+		
+		print("[INFO] {} cache used".format(filename))
+		return cache
 
-			return result
 
-		return wrapper
+	def __cache_exists(self, filename):
+		path = DB_CACHE_FOLDER + filename + '.pkl'
+		if os.path.isfile(path):
+			return True
+		else:
+			return False
 
-	def __make_parser_cacheable(self):
-		parser.linkers.getLinkersScheduleLearner = self.__make_cacheable(
-			"groups_linkers", DB_USE_CACHE_LG, DB_SAVE_CACHE_LG,
-			parser.linkers.getLinkersScheduleLearner)
 
-		parser.linkers.getLinkersListTeacher = self.__make_cacheable(
-			"teachers_linkers", DB_USE_CACHE_LT, DB_SAVE_CACHE_LT,
-			parser.linkers.getLinkersListTeacher)
-
-		parser.getScheduleLearner = self.__make_cacheable(
-			"groups_schedules", DB_USE_CACHE_SG, DB_SAVE_CACHE_SG,
-			parser.getScheduleLearner)
-
-		parser.getScheduleTeacher = self.__make_cacheable(
-			"teachers_schedules", DB_USE_CACHE_ST, DB_SAVE_CACHE_ST,
-			parser.getScheduleTeacher)
-
-		parser.getListLearners = self.__make_cacheable(
-			"students_list", DB_USE_CACHE_L, DB_SAVE_CACHE_L,
-			parser.getListLearners)
-
-	def __clear_cache(self):
-		files = glob.glob(DB_CACHE_FOLDER + "*")
-		for f in files:
-		    os.remove(f)
-		    #print("{} will be deleted next time :)".format(f))
+	def __cache_clear(self, filename):
+		if filename == "all":
+			files = glob.glob(DB_CACHE_FOLDER + "*")
+			for f in files:
+				os.remove(f)
+		else:
+			path = DB_CACHE_FOLDER + filename
+			if os.path.isfile(path):
+				os.remove(path)
 
 
 	#-------------------/ INSERTION /----------------------------------------------------------------------------------
-
 
 	def insert_groups(self, groups):
 		args = []
@@ -245,37 +228,37 @@ class DB:
 				'''VALUES {}'''.format(",".join(args))
 		self.__execute(cmd)
 
+
+	#-------------------/ CLEAR /-------------------------------------------------------------------------------------
+
+	# def clear_table(self, table_name):
+	# 	cmd = '''DELETE FROM {}'''.format(table_name) ???
+	# 	self.__execute(cmd)		
+
 	#-------------------/ UPDATE /-------------------------------------------------------------------------------------
 
-
-	def update_groups(self):
+	def update_groups(self, groups_linkers):
 		# [FEATURE] add all groups, otherwise there will be errors
-		groups_linkers = parser.linkers.getLinkersScheduleLearner(selection=DB_GROUPS_LIMIT)
 
 		groups   = []
 		for group in groups_linkers:
 			groups.append(group["name"])
 
+		#self.clear_table("teams")
 		self.insert_groups(groups)
 
 
-	def update_teachers(self):
-		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-		print("!!!")
-		print(teachers_linkers)
+	def update_teachers(self, teachers_linkers):
 
 		teachers = []
 		for tl in teachers_linkers:
 			teachers.append(tl["name"])
 
-		print_json(teachers)
-
+		#self.clear_table("teachers")
 		self.insert_teachers(teachers)
 
 		
-	def update_subjects(self):
-		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-		teachers_schedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
+	def update_subjects(self, teachers_schedules):
 
 		subjects = []
 		for teacher in teachers_schedules:
@@ -286,18 +269,14 @@ class DB:
 						"duration" : lesson["duration"]
 					})
 
+		#self.clear_table("subjects")
 		self.insert_subjects(subjects)
 
 
-	def update_students(self):
-		groups_linkers = parser.linkers.getLinkersScheduleLearner(selection=DB_GROUPS_LIMIT)
-		students_list = parser.getListLearners(groups_linkers, {
-			"login"    : AUTH_LOGIN,
-			"password" : AUTH_PASS
-		})
+	def update_students(self, students_lists):
 
 		students = []
-		for group in students_list:
+		for group in students_lists:
 			for student in group["data"]:
 				students.append({
 					"group" : group["name"],
@@ -305,12 +284,11 @@ class DB:
 					"count" : student["id"]
 				})
 
+		#self.clear_table("students")
 		self.insert_students(students)
 		
 
-	def update_lessons(self):
-		teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
-		teachers_schedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
+	def update_lessons(self, teachers_schedules):
 		
 		lessons = []
 		for teacher in teachers_schedules:
@@ -327,7 +305,77 @@ class DB:
 						"groups"  : lesson["groups"]
 					})
 
+		#self.clear_table("lessons")
 		self.insert_lessons(lessons)
+
+
+	#-------------------/ MANAGE /-------------------------------------------------------------------------------------
+
+	def full_update(self):
+		# [FEATURE] add tables removing, cascade delete, etc
+
+		# clear DB and cache
+		if DB_CLEAR:
+			self.__execute_f(DB_CLEAR_SQL)
+		if DB_CACHE_CLEAR:
+			self.__clear_cache("all")
+
+
+		# download data using parser if needed
+		if DB_UPDATE_GROUPS or DB_UPDATE_STUDENTS:
+			if self.__cache_exists("groups_linkers") and not DB_DOWNLOAD_GROUPS_LINKERS:
+				groups_linkers = self.__cache_use("groups_linkers")
+			else:
+				groups_linkers = parser.linkers.getLinkersScheduleLearner(selection=DB_GROUPS_LIMIT)
+				self.__cache_save("groups_linkers", groups_linkers)
+
+		if DB_UPDATE_TEACHERS or DB_UPDATE_SUBJECTS or DB_UPDATE_LESSONS:
+			if self.__cache_exists("teachers_linkers") and not DB_DOWNLOAD_TEACHERS_LINKERS:
+				teachers_linkers = self.__cache_use("teachers_linkers")
+			else:
+				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
+				self.__cache_save("teachers_linkers", teachers_linkers)
+				print("[INFO] teachers_linkers:\n")
+				print_json(teachers_linkers)
+
+		if DB_UPDATE_SUBJECTS or DB_UPDATE_LESSONS:
+			if self.__cache_exists("teachers_schedules") and not DB_DOWNLOAD_TEACHERS_SCHEDULES:
+				teachers_schedules = self.__cache_use("teachers_schedules")
+			else:
+				teachers_schedules = parser.getScheduleTeacher(data = teachers_linkers, debug=False)
+				self.__cache_save("teachers_schedules", teachers_schedules)
+
+		if DB_UPDATE_STUDENTS:
+			if self.__cache_exists("students_lists") and not DB_DOWNLOAD_GROUPS_LISTS:
+				students_lists = self.__cache_use("students_lists")
+			else:
+				students_lists = parser.getListLearners(groups_linkers, {
+					"login"    : AUTH_LOGIN,
+					"password" : AUTH_PASS
+				})
+				self.__cache_save("students_lists", students_lists)
+
+
+		# update DB
+		if DB_UPDATE_GROUPS:
+			self.update_groups(groups_linkers)
+
+		if DB_UPDATE_TEACHERS:
+			self.update_teachers(teachers_linkers)
+
+		if DB_UPDATE_SUBJECTS:
+			self.update_subjects(teachers_schedules)
+
+		if DB_UPDATE_STUDENTS:
+			self.update_students(students_lists)
+
+		if DB_UPDATE_LESSONS:
+			self.update_lessons(teachers_schedules)
+
+
+	def init(self):
+		if(DB_FULL_UPDATE):
+			self.full_update()
 
 
 	#-------------------/ GET /----------------------------------------------------------------------------------------
@@ -369,7 +417,7 @@ class DB:
 				'''INNER JOIN teachers ON lessons.teacher_id = teachers.id ''' \
 				'''INNER JOIN subjects ON lessons.subject_id = subjects.id ''' \
 				'''WHERE lessons.teacher_id = {} ''' \
-				'''ORDER BY lessons.wday ASC '''.format(teacher_id)
+				'''ORDER BY lessons.wday, lessons.clock ASC '''.format(teacher_id)
 		lessons = self.__execute(cmd)
 
 		for l in lessons:
@@ -413,22 +461,83 @@ class DB:
 		students_list = {"name" : group_name, "data" : students}
 		return students_list
 
-
-	#-------------------/ MANAGE /-------------------------------------------------------------------------------------
-
-	def full_update(self):
-		if DB_CLEAR:
-			self.__execute_f(DB_CLEAR_SQL)
-		if DB_CLEAR_CACHE:
-			self.__clear_cache()
-
-		self.update_groups()
-		self.update_teachers()
-		self.update_subjects()
-		self.update_students()
-		self.update_lessons()
+	def get_report(self, teacher_id, subject_name, group_name): # subject_id?
+		pass
 
 
-	def init(self):
-		if(DB_FULL_UPDATE):
-			self.full_update()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	# def __make_cacheable(self, filename, use, save, func):
+	# 	def wrapper(*args, **kwargs):
+	# 		path = DB_CACHE_FOLDER + filename + '.pkl'
+
+	# 		cache_used = False
+
+	# 		if (not DB_NOT_USE_CACHE) and (DB_USE_CACHE or use) and os.path.isfile(path):
+	# 			with open(path, 'rb') as f:
+	# 				result = pickle.load(f)
+	# 			cache_used = True
+	# 			print("[INFO] Using cached {}.".format(filename))
+	# 		else:
+	# 			result = func(*args, **kwargs)
+
+	# 		print("[INFO] RESULT FROM WRAPPER: \n") 
+	# 		print_json(result)
+
+	# 		if (not DB_NOT_SAVE_CACHE) and (DB_SAVE_CACHE or save) and not cache_used:
+	# 			with open(path, 'wb') as f:
+	# 				pickle.dump(result, f)
+
+	# 			print("[INFO] {} cached.".format(filename))
+
+	# 		return result
+
+	# 	return wrapper
+
+	# def __make_parser_cacheable(self):
+	# 	parser.linkers.getLinkersScheduleLearner = self.__make_cacheable(
+	# 		"groups_linkers", DB_USE_CACHE_LG, DB_SAVE_CACHE_LG,
+	# 		parser.linkers.getLinkersScheduleLearner)
+
+	# 	parser.linkers.getLinkersListTeacher = self.__make_cacheable(
+	# 		"teachers_linkers", DB_USE_CACHE_LT, DB_SAVE_CACHE_LT,
+	# 		parser.linkers.getLinkersListTeacher)
+
+	# 	parser.getScheduleLearner = self.__make_cacheable(
+	# 		"groups_schedules", DB_USE_CACHE_SG, DB_SAVE_CACHE_SG,
+	# 		parser.getScheduleLearner)
+
+	# 	parser.getScheduleTeacher = self.__make_cacheable(
+	# 		"teachers_schedules", DB_USE_CACHE_ST, DB_SAVE_CACHE_ST,
+	# 		parser.getScheduleTeacher)
+
+	# 	parser.getListLearners = self.__make_cacheable(
+	# 		"students_lists", DB_USE_CACHE_L, DB_SAVE_CACHE_L,
+	# 		parser.getListLearners)
+
+

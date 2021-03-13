@@ -77,6 +77,26 @@ CREATE TABLE reports (
 	FOREIGN KEY (subject_id) REFERENCES subjects(id)
 );
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- CREATE TABLE clocks (
 -- 	id INT NOT NULL AUTO_INCREMENT,
 -- 	day INT NOT NULL,
