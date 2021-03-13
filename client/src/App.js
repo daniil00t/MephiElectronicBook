@@ -28,7 +28,7 @@ export default class App extends React.Component {
 	componentDidMount(){
 		ee.on("changeNameIdTeacher", (data) => {
 			console.log(data);
-			this.setState({id: data.id});
+			// this.setState({id: data.id});
 		})
 	}
 	render(){
@@ -44,6 +44,12 @@ export default class App extends React.Component {
 	        </Route>
 	        <Route path="/personalPage/tables/score">
           	<PersonPage id={this.state.id} match={"table-score"}/>
+	        </Route>
+	        <Route path="/personalPage/groups">
+          	<PersonPage id={this.state.id} match={"groups"}/>
+	        </Route>
+	        <Route path="/personalPage/subjects">
+          	<PersonPage id={this.state.id} match={"subjects"}/>
 	        </Route>
 	        <Route path="/personalPage">
           	<PersonPage id={this.state.id} match={"main"}/>

@@ -18,7 +18,7 @@ export default class Home extends React.Component {
 	render() {
 		return (
 			<div>
-				Welcome to the ELBook!
+				Welcome to the ELBook!<br />
 				{this.switcher()}
 			</div>
 		);

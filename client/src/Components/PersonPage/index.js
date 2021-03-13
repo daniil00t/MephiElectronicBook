@@ -8,14 +8,16 @@ import {
   useRouteMatch,
   useParams
 } from "react-router-dom";
-import { getScheduleTeacher, getListLearners } from "../../api.js";
+
 // Components
+import { getScheduleTeacher, getListLearners } from "../../api.js";
 import { Header } from "./Header.js";
 import { Schedule } from "./Schedule.js";
 import { PanelTeacher } from "./PanelTeacher.js";
 import { Footer } from "./Footer.js";
 import TableAttendance from "./TableAttendance.jsx";
 import TableScore from "./TableScore.jsx";
+
 // Styles
 import "../../styles/PersonPage.css";
 
@@ -25,11 +27,17 @@ export class PersonPage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			// main info
 			id: +Cookies.get("id") || -1,
 			name: "",
+			// schedule
 			schedule: [],
 			groups: [],
-			subjects: []
+			subjects: [],
+			// for tables
+			activeTypeTable: "",
+			activeGroupId: -1,
+			activeSubjectId: -1
 		}
 	}
 
@@ -37,8 +45,8 @@ export class PersonPage extends React.Component {
 		let arraySubjects = [];
 		let arrayGroups 	= [];
 
-		schedule.map((day, iterZ0) => {
-			day.map((lesson, iterZ1) => {
+		schedule.map(day => {
+			day.map(lesson => {
 				if(!(arraySubjects.includes(lesson.name))) arraySubjects.push(lesson.name);
 				lesson.groups.map(group => {
 					if(!(arrayGroups.includes(group))) arrayGroups.push(group);		
@@ -51,25 +59,22 @@ export class PersonPage extends React.Component {
 		};
 	}
 	componentDidMount(){
-		// console.log(useParams);
 		let id = -1;
-		// for save context
-		let self = this;
 		if(this.props.id != -1 || this.state.id != -1){
 			this.props.id != -1 ? (id = this.props.id) : (id = this.state.id);
 			getScheduleTeacher(id, data => {
+				console.log(data);
 				let name = data.data[0].name;
 				let schedule = data.data[0].data;
 
 				if(Cookies.get("id") == -1){
-					Cookies.set("name", name);
 					Cookies.set("id", this.props.id);
 				}
 				this.setState({
-					name: name, 
+					name: name,
 					schedule: schedule,
-					groups: self.solveCounts(schedule).groups,
-					subjects: self.solveCounts(schedule).subjects
+					groups: this.solveCounts(schedule).groups,
+					subjects: this.solveCounts(schedule).subjects
 				});
 			}, err => {
 				console.log(err);
@@ -79,8 +84,8 @@ export class PersonPage extends React.Component {
 			document.location.replace('/auth');
 		}
 	}
-	switcher(match, props){
-		switch(match){
+	switcher(props, state){
+		switch(this.props.match){
 			case "main": {
 				return (
 					<main>
@@ -93,8 +98,20 @@ export class PersonPage extends React.Component {
 					</main>
 				)
 			};break;
+			case "groups": {
+				return (<ul>
+					{
+						this.state.groups.map((el, index) => <li onClick={e => this.setState({activeGroupId: index})}><Link to="/personalPage/tables/att">{el}</Link></li>)
+					}
+				</ul>)};break;
+			case "subjects": {
+				return (<ul>
+					{
+						this.state.subjects.map((el, index) => <li onClick={e => this.setState({activeSubjectId: index})}><Link to="/personalPage/tables/att">{el}</Link></li>)
+					}
+				</ul>)};break;
 			case "table-att":
-				return <TableAttendance listLearners={[]}/>;break;
+				return <TableAttendance listLearners={[]} props={this.props} state={this.state}/>;break;
 			case "table-score":
 				return <TableScore />;break;
 		}
@@ -104,7 +121,9 @@ export class PersonPage extends React.Component {
 		return (
 			<div>
 				<Header groups={this.state.groups} subjects={this.state.subjects}/>
-				{this.switcher(this.props.match)}
+					{
+						this.switcher()
+					}
 				<Footer />
 			</div>
 		);

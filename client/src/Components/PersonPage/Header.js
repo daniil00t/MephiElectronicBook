@@ -22,9 +22,9 @@ export class Header extends React.Component {
 
 			  <Navbar.Collapse id="basic-navbar-nav">
 			    <Nav className="ml-auto" style={{marginRight: "40px"}}>
-			      <Nav.Link href="/">Главная</Nav.Link>
-
-			      <Nav.Link href="#link">Мои группы</Nav.Link>
+			      <Link to="/" className="nav-link">Главная</Link>
+			      <Link to="/personalPage/groups" className="nav-link">Мои группы</Link>
+			      <Link to="/personalPage/subjects" className="nav-link">Мои предметы</Link>
 			      <NavDropdown title="Мои ведомости" id="basic-nav-dropdown">
 			        <Link to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
 			        <Link to="/personalPage/tables/att" className="dropdown-item">Ведомость посещаемости</Link>

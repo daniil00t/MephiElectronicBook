@@ -2,7 +2,7 @@
 import $ from "jquery";
 import * as CONFIG from "./config.json";
 
-let sendRequest = (url, data, callbackSuccess, callbackError) => {
+const sendRequest = (url, data, callbackSuccess, callbackError) => {
 	return $.getJSON(url, data, callbackSuccess, callbackError);
 };
 
@@ -15,7 +15,7 @@ const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
 	}, callbackSuccess, callbackError);
 };
 
-let getListLearners = (callbackSuccess, callbackError) => {
+const getListLearners = (callbackSuccess, callbackError) => {
 	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlListLearners, {
 		code: 200,
 		type: "listLearners",
@@ -23,7 +23,7 @@ let getListLearners = (callbackSuccess, callbackError) => {
 	}, callbackSuccess, callbackError);
 };
 
-let getListTeachers = (callbackSuccess, callbackError) => {
+const getListTeachers = (callbackSuccess, callbackError) => {
 	console.log(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers);
 	sendRequest(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers, {
 		code: 200

@@ -6,12 +6,20 @@ def print_json(data):
 	print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
-# print(
+# print_json(
 # 	linkers.getLinkersListTeacher(
 # 		main_link = "https://home.mephi.ru/ru/people", 
-# 		endProccess=5
+# 		endProccess=3.6,
+# 		debug=False
 # 	)
 # )
+
+# print_json(getListLearners([
+# 	{'name': 'Б20-101', 'href': 'https://home.mephi.ru/study_groups/11122/schedule'}, 
+# 	{'name': 'Б20-102', 'href': 'https://home.mephi.ru/study_groups/11123/schedule'}, 
+# 	# {'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'},
+# 	{'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'}
+# ], {"login": "sdm009", "password": "P101119767688"}, debug=True))
 
 
 
@@ -25,11 +33,15 @@ def print_json(data):
 # 	endProccess=3.90
 # ))
 
+# print_json(getScheduleTeacher(data = [
+# 	{
+# 		"name": "Агамова Оксана Данияловна",
+# 		"link": "https://home.mephi.ru/tutors/19241"
+# 	}
+# ], debug=True))
 
-print_json(getScheduleTeacher(data = [
-	{
-		"name": "",
-		"link": "https://home.mephi.ru/tutors/18416"
-	}
 
-], debug=True))
+print_json(
+	getScheduleTeacher(data = linkers.getLinkersListTeacher(debug=False),
+	debug=True)
+)
