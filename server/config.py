@@ -50,3 +50,12 @@ DB_CACHE_FOLDER = './server/cache_parser/'
 #----------------------------------------------------------------------------------
 #------------------------------/ OVERWRITTEN /-------------------------------------
 #----------------------------------------------------------------------------------
+# DEBUG = False
+
+# DB_CLEAR = True
+# DB_FULL_UPDATE = True
+# DB_CLEAR_CACHE = True
+# DB_SAVE_CACHE = True
+
+# DB_GROUPS_LIMIT = r"Б20-5\d3"
+# DB_TEACHERS_LIMIT = 4
