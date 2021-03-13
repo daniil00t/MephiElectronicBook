@@ -148,7 +148,6 @@ class DB:
 
 		cmd   = '''INSERT IGNORE INTO subjects (name, duration)''' \
 				'''VALUES {}'''.format(",".join(args))
-
 		self.__execute(cmd)
 
 
@@ -181,11 +180,12 @@ class DB:
 				continue
 			args.append(
 				'''((SELECT id FROM teachers WHERE name = \"{}\"),''' \
-				'''(SELECT id FROM subjects WHERE name = \"{}\"),''' \
+				'''(SELECT id FROM subjects WHERE name = \"{}\" AND duration = \"{}\"),''' \
 				'''{}, \"{}\", {},''' \
 				'''\"{}\", \"{}\")'''.format(
 					l["teacher"],
 					l["subject"],
+					l["duration"],
 					l["wday"], l["time"], l["even"],
 					l["type"], l["place"]
 				)
@@ -259,7 +259,7 @@ class DB:
 
 		
 	def update_subjects(self, teachers_schedules):
-
+		# [FEATURE] fix  durations in parser: ',' and '-'
 		subjects = []
 		for teacher in teachers_schedules:
 			for day in teacher["data"]:
@@ -297,6 +297,7 @@ class DB:
 					lessons.append({ # don't use lesson directly
 						"teacher" : teacher["name"],
 						"subject" : lesson["name"],
+						"duration": lesson["duration"],
 						"wday"    : lesson["wday"],
 						"time"    : lesson["time"],
 						"even"    : lesson["even"],
@@ -313,6 +314,7 @@ class DB:
 
 	def full_update(self):
 		# [FEATURE] add tables removing, cascade delete, etc
+		# [FEATURE] use also students' schedules to add teacchers and their schedules
 
 		# clear DB and cache
 		if DB_CLEAR:
@@ -333,7 +335,7 @@ class DB:
 			if self.__cache_exists("teachers_linkers") and not DB_DOWNLOAD_TEACHERS_LINKERS:
 				teachers_linkers = self.__cache_use("teachers_linkers")
 			else:
-				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT)
+				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT, debug=True)
 				self.__cache_save("teachers_linkers", teachers_linkers)
 				print("[INFO] teachers_linkers:\n")
 				print_json(teachers_linkers)
@@ -420,6 +422,8 @@ class DB:
 				'''ORDER BY lessons.wday, lessons.clock ASC '''.format(teacher_id)
 		lessons = self.__execute(cmd)
 
+		print_json(lessons)
+
 		for l in lessons:
 			l_dict = {
 				"name"     : l[1],
@@ -461,8 +465,8 @@ class DB:
 		students_list = {"name" : group_name, "data" : students}
 		return students_list
 
-	def get_report(self, teacher_id, subject_name, group_name): # subject_id?
-		pass
+	def get_report(self, teacher_name, subject_name, group_name):
+		return "kinda report ;)"
 
 
 

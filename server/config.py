@@ -25,7 +25,7 @@ DB_DOWNLOAD_TEACHERS_LINKERS = False
 DB_DOWNLOAD_TEACHERS_SCHEDULES = False
 DB_DOWNLOAD_GROUPS_LISTS = False
 
-DB_GROUPS_LIMIT = r"Б20-5\d3"
+DB_GROUPS_LIMIT = r"Б20-523"
 DB_TEACHERS_LIMIT = 20
 
 
@@ -45,11 +45,14 @@ RP_FOLDER = './server/reports/'
 #----------------------------------------------------------------------------------
 DEBUG = False
 
+DB_CLEAR = True
+DB_FULL_UPDATE = True
 
-
-
-
-
+DB_UPDATE_GROUPS = True
+DB_UPDATE_TEACHERS = True
+DB_UPDATE_SUBJECTS = True
+DB_UPDATE_STUDENTS = True
+DB_UPDATE_LESSONS = True
 
 
 

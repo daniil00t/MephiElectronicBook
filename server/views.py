@@ -21,6 +21,8 @@ def __get_schedule():
 	with DB() as db:
 		result =  db.get_schedule(id)
 
+	print_json(result)
+
 	return jsonify({ "data" : result })
 
 
@@ -33,3 +35,41 @@ def __get_students():
 		result =  db.get_students(group_name)
 
 	return jsonify({ "data" : result })
+
+
+
+# @app.route('/__get_report')
+# def hello():
+# 	print("[INFO] Got json:\n")
+# 	print_json(request.json)
+
+# 	with DB() as db:
+# 		result =  db.get_report(
+# 			teacher_name = request.json["teacherName"],
+# 			subject_name = request.json["subjectName"],
+# 			group_name = request.json["groupName"],
+# 		)
+
+# 	print("[INFO] Sending this report:\n")
+# 	print_json(result)
+
+# 	return jsonify({ "data" : "Believe me, it's realy report"})
+
+
+
+# @app.route('/__get_report', methods)
+# def hello():
+# 	print("[INFO] Got json:\n")
+# 	print_json(request.json)
+
+# 	with DB() as db:
+# 		result =  db.get_report(
+# 			teacher_name = request.json["teacherName"],
+# 			subject_name = request.json["subjectName"],
+# 			group_name = request.json["groupName"],
+# 		)
+
+# 	print("[INFO] Sending this report:\n")
+# 	print_json(result)
+
+# 	return jsonify({ "data" : "Believe me, it's realy report"})
