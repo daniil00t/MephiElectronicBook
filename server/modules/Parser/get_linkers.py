@@ -73,36 +73,52 @@ class Linkers:
 
 	# def __filterLinkersTeacher(self, obj):
 	# 	enableTypesTeachers = ['профессор', 'доцент', "инженер", "преподаватель", "заведующий"]
-
-	def getLinkersListTeacher(self, main_link = "https://home.mephi.ru/ru/people", endProccess=100):
-		''' Пример данных - массив словарей:
+	def __printInfo(self, info):
+		if info["errorState"]:
+			print(f"[ERROR] {info['errorMsg']}")
+		else:
+			print(f"[INFO] Parsed {info['accessLinks']} links")
+			print(f"[INFO] hasn't parsed {info['crushLinks']} links")
+	def getLinkersListTeacher(self, main_link = "https://home.mephi.ru/ru/people", endProccess=100, debug=False):
+		''' Пример output - массив словарей:
 		 ...
 		 {
-		 	"name": "Фролов Игорь Владимирович"
-		 	"href": "https://home.mephi.ru/tutors/18353"
+		 	"name": "Фролов Игорь Владимирович",
+		 	"href": "https://home.mephi.ru/tutors/18353",
 		 	"link": "https://home.mephi.ru/ru/users/14697/public"
 		 }
 		 ...
 		'''
-		res = []
+
+		result = []
+		info = {
+			"crushLinks": 0,
+			"accessLinks": 0,
+			"errorState": False,
+			"errorMsg": ""
+		}
 		chars = ['А','Б','В','Г','Д','Е','Ё','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Э','Ю','Я']
 		# request = reqs.Request(main_link)
 		
 		if reqs.Request(main_link)["error"]:
 			print("Error: href incorrect!")
+			info["errorState"] = True
+			info["errorMsg"] = "href incorrect"
 			return []
 		else:
 			iteratorZ0 = 0
 			for i in chars:
+				# print(f"{main_link}?char={quote(i)}")
 				countPages = len(reqs.Request(f"{main_link}?char={quote(i)}")["data"].find_all("li", class_="page"))
+
 				if countPages > 4:
 					countPages = len(reqs.Request(f"{main_link}?char={quote(i)}&page=5")["data"].find_all("li", class_="page"))
+				if countPages == 0:
+					countPages = 1
 
-				res = []
 				iteratorZ0 += 1
 				iteratorZ1 = 0
 				for j in range(countPages):
-					
 					request = reqs.Request(f"{main_link}?char={quote(i)}&page={j+1}")
 					iteratorZ2 = 0
 					Teachers = self.__parseLinkersListTeacher(request["data"])
@@ -112,25 +128,26 @@ class Linkers:
 						###
 							#==================================== Testing module ====================================#
 						###
-						if proccessAsProcents >= endProccess:
-							return res 
+						if proccessAsProcents >= endProccess and debug:
+							self.__printInfo(info)
+							return result 
 						###
 							#================================== Testing module End ==================================#
 						###	
 						try:
 							link = reqs.Request(k['href'])["data"].find("a", class_="btn btn-primary btn-block hidden-print").get("href")
 							if link != "":
-								res.append({
+								result.append({
 									# "name": self.getName(k["name"]),
 									"name": k["name"],
 									"href": k["href"],
 									"link": "https://home.mephi.ru" + link
 								})
+								info["accessLinks"] += 1
 						except Exception as e:
 							print("Видимо, чел не преподает:(")
-
+							info["crushLinks"] += 1
 						iteratorZ2 += 1
 					iteratorZ1+=1
-
-				
-		return res
+		self.__printInfo(info)
+		return result

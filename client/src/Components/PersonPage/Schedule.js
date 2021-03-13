@@ -54,7 +54,7 @@ export class Schedule extends React.Component {
 				<div className="schedule-day">
 					<h5 className="schedule-day-name">{wday[props.wday]}</h5>
 					<div className="lessons">
-						{props.This.compactLessons(props.data).map(lesson => <props.This.Lesson data={lesson} This={props.This}/> )}
+						{props.data.map(lesson => <props.This.Lesson data={lesson} This={props.This}/> )}
 					</div>
 				</div>
 			);
