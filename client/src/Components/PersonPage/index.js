@@ -4,19 +4,20 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
-  useRouteMatch,
-  useParams
+  Link
 } from "react-router-dom";
+import {Card, ListGroup} from 'react-bootstrap';
 
 // Components
-import { getScheduleTeacher, getListLearners } from "../../api.js";
+import { 
+	getScheduleTeacher, 
+	getListLearners } from "../../api.js";
 import { Header } from "./Header.js";
 import { Schedule } from "./Schedule.js";
 import { PanelTeacher } from "./PanelTeacher.js";
 import { Footer } from "./Footer.js";
-import TableAttendance from "./TableAttendance.jsx";
-import TableScore from "./TableScore.jsx";
+import Report from "./Report.jsx";
+import EventEmmiter from "../../EventEmmiter.js";
 
 // Styles
 import "../../styles/PersonPage.css";
@@ -35,12 +36,19 @@ export class PersonPage extends React.Component {
 			groups: [],
 			subjects: [],
 			// for tables
-			activeTypeTable: "",
+			activeTypeTable: -1,
 			activeGroupId: -1,
 			activeSubjectId: -1
 		}
+		this.emmiter = new EventEmmiter();
+		this.listen = this.listen.bind(this);
+		this.listen();
 	}
-
+	listen(){
+		this.emmiter.on("changeTypeTable", data => {
+			this.setState({activeTypeTable: data.data});
+		})
+	}
 	solveCounts(schedule){
 		let arraySubjects = [];
 		let arrayGroups 	= [];
@@ -63,7 +71,6 @@ export class PersonPage extends React.Component {
 		if(this.props.id != -1 || this.state.id != -1){
 			this.props.id != -1 ? (id = this.props.id) : (id = this.state.id);
 			getScheduleTeacher(id, data => {
-				console.log(data);
 				let name = data.data[0].name;
 				let schedule = data.data[0].data;
 
@@ -84,7 +91,9 @@ export class PersonPage extends React.Component {
 			document.location.replace('/auth');
 		}
 	}
-	switcher(props, state){
+
+
+	switcher(self){
 		switch(this.props.match){
 			case "main": {
 				return (
@@ -99,30 +108,66 @@ export class PersonPage extends React.Component {
 				)
 			};break;
 			case "groups": {
-				return (<ul>
-					{
-						this.state.groups.map((el, index) => <li onClick={e => this.setState({activeGroupId: index})}><Link to="/personalPage/tables/att">{el}</Link></li>)
-					}
-				</ul>)};break;
+				return <this.ListGroups groups={this.state.groups} handleClickOnLink={index => this.setState({activeGroupId: index})} />
+			};break;
 			case "subjects": {
-				return (<ul>
-					{
-						this.state.subjects.map((el, index) => <li onClick={e => this.setState({activeSubjectId: index})}><Link to="/personalPage/tables/att">{el}</Link></li>)
-					}
-				</ul>)};break;
-			case "table-att":
-				return <TableAttendance listLearners={[]} props={this.props} state={this.state}/>;break;
+				return <this.ListSubjects subjects={this.state.subjects} handleClickOnLink={index => this.setState({activeSubjectId: index})} />
+			};break;
 			case "table-score":
-				return <TableScore />;break;
+				// this.setState({activeTypeTable: 1});break;
+			case "table-att":{
+				// this.setState({activeTypeTable: 0});break;
+				return (
+					<main>
+						<PanelTeacher 
+							countSubject={this.solveCounts(this.state.schedule).subjects.length} 
+							countGroups={this.solveCounts(this.state.schedule).groups.length} 
+							name={this.state.name}
+						/>
+						<Report listLearners={[]} props={this.props} state={this.state} changeState={newState => this.setState(newState)}/>
+					</main>
+				)
+			};break;
+			// case "table-score":
+			// 	return <TableScore />;break;
+			default:
+				return "Not Found:(";
 		}
 	}
-	render() {
-		console.log(this.props.match);
+	ListGroups(props){
 		return (
-			<div>
-				<Header groups={this.state.groups} subjects={this.state.subjects}/>
+			<div className="card-wrap">
+				<Card style={{ width: '18rem' }}>
+				  <Card.Header>Groups</Card.Header>
+				  <ListGroup variant="flush">
+				  	{
+							props.groups.map((el, index) => <Link data_index={index} onClick={e => props.handleClickOnLink(+e.target.attributes.data_index.value)} className="list-group-item" to="/personalPage/tables/att">{el}</Link>)
+						}
+				  </ListGroup>
+				</Card>
+			</div>
+		);
+	}
+	ListSubjects(props){
+		return (
+			<div className="card-wrap">
+				<Card style={{ width: '18rem' }}>
+				  <Card.Header>Subjects</Card.Header>
+				  <ListGroup variant="flush">
+				  	{
+							props.subjects.map((el, index) => <Link data_index={index} onClick={e => props.handleClickOnLink(+e.target.attributes.data_index.value)} className="list-group-item" to="/personalPage/tables/att">{el}</Link>)
+						}
+				  </ListGroup>
+				</Card>
+			</div>
+		);
+	}
+	render() {
+		return (
+			<div className="person-page-container">
+				<Header groups={this.state.groups} subjects={this.state.subjects} self={this} emmiter={this.emmiter}/>
 					{
-						this.switcher()
+						this.switcher(this)
 					}
 				<Footer />
 			</div>

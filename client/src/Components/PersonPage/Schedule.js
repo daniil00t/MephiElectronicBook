@@ -9,7 +9,7 @@ export class Schedule extends React.Component {
 			case "Лаб": return <div className="type type-lab">{type}</div>;break;
 			case "Пр": 	return <div className="type type-practice">{type}</div>;break;
 			case "Лек": return <div className="type type-lecture">{type}</div>;break;
-			default: 		return <div className="type">{type}</div>;
+			default: 		return <div className="type type-none">Доп</div>;
 		}
 	}
 	compactLessons(day){
@@ -27,14 +27,26 @@ export class Schedule extends React.Component {
 		});
 		return newDay;
 	}
+	sliceName(name){
+		const len = 60;
+		let res = "";
+		name.length > len ? 
+			(res = name.slice(0, len) + "...") :
+			(res = name);
+		return res;
+	}
+
 	Lesson(props){
+		console.log(props.data.even);
 		return (
 			<div className="lesson" data-order={`#${1}`}>
 				<div className="time">{props.data.time}</div>
-				{props.This.getType(props.data.type)}
-				<div className="name">{props.data.name}</div>
+				{props.self.getType(props.data.type)}
+				<div className="wday-wrap"><div className={`wday wday-${props.data.even}`}></div></div>
+				<div className="name">{props.self.sliceName(props.data.name)}</div>
 				{props.data.groups.map((obj, i) => <a href="#" className='link-group'>{obj}</a>)}
-				<div className="place">{props.data.place}</div>
+				<div className="duration">{props.data.duration == "ALL_SEMESTER" ? "Весь семестр" : props.data.duration}</div>
+				<div className="place" title={props.data.place}>{props.data.place}</div>
 			</div>
 		);
 	}
@@ -54,7 +66,7 @@ export class Schedule extends React.Component {
 				<div className="schedule-day">
 					<h5 className="schedule-day-name">{wday[props.wday]}</h5>
 					<div className="lessons">
-						{props.data.map(lesson => <props.This.Lesson data={lesson} This={props.This}/> )}
+						{props.data.map(lesson => <props.self.Lesson data={lesson} self={props.self}/> )}
 					</div>
 				</div>
 			);
@@ -93,11 +105,9 @@ export class Schedule extends React.Component {
 					<h4 class="schedule-name">Мое расписание</h4>
 
 					<div class="schedule-days">
-
 						{
-							this.sortScheduleByTime(this.props.schedule).map((day, iter) => <this.Day This={this} data={day} wday={iter} /> )
+							this.sortScheduleByTime(this.props.schedule).map((day, iter) => <this.Day self={this} data={day} wday={iter} /> )
 						}
-					
 					</div>
 				</div>	
 			</div>

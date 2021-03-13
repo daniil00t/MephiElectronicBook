@@ -26,10 +26,10 @@ export default class App extends React.Component {
 
 
 	componentDidMount(){
-		ee.on("changeNameIdTeacher", (data) => {
-			console.log(data);
-			// this.setState({id: data.id});
-		})
+		// ee.on("changeNameIdTeacher", (data) => {
+		// 	console.log(data);
+		// 	// this.setState({id: data.id});
+		// })
 	}
 	render(){
 		// console.log(useParams());
