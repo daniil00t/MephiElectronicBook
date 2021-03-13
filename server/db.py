@@ -1,7 +1,6 @@
 from .config import *
 from .config_auth import *
 from .modules import Parser as parser
-from .modules import Reports as reports
 
 import mysql.connector as mysql
 
@@ -210,12 +209,13 @@ class DB:
 					'''((SELECT id FROM teams WHERE name = \"{}\"),''' \
 					'''(SELECT id FROM lessons WHERE ''' \
 					'''teacher_id = (SELECT id FROM teachers WHERE name = \"{}\") AND ''' \
-					'''subject_id = (SELECT id FROM subjects WHERE name = \"{}\") AND ''' \
+					'''subject_id = (SELECT id FROM subjects WHERE name = \"{}\" AND duration = \"{}\") AND ''' \
 					'''wday = {} AND clock = \"{}\" AND even = {} AND ''' \
 					'''type = \"{}\" AND place = \"{}\"))'''.format(
 						group,
 						l["teacher"],
 						l["subject"],
+						l["duration"],
 						l["wday"], l["time"], l["even"],
 						l["type"], l["place"]
 					)
@@ -226,6 +226,35 @@ class DB:
 
 		cmd   = '''INSERT IGNORE INTO lessons_teams (team_id, lesson_id)''' \
 				'''VALUES {}'''.format(",".join(args))
+		self.__execute(cmd)
+
+
+	def insert_report(self, report_data):
+		cmd   = '''SELECT id FROM teachers WHERE name = \"{}\"'''.format(report_data["teacher_name"])
+		teacher_id = self.__execute(cmd)[0][0]
+
+		cmd   = '''SELECT id FROM subjects WHERE name = \"{}\" AND duration = \"{}\"'''.format(
+			report_data["subject_name"], report_data["subject_duration"])
+		subject_id = self.__execute(cmd)[0][0]
+
+		cmd   = '''SELECT id FROM teams WHERE name = \"{}\"'''.format(report_data["group_name"])
+		team_id = self.__execute(cmd)[0][0]
+
+
+
+		cmd   = '''INSERT INTO reports (teacher_id, subject_id,	team_id, type)''' \
+				'''VALUES ({}, {}, {}, \"{}\")''' \
+				'''ON DUPLICATE KEY UPDATE ''' \
+				'''teacher_id = VALUES(teacher_id),''' \
+				'''subject_id = VALUES(subject_id),''' \
+				'''team_id    = VALUES(team_id),''' \
+				'''type       = VALUES(type)'''.format(
+					teacher_id,
+					subject_id,
+					team_id,
+					report_data["report_type"],
+					report_data["meta"]
+				)
 		self.__execute(cmd)
 
 
@@ -422,8 +451,6 @@ class DB:
 				'''ORDER BY lessons.wday, lessons.clock ASC '''.format(teacher_id)
 		lessons = self.__execute(cmd)
 
-		print_json(lessons)
-
 		for l in lessons:
 			l_dict = {
 				"name"     : l[1],
@@ -445,11 +472,10 @@ class DB:
 			groups = self.__execute(cmd)
 
 			if len(groups) != 0:
-				l_dict["groups"] = groups[0]
+				l_dict["groups"] = groups
 
 			schedule[0]["data"][l_dict["wday"]].append(l_dict)
 
-		print_json(schedule)
 		return(schedule)
 
 	def get_students(self, group_name):
@@ -465,8 +491,41 @@ class DB:
 		students_list = {"name" : group_name, "data" : students}
 		return students_list
 
-	def get_report(self, teacher_name, subject_name, group_name):
-		return "kinda report ;)"
+	def get_report_id(self, report_data):
+		cmd   = '''SELECT id FROM teachers WHERE name = \"{}\"'''.format(report_data["teacher_name"])
+		teacher_id = self.__execute(cmd)[0][0]
+
+		cmd   = '''SELECT id FROM subjects WHERE name = \"{}\" AND duration = \"{}\"'''.format(
+			report_data["subject_name"], report_data["subject_duration"])
+		subject_id = self.__execute(cmd)[0][0]
+
+		cmd   = '''SELECT id FROM teams WHERE name = \"{}\"'''.format(report_data["group_name"])
+		team_id = self.__execute(cmd)[0][0]
+
+
+
+		cmd	  = '''SELECT id FROM reports WHERE ''' \
+				'''teacher_id = {} AND ''' \
+				'''subject_id = {} AND ''' \
+				'''team_id    = {} AND ''' \
+				'''type       = \"{}\"'''.format(
+					teacher_id,
+					subject_id,
+					team_id,
+					report_data["report_type"]
+				)
+		result = self.__execute(cmd)
+
+		if len(result) != 0:
+			report_id = result[0][0]
+			return report_id
+		else:
+			return None
+
+	#----------------/ SET /-------------------------------------------------------
+
+
+
 
 
 

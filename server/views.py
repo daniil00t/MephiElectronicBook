@@ -1,12 +1,12 @@
 from flask import jsonify, render_template, send_from_directory, request
 from server import app
 from .db import  *
+from .reports import *
 
 
 
 @app.route('/__get_teachers')
 def __get_teachers():
-	result = []
 	with DB() as db:
 		result =  db.get_teachers()
 
@@ -16,12 +16,10 @@ def __get_teachers():
 
 @app.route('/__get_schedule')
 def __get_schedule():
-	id = int(request.args.get('id'))
+	id = request.args.get('id', type=int)
 
 	with DB() as db:
 		result =  db.get_schedule(id)
-
-	print_json(result)
 
 	return jsonify({ "data" : result })
 
@@ -38,22 +36,21 @@ def __get_students():
 
 
 
-# @app.route('/__get_report')
-# def hello():
-# 	print("[INFO] Got json:\n")
-# 	print_json(request.json)
+@app.route('/__get_report')
+def __get_report():
+	report_data = {
+		"teacher_name" 		: request.args.get('teacherName', type=str),
+		"subject_name" 		: request.args.get('subjectName', type=str),
+		"subject_duration" 	: request.args.get('subjectDuration', type=str),
+		"group_name" 		: request.args.get('groupName', type=str),
+		"report_type" 		: request.args.get('reportType', type=str),
+		"meta" 				: str(request.args.get('meta'))
+	}
 
-# 	with DB() as db:
-# 		result =  db.get_report(
-# 			teacher_name = request.json["teacherName"],
-# 			subject_name = request.json["subjectName"],
-# 			group_name = request.json["groupName"],
-# 		)
+	rm = RM()
+	result = rm.get(report_data)
 
-# 	print("[INFO] Sending this report:\n")
-# 	print_json(result)
-
-# 	return jsonify({ "data" : "Believe me, it's realy report"})
+	return jsonify({ "data" : result})
 
 
 
@@ -67,6 +64,7 @@ def __get_students():
 # 			teacher_name = request.json["teacherName"],
 # 			subject_name = request.json["subjectName"],
 # 			group_name = request.json["groupName"],
+#			report_type = request.json["reportType"]
 # 		)
 
 # 	print("[INFO] Sending this report:\n")

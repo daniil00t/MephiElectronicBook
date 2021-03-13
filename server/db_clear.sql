@@ -31,7 +31,7 @@ CREATE TABLE subjects (
 	name VARCHAR(300) NOT NULL,
 	duration VARCHAR(100) DEFAULT NULL,
 	PRIMARY KEY (id),
-	UNIQUE KEY unkey (name, duration) -- !!!!!
+	UNIQUE KEY unkey (name, duration)
 );
 
 CREATE TABLE students (
@@ -40,7 +40,7 @@ CREATE TABLE students (
 	team_id INT NOT NULL,
 	count INT NOT NULL,
 	PRIMARY KEY (id),
-	UNIQUE KEY unkey (name, team_id, count), -- !!!!!
+	UNIQUE KEY unkey (name, team_id, count),
 	FOREIGN KEY (team_id) REFERENCES teams(id)
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE lessons (
 	PRIMARY KEY (id),
 	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
 	FOREIGN KEY (subject_id) REFERENCES subjects(id),
-	UNIQUE KEY unkey (teacher_id, subject_id, wday, clock, even)-- !!!!!
+	UNIQUE KEY unkey (teacher_id, subject_id, wday, clock, even)
 );
 
 CREATE TABLE lessons_teams (
@@ -69,58 +69,13 @@ CREATE TABLE lessons_teams (
 
 CREATE TABLE reports (
 	id INT NOT NULL AUTO_INCREMENT,
-	team_id INT NOT NULL,
+	teacher_id INT NOT NULL,
 	subject_id INT NOT NULL,
-	content VARCHAR(100) NOT NULL,
+	team_id INT NOT NULL,
+	type VARCHAR(10) NOT NULL,
 	PRIMARY KEY (id),
+	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+	FOREIGN KEY (subject_id) REFERENCES subjects(id),
 	FOREIGN KEY (team_id) REFERENCES teams(id),
-	FOREIGN KEY (subject_id) REFERENCES subjects(id)
+	UNIQUE KEY unkey (teacher_id, subject_id, team_id, type)
 );
-
-
-
-
-
--- INSERT IGNORE INTO lessons (teacher_id, subject_id, wday, clock, even, type, place) VALUES
--- (1,(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия ядерного приборостроения"),5, "08:30 — 10:05", 0,"Пр", "ДОТ");
-
--- INSERT IGNORE INTO lessons (teacher_id, subject_id, wday, clock, even, type, place) VALUES
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия ядерного приборостроения"),5, "08:30 — 10:05", 0,"Пр", "ДОТ"),
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия ядерного приборостроения"),5, "08:30 — 10:05", 0,"Лек", "ДОТ"),
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия приборостроения"),5, "10:15 — 11:50", 0,"Лек", "ДОТ"),
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия приборостроения"),5, "10:15 — 11:50", 0,"Пр", "ДОТ"),
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия приборостроения"),5, "11:55 — 12:40", 0,"Лек", "ДОТ"),
--- ((SELECT id FROM teachers WHERE name = "Абакумов Евгений Михайлович"),(SELECT id FROM subjects WHERE name = "Методы планирования и управления деятельностью современного предприятия приборостроения"),5, "12:45 — 15:15", 0,"Пр", "ДОТ");
-
-
-
-
-
-
-
-
-
-
-
-
--- CREATE TABLE clocks (
--- 	id INT NOT NULL AUTO_INCREMENT,
--- 	day INT NOT NULL,
--- 	clock VARCHAR(50) NOT NULL,
--- 	even INT NOT NULL,
--- 	PRIMARY KEY (id)
--- );
-
--- CREATE TABLE lessons (
--- 	id INT NOT NULL AUTO_INCREMENT,
--- 	teacher_id INT NOT NULL,
--- 	subject_id INT NOT NULL,
--- 	wday INT 
--- 	clock VARCHAR(50),
--- 	even INT,
--- 	type VARCHAR(10),
--- 	place VARCHAR(20),
--- 	PRIMARY KEY (id),
--- 	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
--- 	FOREIGN KEY (subject_id) REFERENCES subjects(id)
--- );
