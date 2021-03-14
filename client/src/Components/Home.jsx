@@ -20,6 +20,8 @@ export default class Home extends React.Component {
 			<div>
 				Welcome to the ELBook!<br />
 				{this.switcher()}
+				<br/>
+				<span style={{color: "#999"}}>Ждем эту страницу от фронтендера:)</span>
 			</div>
 		);
 	}
