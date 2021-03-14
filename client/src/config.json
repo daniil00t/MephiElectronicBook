@@ -3,6 +3,8 @@
 	"URLS_API": {
 		"urlScheduleTeacher": "__get_schedule",
 		"urlListTeachers": "__get_teachers",
-		"urlListLearners": "__getListLearners"
+		"urlListLearners": "__getListLearners",
+		"urlGetReport": "__get_report",
+		"urlSendReport": "__set_report"
 	}
 }

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Table, ButtonGroup, ToggleButton } from 'react-bootstrap';
-import date from "date.js";
 import Cookies from "js-cookie";
 import EventEmmiter from "../../EventEmmiter.js";
+import { 
+	getReport, 
+	setReport } from "../../api.js";
 
 import "../../styles/tables.css";
 
@@ -56,6 +58,19 @@ export default class Report extends React.Component {
 		else{
 			return el;
 		}
+	}
+	handleGetReport(){
+		getReport({
+			nameGroup: "Б20-123",
+			nameTeacher: "Уткин Карл Селедкович",
+			nameSubject: "Термостатика коричневых станков в условиях болотной местности c применением транспортира из замороженной сгущенки",
+			durationSubject: "11.01.21 - 02.05.21",
+			typeReport: "att"
+		}, success => {
+			console.log(success);
+		}, err => {
+			console.error(err);
+		});
 	}
 	PanelTable(props){
 		const radios = [
@@ -141,6 +156,8 @@ export default class Report extends React.Component {
 						  }
 					  </tbody>
 					</Table>
+
+					<button onClick={e => this.handleGetReport(e)}>This is magic!!</button>
 				</div>
 			</div>
 		);
