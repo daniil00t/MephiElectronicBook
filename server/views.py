@@ -1,4 +1,4 @@
-from flask import jsonify, render_template, send_from_directory, request
+from flask import jsonify, render_template, send_from_directory, request, Response
 from server import app
 from .db import  *
 from .reports import *
@@ -36,21 +36,60 @@ def __get_students():
 
 
 
-@app.route('/__get_report')
+@app.route('/__get_report', methods=['POST'])
 def __get_report():
+	data = request.json
+	print_json(data)
+
 	report_data = {
-		"teacher_name" 		: request.args.get('teacherName', type=str),
-		"subject_name" 		: request.args.get('subjectName', type=str),
-		"subject_duration" 	: request.args.get('subjectDuration', type=str),
-		"group_name" 		: request.args.get('groupName', type=str),
-		"report_type" 		: request.args.get('reportType', type=str),
-		"meta" 				: str(request.args.get('meta'))
+		"teacher_name" 		: data["teacherName"],
+		"subject_name" 		: data["subjectName"],
+		"subject_duration" 	: data["subjectDuration"],
+		"group_name" 		: data["groupName"],
+		"report_type" 		: data["reportType"]
 	}
 
-	rm = RM()
-	result = rm.get(report_data)
+	with RM() as rm:
+		result = rm.get(report_data)
 
-	return jsonify({ "data" : result})
+	return jsonify({ "data" : result })
+
+
+
+@app.route('/__set_report', methods=['POST'])
+def __set_report():
+	data = request.json
+
+	report_data = {
+		"teacher_name" 		: data["teacherName"],
+		"subject_name" 		: data["subjectName"],
+		"subject_duration" 	: data["subjectDuration"],
+		"group_name" 		: data["groupName"],
+		"report_type" 		: data["reportType"]
+	}
+
+
+	report = {
+		"teacher_name" 		: data["teacherName"],
+		"subject_name" 		: data["subjectName"],
+		"subject_duration" 	: data["subjectDuration"],
+		"group_name" 		: data["groupName"],
+		"report_type" 		: data["reportType"],
+		"thead"				: data["thead"],
+		"data" 				: data["data"]
+	}
+
+	with RM() as rm:
+		result = rm.set(report_data, report)
+
+
+	if result:
+		status_code = Response(status=200)
+	else:
+		status_code = Response(status=500)
+	return status_code
+
+
 
 
 

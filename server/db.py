@@ -252,8 +252,7 @@ class DB:
 					teacher_id,
 					subject_id,
 					team_id,
-					report_data["report_type"],
-					report_data["meta"]
+					report_data["report_type"]
 				)
 		self.__execute(cmd)
 
