@@ -23,7 +23,7 @@ def __get_schedule():
 	with DB() as db:
 		result =  db.get_schedule(id)
 
-	return result
+	return jsonify(result)
 
 
 
@@ -34,7 +34,7 @@ def __get_students():
 	with DB() as db:
 		result =  db.get_students(group_name)
 
-	return result
+	return jsonify(result)
 
 
 
@@ -46,7 +46,7 @@ def __get_report():
 	with RM() as rm:
 		result = rm.get(data)
 
-	return result
+	return jsonify(result)
 
 
 

@@ -21,11 +21,11 @@ class RM():
 	def __convert_report_data(self, report_data, convert_to):
 		if convert_to == "back":
 			new_report_data = {
-				"teacher_name" 		: report_data["teacherName"],
-				"subject_name" 		: report_data["subjectName"],
-				"subject_duration" 	: report_data["subjectDuration"],
-				"group_name" 		: report_data["groupName"],
-				"report_type" 		: report_data["reportType"]
+				"teacher_name" 		: report_data["nameTeacher"],
+				"subject_name" 		: report_data["nameSubject"],
+				"subject_duration" 	: report_data["durationSubject"],
+				"group_name" 		: report_data["nameGroup"],
+				"report_type" 		: report_data["typeReport"]
 			}
 			return new_report_data
 
