@@ -14,12 +14,37 @@ class RM():
 		return type is None
 
 	def __create(self, report_data):
-		# [FEATURE] create empty report correctly using group list and date module
-		return  {
-			"data"	: "empty report"
-		}
+		with DB() as db:
+			teacher_id = db.get_teacher_id(report_data["teacher_name"])
+			schedule = db.get_schedule(teacher_id)["data"]
+			students = db.get_students(report_data["group_name"])
 
+		# [FEATURE] maybe use list of days?
+		# pattern = []
+		# duration = ""
+		# for day in schedule:
+		# 	for lesson in day:
+		# 		if  (lesson["name"] == report_data["subject_name"]) and \
+		# 			(lesson["duration"] == report_data["subject_duration"]) and \
+		# 			(report_data["group_name"] in lesson["groups"]):
 
+		# 				duration = dates.parse_duration(lesson["duration"])
+		# 				time = dates.parse_time(lesson["time"])
+
+		# 				pattern.append({
+		# 					"time" : time,
+		# 					"even" : lesson["even"],
+		# 					"wday" : lesson["wday"]
+		# 				})
+
+		# dates_list = dates.get_dates(pattern, duration)
+
+		# # [FEATURE] create empty report correctly using group list and date module
+		# return  {		
+		# 	"thead" : dates_list
+		# }
+
+		return {"data" : "empty"}
 
 	def __read(self, report_id):
 		path = RP_FOLDER + str(report_id) + '.json'

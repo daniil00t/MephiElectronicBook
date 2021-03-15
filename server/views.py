@@ -16,6 +16,7 @@ def __get_teachers():
 
 @app.route('/__get_schedule')
 def __get_schedule():
+	# [FEATURE] use teacher_name instead of id
 	id = request.args.get('id', type=int)
 
 	with DB() as db:
@@ -59,6 +60,7 @@ def __get_report():
 @app.route('/__set_report', methods=['POST'])
 def __set_report():
 	data = request.json
+	print_json(data)
 
 	report_data = {
 		"teacher_name" 		: data["teacherName"],

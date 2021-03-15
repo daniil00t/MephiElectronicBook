@@ -410,6 +410,13 @@ class DB:
 
 	#-------------------/ GET /----------------------------------------------------------------------------------------
 
+	def get_teacher_id(self, teacher_name):
+		cmd = '''SELECT id FROM teachers WHERE name = \"{}\"'''.format(teacher_name)		
+		teacher_name = self.__execute(cmd)[0][0]
+
+		return teacher_name
+
+
 	def get_teachers(self):
 		cmd = '''SELECT id, name FROM teachers'''
 		result = self.__execute(cmd)
@@ -475,7 +482,7 @@ class DB:
 
 			schedule[0]["data"][l_dict["wday"]].append(l_dict)
 
-		return(schedule)
+		return schedule
 
 	def get_students(self, group_name):
 		cmd   = '''SELECT count, name FROM students WHERE team_id=''' \
