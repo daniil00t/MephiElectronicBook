@@ -48,9 +48,8 @@ export default class Report extends React.Component {
 	}
 	getReportWithAccess(){
 		if(this.isValidGetRequest()){
-			console.log("DAAAAAAAAA");
 			getReport(this.state.getRequest, data => {
-				console.log("DATA!!!!!!!: ", data);
+				this.setState({table: data});
 			}, err => {
 				console.error(err);
 			})
@@ -75,24 +74,7 @@ export default class Report extends React.Component {
 		});
 		this.getReportWithAccess();
 		// request to server, but now used object
-		let table = {
-			nameGroup: "Б20-101",
-			nameTeacher: "Уткин Игорь Шапкович",
-			nameSubject: "Физика",
-			thead: ["id", "name", "03.03.21", "05.03.21", "06.03.21", "08.03.21", "11.03.21", "13.03.21", "15.03.21", "common"],
-			meta: {
-				countSpecialCols: 2
-			},
-			data: [
-				[1, "Аржаков Владислав Леонидович", true, false, true, false, false, true, true],
-				[2, "Арляпов Евгений Романович",  true, true, true, true, false, false, true],
-				[3, "Бугрей Павел Сергеевич", true, false, true, false, false, true, true],
-				[4, "Гончаров Иван Юрьевич", true, true, true, true, false, false, true],
-				[5, "Горбунов Дмитрий Сергеевич", true, false, true, false, false, true, true]
-				// ...
-			]
-		}
-		this.setState({table: table});
+		// this.setState({table: table});
 	}
 
 	toggleTypeTable(type){
@@ -117,8 +99,8 @@ export default class Report extends React.Component {
 	}
 	changeGroup(e, props){
 		// this is correct, but have some problems on server
-		// let group = props.groups[+e.target.value];
-		let group = props.groups[+e.target.value][0];
+		let group = props.groups[+e.target.value];
+		// let group = props.groups[+e.target.value][0];
 		this.setState({getRequest: this.concatObject(this.state.getRequest, {nameGroup: group})});
 		this.getReportWithAccess();
 	}
@@ -172,6 +154,9 @@ export default class Report extends React.Component {
 	    </div>
 		);
 	}
+	handleClick(){
+		setReport(this.state.table, (data) => console.log(data));
+	}
 	render() {
 		// console.log(this.getDates("03.03.21", [0, 1, 0, 0, 1, 1], 20));
 		console.log(this.props.state);
@@ -207,6 +192,7 @@ export default class Report extends React.Component {
 						  }
 					  </tbody>
 					</Table>
+					<button onClick={e => this.handleClick(e)}>Click!</button>
 				</div>
 			</div>
 		);

@@ -88,8 +88,8 @@ export class PersonPage extends React.Component {
 			this.props.id != -1 ? (id = this.props.id) : (id = this.state.id);
 			getScheduleTeacher(id, data => {
 				console.log(data);
-				let name = data.data[0].name;
-				let schedule = data.data[0].data;
+				let name = data.name;
+				let schedule = data.data;
 
 				if(Cookies.get("id") == -1){
 					Cookies.set("id", this.props.id);
