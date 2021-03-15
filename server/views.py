@@ -3,14 +3,15 @@ from server import app
 from .db import  *
 from .reports import *
 
-
+# [FEATURE] change all to POST
+# [FEATURE] check if report exists
 
 @app.route('/__get_teachers')
 def __get_teachers():
 	with DB() as db:
 		result =  db.get_teachers()
 
-	return jsonify({ "data" : result })
+	return jsonify({ "data" : result }) # result is a list
 
 
 
@@ -22,7 +23,7 @@ def __get_schedule():
 	with DB() as db:
 		result =  db.get_schedule(id)
 
-	return jsonify({ "data" : result })
+	return result
 
 
 
@@ -33,7 +34,7 @@ def __get_students():
 	with DB() as db:
 		result =  db.get_students(group_name)
 
-	return jsonify({ "data" : result })
+	return result
 
 
 
@@ -42,18 +43,10 @@ def __get_report():
 	data = request.json
 	print_json(data)
 
-	report_data = {
-		"teacher_name" 		: data["teacherName"],
-		"subject_name" 		: data["subjectName"],
-		"subject_duration" 	: data["subjectDuration"],
-		"group_name" 		: data["groupName"],
-		"report_type" 		: data["reportType"]
-	}
-
 	with RM() as rm:
-		result = rm.get(report_data)
+		result = rm.get(data)
 
-	return jsonify({ "data" : result })
+	return result
 
 
 
@@ -62,53 +55,11 @@ def __set_report():
 	data = request.json
 	print_json(data)
 
-	report_data = {
-		"teacher_name" 		: data["teacherName"],
-		"subject_name" 		: data["subjectName"],
-		"subject_duration" 	: data["subjectDuration"],
-		"group_name" 		: data["groupName"],
-		"report_type" 		: data["reportType"]
-	}
-
-
-	report = {
-		"teacher_name" 		: data["teacherName"],
-		"subject_name" 		: data["subjectName"],
-		"subject_duration" 	: data["subjectDuration"],
-		"group_name" 		: data["groupName"],
-		"report_type" 		: data["reportType"],
-		"thead"				: data["thead"],
-		"data" 				: data["data"]
-	}
-
 	with RM() as rm:
-		result = rm.set(report_data, report)
-
+		result = rm.set(data)
 
 	if result:
 		status_code = Response(status=200)
 	else:
 		status_code = Response(status=500)
 	return status_code
-
-
-
-
-
-# @app.route('/__get_report', methods)
-# def hello():
-# 	print("[INFO] Got json:\n")
-# 	print_json(request.json)
-
-# 	with DB() as db:
-# 		result =  db.get_report(
-# 			teacher_name = request.json["teacherName"],
-# 			subject_name = request.json["subjectName"],
-# 			group_name = request.json["groupName"],
-#			report_type = request.json["reportType"]
-# 		)
-
-# 	print("[INFO] Sending this report:\n")
-# 	print_json(result)
-
-# 	return jsonify({ "data" : "Believe me, it's realy report"})
