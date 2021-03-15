@@ -434,7 +434,7 @@ class DB:
 		cmd = '''SELECT name FROM teachers WHERE id = {}'''.format(teacher_id)		
 		teacher_name = self.__execute(cmd)[0][0]
 
-		schedule = [{
+		schedule = {
 			"name" : teacher_name,
 			"data" : [
 				[],
@@ -444,7 +444,7 @@ class DB:
 				[],
 				[]
 			]
-		}]
+		}
 
 		# 2) get lessons and groups
 		cmd   = '''SELECT lessons.id, subjects.name, subjects.duration, ''' \
@@ -481,7 +481,7 @@ class DB:
 			if len(groups) != 0:
 				l_dict["groups"] = groups
 
-			schedule[0]["data"][l_dict["wday"]].append(l_dict)
+			schedule["data"][l_dict["wday"]].append(l_dict)
 
 		return schedule
 

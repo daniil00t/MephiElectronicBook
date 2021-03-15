@@ -47,7 +47,7 @@ class RM():
 	def __create(self, report_data):
 		with DB() as db:
 			teacher_id = db.get_teacher_id(report_data["teacher_name"])
-			schedule = db.get_schedule(teacher_id)[0]["data"]
+			schedule = db.get_schedule(teacher_id)["data"]
 			students = db.get_students(report_data["group_name"])["data"]
 
 
@@ -119,7 +119,6 @@ class RM():
 
 	def get(self, report_data):
 		report_data = self.__convert_report_data(report_data, convert_to="back")
-		print(report_data)
 
 		with DB() as db:
 			report_id = db.get_report_id(report_data)
