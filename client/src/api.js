@@ -4,7 +4,7 @@ import * as CONFIG from "./config.json";
 
 const sendRequestGET = (url, data, callbackSuccess, callbackError) => {
 	axios.get(url, { params: data })
-		.then(res => callbackSuccess(res))
+		.then(res => callbackSuccess(res.data))
 		.catch(error => callbackError(error.response))
 };
 const sendRequestPOST = (url, data, callbackSuccess, callbackError) => {

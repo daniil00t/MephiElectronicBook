@@ -7,12 +7,20 @@ import {
 	setReport } from "../../api.js";
 
 import "../../styles/tables.css";
+import * as CONFIG from "../../config.json";
 
 export default class Report extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			getRequest: {
+				nameGroup: "",
+				nameTeacher: "",
+				nameSubject: "",
+				durationSubject: "",
+				typeReport: ""
+			},
 			table: {
 				group: "",
 				name: "",
@@ -20,34 +28,59 @@ export default class Report extends React.Component {
 				meta: {},
 				data: [[]]
 			}
+		};
+		this.emmiter = this.props.emmiter;
+		this.listen = this.listen.bind(this);
+		this.listen();
+	}
+	isValidGetRequest(){
+		let access = false;
+		let req = this.state.getRequest;
+		if(typeof req.nameTeacher !== "undefined" && req.nameTeacher != "" &&
+				typeof req.nameGroup !== "undefined" && req.nameGroup != "" &&
+				typeof req.nameSubject !== "undefined" && req.nameSubject != "" &&
+				typeof req.durationSubject !== "undefined" && req.durationSubject != "" &&
+				typeof req.typeReport !== "undefined" && req.typeReport != "") 
+		{
+			access = true
 		}
-		this.emmiter = new EventEmmiter();
+		return access;
+	}
+	getReportWithAccess(){
+		if(this.isValidGetRequest()){
+			getReport(this.state.getRequest, data => {
+				this.setState({table: data});
+			}, err => {
+				console.error(err);
+			})
+		}
+	}
+	concatObject(baseObject, appendObject){
+		return Object.assign({}, baseObject, appendObject);
+	}
+	listen(){
+		this.emmiter.on("changeTypeTable", data => {
+			this.setState({getRequest: this.concatObject(this.state.getRequest, {typeReport: CONFIG.TYPES_REPORTS[data.data].alias})});
+			this.getReportWithAccess();
+		});
 	}
 	componentDidMount(){
+		// console.log("THIS: ", Object.keys(this.props.state));
+		this.setState({
+			getRequest: {
+				nameTeacher: this.props.state.name,
+				typeReport: this.props.state.activeTypeTable,
+			}
+		});
+		this.getReportWithAccess();
 		// request to server, but now used object
-		let table = {
-			nameGroup: "Б20-101",
-			nameTeacher: "Уткин Игорь Шапкович",
-			nameSubject: "Физика",
-			thead: ["id", "name", "03.03.21", "05.03.21", "06.03.21", "08.03.21", "11.03.21", "13.03.21", "15.03.21", "common"],
-			meta: {
-				countSpecialCols: 2
-			},
-			data: [
-				[1, "Аржаков Владислав Леонидович", true, false, true, false, false, true, true],
-				[2, "Арляпов Евгений Романович",  true, true, true, true, false, false, true],
-				[3, "Бугрей Павел Сергеевич", true, false, true, false, false, true, true],
-				[4, "Гончаров Иван Юрьевич", true, true, true, true, false, false, true],
-				[5, "Горбунов Дмитрий Сергеевич", true, false, true, false, false, true, true]
-				// ...
-			]
-		}
-		this.setState({table: table});
+		// this.setState({table: table});
 	}
 
 	toggleTypeTable(type){
 		this.props.changeState({activeTypeTable: type})
-		Cookies.set("reportType", type)
+		this.setState({getRequest: this.concatObject(this.state.getRequest, {typeReport: CONFIG.TYPES_REPORTS[type].alias})});
+		this.getReportWithAccess();
 	}
 	replaceChar(el){
 		if(el === true){
@@ -59,18 +92,17 @@ export default class Report extends React.Component {
 			return el;
 		}
 	}
-	handleGetReport(){
-		getReport({
-			nameGroup: "Б20-123",
-			nameTeacher: "Уткин Карл Селедкович",
-			nameSubject: "Термостатика коричневых станков в условиях болотной местности c применением транспортира из замороженной сгущенки",
-			durationSubject: "11.01.21 - 02.05.21",
-			typeReport: "att"
-		}, success => {
-			console.log(success);
-		}, err => {
-			console.error(err);
-		});
+	changeSubject(e, props){
+		let subject = props.subjects[+e.target.value];
+		this.setState({getRequest: this.concatObject(this.state.getRequest, {nameSubject: subject, durationSubject: this.props.state.durations[+e.target.value]})});
+		this.getReportWithAccess();
+	}
+	changeGroup(e, props){
+		// this is correct, but have some problems on server
+		let group = props.groups[+e.target.value];
+		// let group = props.groups[+e.target.value][0];
+		this.setState({getRequest: this.concatObject(this.state.getRequest, {nameGroup: group})});
+		this.getReportWithAccess();
 	}
 	PanelTable(props){
 		const radios = [
@@ -81,7 +113,7 @@ export default class Report extends React.Component {
 		return (
 			<div className="panelHeadTable">
 				<div className="tableWrap">
-					<select className="form-control groups">
+					<select onChange={e => props.self.changeGroup(e, props)} className="form-control groups">
 						<option value={-1}>Choose group</option>
 						{
 							props.groups.map((el, index) => 
@@ -91,7 +123,7 @@ export default class Report extends React.Component {
 							)
 						}
 					</select>
-					<select className="form-control subjects">
+					<select onChange={e => props.self.changeSubject(e, props)} className="form-control subjects">
 						<option value={-1}>Choose subject</option>
 						{
 							props.subjects.map((el, index) => 
@@ -112,7 +144,7 @@ export default class Report extends React.Component {
 		            name="radio"
 		            value={radio.value}
 		            checked={props.state.activeTypeTable === radio.value}
-		            onChange={(e) => props.This.toggleTypeTable(+e.currentTarget.value)}
+		            onChange={(e) => props.self.toggleTypeTable(+e.currentTarget.value)}
 		          >
 		            {radio.name}
 		          </ToggleButton>
@@ -122,13 +154,17 @@ export default class Report extends React.Component {
 	    </div>
 		);
 	}
+	handleClick(){
+		setReport(this.state.table, (data) => console.log(data));
+	}
 	render() {
 		// console.log(this.getDates("03.03.21", [0, 1, 0, 0, 1, 1], 20));
+		console.log(this.props.state);
 		return (
 			<div className="table-wrap">
 				<div className="TABLE">
 					<this.PanelTable
-						This={this}
+						self={this}
 						state={this.props.state}
 						name={this.props.state.name}
 						groups={this.props.state.groups}
@@ -156,8 +192,7 @@ export default class Report extends React.Component {
 						  }
 					  </tbody>
 					</Table>
-
-					<button onClick={e => this.handleGetReport(e)}>This is magic!!</button>
+					<button onClick={e => this.handleClick(e)}>Click!</button>
 				</div>
 			</div>
 		);
