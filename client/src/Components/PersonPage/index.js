@@ -35,6 +35,7 @@ export class PersonPage extends React.Component {
 			schedule: [],
 			groups: [],
 			subjects: [],
+			durations: [],
 			// for tables
 			activeTypeTable: -1,
 			activeGroupId: -1,
@@ -44,18 +45,32 @@ export class PersonPage extends React.Component {
 		this.listen = this.listen.bind(this);
 		this.listen();
 	}
+
 	listen(){
 		this.emmiter.on("changeTypeTable", data => {
 			this.setState({activeTypeTable: data.data});
 		})
 	}
 	solveCounts(schedule){
-		let arraySubjects = [];
-		let arrayGroups 	= [];
+		let arraySubjects 	= [];
+		let arrayGroups 		= [];
+		let arrayDurations 	= [];
 
 		schedule.map(day => {
-			day.map(lesson => {
-				if(!(arraySubjects.includes(lesson.name))) arraySubjects.push(lesson.name);
+			day.map((lesson, index) => {
+				if(!(arraySubjects.includes(lesson.name))){
+					let indexDuration = arraySubjects.indexOf(lesson.name);
+					let itemDuration = arrayDurations[indexDuration];
+					if(lesson.duration != itemDuration){
+						if(Array.isArray(itemDuration)){
+							arrayDurations[indexDuration] = [arrayDurations[indexDuration], itemDuration];
+						}
+						else{
+							arrayDurations.push(lesson.duration);
+						}
+					}
+					arraySubjects.push(lesson.name);
+				}
 				lesson.groups.map(group => {
 					if(!(arrayGroups.includes(group))) arrayGroups.push(group);		
 				})
@@ -63,7 +78,8 @@ export class PersonPage extends React.Component {
 		});
 		return {
 			subjects: arraySubjects,
-			groups: arrayGroups
+			groups: arrayGroups,
+			durations: arrayDurations
 		};
 	}
 	componentDidMount(){
@@ -71,6 +87,7 @@ export class PersonPage extends React.Component {
 		if(this.props.id != -1 || this.state.id != -1){
 			this.props.id != -1 ? (id = this.props.id) : (id = this.state.id);
 			getScheduleTeacher(id, data => {
+				console.log(data);
 				let name = data.data[0].name;
 				let schedule = data.data[0].data;
 
@@ -81,7 +98,8 @@ export class PersonPage extends React.Component {
 					name: name,
 					schedule: schedule,
 					groups: this.solveCounts(schedule).groups,
-					subjects: this.solveCounts(schedule).subjects
+					subjects: this.solveCounts(schedule).subjects,
+					durations: this.solveCounts(schedule).durations
 				});
 			}, err => {
 				console.log(err);
@@ -114,9 +132,9 @@ export class PersonPage extends React.Component {
 				return <this.ListSubjects subjects={this.state.subjects} handleClickOnLink={index => this.setState({activeSubjectId: index})} />
 			};break;
 			case "table-score":
-				// this.setState({activeTypeTable: 1});break;
+				this.emmiter.emit("initReportType", {activeTypeTable: 1});
 			case "table-att":{
-				// this.setState({activeTypeTable: 0});break;
+				this.emmiter.emit("initReportType", {activeTypeTable: 0});
 				return (
 					<main>
 						<PanelTeacher 
@@ -124,7 +142,7 @@ export class PersonPage extends React.Component {
 							countGroups={this.solveCounts(this.state.schedule).groups.length} 
 							name={this.state.name}
 						/>
-						<Report listLearners={[]} props={this.props} state={this.state} changeState={newState => this.setState(newState)}/>
+						<Report listLearners={[]} props={this.props} state={this.state} emmiter={this.emmiter} changeState={newState => this.setState(newState)}/>
 					</main>
 				)
 			};break;
