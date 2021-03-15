@@ -475,7 +475,8 @@ class DB:
 					'''WHERE id IN ''' \
 					'''(SELECT team_id FROM lessons_teams ''' \
 					'''WHERE lesson_id = {})'''.format(l_id)
-			groups = self.__execute(cmd)
+			result = self.__execute(cmd)
+			groups = [r[0] for r in result]
 
 			if len(groups) != 0:
 				l_dict["groups"] = groups
