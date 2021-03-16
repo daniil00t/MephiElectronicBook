@@ -1,11 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.css';
-// import $ from 'jquery';
-import { Button } from 'react-bootstrap';
 
-// import '../public/media/libs/bootstrap/css/bootstrap.min.css';
-// import '../public/media/styles/auth.css';
+import './styles/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

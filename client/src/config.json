@@ -9,18 +9,18 @@
 	},
 	"TYPES_REPORTS": [
 		{
-			"id": 1,
-			"name": "Attendance Report",
+			"id": 0,
+			"name": "Посещаемость",
 			"alias": "att"
 		},
 		{
-			"id": 2,
-			"name": "Score Report",
+			"id": 1,
+			"name": "Оценки",
 			"alias": "score"
 		},
 		{
-			"id": 3,
-			"name": "End Report",
+			"id": 2,
+			"name": "Итоги",
 			"alias": "ch"
 		}
 	]

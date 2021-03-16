@@ -1,17 +1,10 @@
 import React from 'react';
 import Cookies from "js-cookie";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 import {Card, ListGroup} from 'react-bootstrap';
 
 // Components
-import { 
-	getScheduleTeacher, 
-	getListLearners } from "../../api.js";
+import { getScheduleTeacher } from "../../api.js";
 import { Header } from "./Header.js";
 import { Schedule } from "./Schedule.js";
 import { PanelTeacher } from "./PanelTeacher.js";
@@ -37,24 +30,17 @@ export class PersonPage extends React.Component {
 			subjects: [],
 			durations: [],
 			// for tables
-			activeTypeTable: -1,
 			activeGroupId: -1,
 			activeSubjectId: -1
 		}
 		this.emmiter = new EventEmmiter();
-		this.listen = this.listen.bind(this);
-		this.listen();
-	}
-
-	listen(){
-		this.emmiter.on("changeTypeTable", data => {
-			this.setState({activeTypeTable: data.data});
-		})
+		console.clear();
 	}
 	solveCounts(schedule){
 		let arraySubjects 	= [];
 		let arrayGroups 		= [];
 		let arrayDurations 	= [];
+		
 
 		schedule.map(day => {
 			day.map((lesson, index) => {
@@ -69,6 +55,7 @@ export class PersonPage extends React.Component {
 							arrayDurations.push(lesson.duration);
 						}
 					}
+                    // arrayGroups.push(lesson.groups);
 					arraySubjects.push(lesson.name);
 				}
 				lesson.groups.map(group => {
@@ -83,11 +70,9 @@ export class PersonPage extends React.Component {
 		};
 	}
 	componentDidMount(){
-		let id = -1;
-		if(this.props.id != -1 || this.state.id != -1){
-			this.props.id != -1 ? (id = this.props.id) : (id = this.state.id);
+		if(this.state.id != -1){
+			let id = this.state.id;
 			getScheduleTeacher(id, data => {
-				console.log(data);
 				let name = data.name;
 				let schedule = data.data;
 
@@ -111,7 +96,7 @@ export class PersonPage extends React.Component {
 	}
 
 
-	switcher(self){
+	Switcher(self){
 		switch(this.props.match){
 			case "main": {
 				return (
@@ -126,10 +111,16 @@ export class PersonPage extends React.Component {
 				)
 			};break;
 			case "groups": {
-				return <this.ListGroups groups={this.state.groups} handleClickOnLink={index => this.setState({activeGroupId: index})} />
+				return <this.ListGroups 
+					groups={this.state.groups} 
+					handleClickOnLink={index => this.setState({activeGroupId: index})}
+					/>;
 			};break;
 			case "subjects": {
-				return <this.ListSubjects subjects={this.state.subjects} handleClickOnLink={index => this.setState({activeSubjectId: index})} />
+				return <this.ListSubjects 
+					subjects={this.state.subjects} 
+					handleClickOnLink={index => this.setState({activeSubjectId: index})} 
+					/>;
 			};break;
 			case "table-score":
 				this.emmiter.emit("initReportType", {activeTypeTable: 1});
@@ -142,14 +133,20 @@ export class PersonPage extends React.Component {
 							countGroups={this.solveCounts(this.state.schedule).groups.length} 
 							name={this.state.name}
 						/>
-						<Report listLearners={[]} props={this.props} state={this.state} emmiter={this.emmiter} changeState={newState => this.setState(newState)}/>
+						<Report
+							compactSchedule={{
+								groups: this.state.groups,
+								subjects: this.state.subjects,
+								durations: this.state.durations
+							}}
+							name={this.state.name}
+							emmiter={this.emmiter}
+						/>
 					</main>
 				)
 			};break;
-			// case "table-score":
-			// 	return <TableScore />;break;
 			default:
-				return "Not Found:(";
+				return "Not Found Match";
 		}
 	}
 	ListGroups(props){
@@ -158,8 +155,20 @@ export class PersonPage extends React.Component {
 				<Card style={{ width: '18rem' }}>
 				  <Card.Header>Groups</Card.Header>
 				  <ListGroup variant="flush">
-				  	{
-							props.groups.map((el, index) => <Link data_index={index} onClick={e => props.handleClickOnLink(+e.target.attributes.data_index.value)} className="list-group-item" to="/personalPage/tables/att">{el}</Link>)
+				  		{
+							props.groups.map(
+								(el, index) => 
+								<Link 
+									data_index={index} 
+									onClick={
+										e => props.handleClickOnLink(+e.target.attributes.data_index.value)
+									} 
+									className="list-group-item" 
+									to="/personalPage/tables/att"
+								>
+									{el}
+								</Link>
+							)
 						}
 				  </ListGroup>
 				</Card>
@@ -172,8 +181,20 @@ export class PersonPage extends React.Component {
 				<Card style={{ width: '18rem' }}>
 				  <Card.Header>Subjects</Card.Header>
 				  <ListGroup variant="flush">
-				  	{
-							props.subjects.map((el, index) => <Link data_index={index} onClick={e => props.handleClickOnLink(+e.target.attributes.data_index.value)} className="list-group-item" to="/personalPage/tables/att">{el}</Link>)
+				  		{
+							props.subjects.map(
+								(el, index) => 
+								<Link 
+									data_index={index} 
+									onClick={
+										e => props.handleClickOnLink(+e.target.attributes.data_index.value)
+									} 
+									className="list-group-item" 
+									to="/personalPage/tables/att"
+								>
+									{el}
+								</Link>
+							)
 						}
 				  </ListGroup>
 				</Card>
@@ -183,10 +204,10 @@ export class PersonPage extends React.Component {
 	render() {
 		return (
 			<div className="person-page-container">
-				<Header groups={this.state.groups} subjects={this.state.subjects} self={this} emmiter={this.emmiter}/>
-					{
-						this.switcher(this)
-					}
+				<Header groups={this.state.groups} subjects={this.state.subjects} emmiter={this.emmiter}/>
+				{
+					this.Switcher(this)
+				}
 				<Footer />
 			</div>
 		);

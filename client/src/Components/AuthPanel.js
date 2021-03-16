@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 
 // import modules
 import { getListTeachers } from "../api.js";
-import ee from "../EventEmmiter.js";
 
 // import styles
 import "../styles/AuthPanel.css";

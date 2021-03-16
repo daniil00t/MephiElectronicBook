@@ -1,28 +1,15 @@
 import React from 'react';
 import {Nav, Navbar, NavDropdown, Form, FormControl, Button} from 'react-bootstrap';
-import Cookies from "js-cookie";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import EventEmmiter from "../../EventEmmiter.js";
 
 export class Header extends React.Component {
 	constructor(props) {
 		super(props);
-		console.log(props);
 		this.emmiter = props.emmiter;
 	}
 	changeTypeTable(type){
-		// this.props.self.setState({activeTypeTable: type});
-		// Cookies.set("reportType", type);
-		// console.log({type: "number", data: type});
-		this.emmiter.emit("changeTypeTable", {type: "number", data: type})
+		this.emmiter.emit("changeTypeTable", {type: "number", data: type});
 	}
 	render() {
 		return (
