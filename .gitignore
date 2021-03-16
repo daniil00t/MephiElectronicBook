@@ -13,3 +13,4 @@
 show.sql
 logs_temp.txt
 /client/node_modules
+.vscode
