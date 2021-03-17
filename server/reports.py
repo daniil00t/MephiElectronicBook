@@ -4,7 +4,7 @@ from .modules import Dates as dates
 import os
 import json
 
-# [FEATURE] add
+# [FEATURE] check type of lesson too!!!
 class RM():
 	def __init__(self):
 		pass
@@ -53,10 +53,13 @@ class RM():
 
 		# 1) get dates
 		#[FEATURE] maybe use list of days?
+		#[FEATURE] what if pattern is empty?
 		pattern = []
 		duration = ""
 		for day in schedule:
 			for lesson in day:
+				print("[INFO] Current lesson:", lesson)
+				print("[INFO] Current report", report_data)
 				if  (lesson["name"] == report_data["subject_name"]) and \
 					(lesson["duration"] == report_data["subject_duration"]) and \
 					(report_data["group_name"] in lesson["groups"]):
