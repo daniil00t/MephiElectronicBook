@@ -9,7 +9,7 @@ export class Header extends React.Component {
 		this.emmiter = props.emmiter;
 	}
 	changeTypeTable(type){
-		this.emmiter.emit("changeTypeTable", {type: "number", data: type});
+		this.emmiter.emit("changeTypeTable", {type: "string", data: type});
 	}
 	render() {
 		return (
@@ -23,8 +23,8 @@ export class Header extends React.Component {
 			      <Link to="/personalPage/groups" className="nav-link">Мои группы</Link>
 			      <Link to="/personalPage/subjects" className="nav-link">Мои предметы</Link>
 			      <NavDropdown title="Мои ведомости" id="basic-nav-dropdown">
-			        <Link onClick={e => this.changeTypeTable(0)} to="/personalPage/tables/att" className="dropdown-item">Ведомость посещаемости</Link>
-			        <Link onClick={e => this.changeTypeTable(1)} to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
+			        <Link onClick={e => this.changeTypeTable("att")} to="/personalPage/tables/att" className="dropdown-item">Ведомость посещаемости</Link>
+			        <Link onClick={e => this.changeTypeTable("score")} to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
 			      </NavDropdown>
 			      
 			      <Nav.Link href="#home">Помощь</Nav.Link>

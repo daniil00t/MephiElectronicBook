@@ -29,6 +29,7 @@ export class PersonPage extends React.Component {
 			groups: [],
 			subjects: [],
 			durations: [],
+			compactSchedule: [],
 			// for tables
 			activeGroupId: -1,
 			activeSubjectId: -1
@@ -36,14 +37,38 @@ export class PersonPage extends React.Component {
 		this.emmiter = new EventEmmiter();
 		console.clear();
 	}
+	addUniqueItem(items, arr){
+		items.map(item => { if(arr.indexOf(item) === -1) arr.push(item) });
+		return arr;
+	}
 	solveCounts(schedule){
 		let arraySubjects 	= [];
 		let arrayGroups 		= [];
 		let arrayDurations 	= [];
+		let compacts 			= [];
 		
 
 		schedule.map(day => {
 			day.map((lesson, index) => {
+				// Add compact array subject -> (name, groups, durations, types)
+				let tmpNames = compacts.reduce((acc, cur) => {
+					return [...acc, cur.name];
+				}, []);
+
+				let indexName = tmpNames.indexOf(lesson.name);
+				if(indexName != -1){
+					compacts[indexName].groups = this.addUniqueItem(lesson.groups, compacts[indexName].groups);
+					compacts[indexName].durations = this.addUniqueItem([lesson.duration], compacts[indexName].durations);
+					compacts[indexName].types = this.addUniqueItem([lesson.type], compacts[indexName].types);
+				}else{
+					compacts.push({
+						name: lesson.name,
+						groups: [...lesson.groups],
+						durations: [lesson.duration],
+						types: [lesson.type]
+					})
+				}
+
 				if(!(arraySubjects.includes(lesson.name))){
 					let indexDuration = arraySubjects.indexOf(lesson.name);
 					let itemDuration = arrayDurations[indexDuration];
@@ -55,7 +80,7 @@ export class PersonPage extends React.Component {
 							arrayDurations.push(lesson.duration);
 						}
 					}
-                    // arrayGroups.push(lesson.groups);
+          	// arrayGroups.push(lesson.groups);
 					arraySubjects.push(lesson.name);
 				}
 				lesson.groups.map(group => {
@@ -66,7 +91,8 @@ export class PersonPage extends React.Component {
 		return {
 			subjects: arraySubjects,
 			groups: arrayGroups,
-			durations: arrayDurations
+			durations: arrayDurations,
+			compacts: compacts
 		};
 	}
 	componentDidMount(){
@@ -84,7 +110,8 @@ export class PersonPage extends React.Component {
 					schedule: schedule,
 					groups: this.solveCounts(schedule).groups,
 					subjects: this.solveCounts(schedule).subjects,
-					durations: this.solveCounts(schedule).durations
+					durations: this.solveCounts(schedule).durations,
+					compactSchedule: this.solveCounts(schedule).compacts
 				});
 			}, err => {
 				console.log(err);
@@ -134,11 +161,10 @@ export class PersonPage extends React.Component {
 							name={this.state.name}
 						/>
 						<Report
-							compactSchedule={{
-								groups: this.state.groups,
-								subjects: this.state.subjects,
-								durations: this.state.durations
-							}}
+							compactSchedule={this.state.compactSchedule}
+							groups={this.state.groups}
+							subjects={this.state.subjects}
+							durations={this.state.durations}
 							name={this.state.name}
 							emmiter={this.emmiter}
 						/>
