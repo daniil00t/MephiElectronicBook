@@ -18,6 +18,10 @@
 	max-width: 400px;
 	margin-right: 10%;
 }
+.tableWrap .types{
+	width: 100px;
+	margin-right: 10%;
+}
 .table-wrap{
 	width: 100%;
 	padding: 0 30px;
