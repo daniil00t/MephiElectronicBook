@@ -9,7 +9,7 @@ import { Header } from "./Header.js";
 import { Schedule } from "./Schedule.js";
 import { PanelTeacher } from "./PanelTeacher.js";
 import { Footer } from "./Footer.js";
-import Report from "./Report.jsx";
+import Report from "./Report/index.js";
 import EventEmmiter from "../../EventEmmiter.js";
 
 // Styles

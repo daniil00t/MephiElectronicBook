@@ -2,10 +2,10 @@ import React from 'react';
 import { ButtonGroup, ToggleButton, Table } from "react-bootstrap";
 import { 
 	getReport, 
-	setReport } from "../../api.js";
-
-import "../../styles/Report.css";
-import * as CONFIG from "../../config.json";
+	setReport } from "../../../api.js";
+import ItemTable from "./ItemTable.jsx";
+import "../../../styles/Report.css";
+import * as CONFIG from "../../../config.json";
 
 export default class Report extends React.Component {
 
@@ -25,18 +25,16 @@ export default class Report extends React.Component {
 				name: "",
 				thead: [],
 				meta: {},
-				data: [[]]
+				data: []
 			},
 			// state for items table
-			stateEdit: false
+			stateChanged: false
 		};
 		this.emmiter = this.props.emmiter;
 		this.listen = this.listen.bind(this);
-		this.listen();
 	}
 	isValidGetRequest(req){
 		let access = false;
-		console.log(req);
 		if(typeof req.nameTeacher 				!== "undefined" && req.nameTeacher 			!= "" &&
 				typeof req.nameGroup 			!== "undefined" && req.nameGroup 			!= "" &&
 				typeof req.nameSubject 			!== "undefined" && req.nameSubject 			!= "" &&
@@ -58,6 +56,7 @@ export default class Report extends React.Component {
 				typeReport: this.state.typeReport
 			}, updateObject), data => {
 				this.setState({table: data});
+            this.listen();
 			}, err => {
 				console.error(err);
 			})
@@ -71,6 +70,18 @@ export default class Report extends React.Component {
 			this.setState({typeReport: data.data});
 			this.getReportWithAccess({typeReport: data.data});
 		});
+      let self = this;
+      this.emmiter.on("changeReport", change => {
+         let table = self.state.table;
+         if(Array.isArray(table.data[change.row])){
+            table.data[+change.row][+change.col] = change.value;
+            self.setState({
+               stateChanged: change.state,
+               table: table
+            });
+         }
+         
+      })
 	}
 	componentDidMount(){
 		this.setState({nameTeacher: this.props.name});
@@ -99,7 +110,7 @@ export default class Report extends React.Component {
 		});
 	}
 	changeGroup(e){
-		let group = this.props.groups[+e.target.value];
+		let group = e.target.value;
 		this.setState({nameGroup: group});
 		this.getReportWithAccess({nameGroup: group});
 	}
@@ -107,6 +118,14 @@ export default class Report extends React.Component {
 		this.setState({typeSubject: e.target.value});
 		this.getReportWithAccess({typeSubject: e.target.value});
 	}
+   saveReport(e){
+      console.log(this.state.table);
+      setReport(this.state.table, pb => {
+         console.log(pb);
+      }, err => {
+         throw err;
+      })
+   }
 	PanelTable(props){
 		let groups 	= [];
 		let types 	= [];
@@ -145,8 +164,8 @@ export default class Report extends React.Component {
 						{
 							groups.map((el, index) => 
 								index == props.self.nameGroup ?
-								<option selected value={index}>{el}</option> :
-								<option value={index}>{el}</option>
+								<option selected value={el}>{el}</option> :
+								<option value={el}>{el}</option>
 							)
 						}
 					</select>
@@ -160,27 +179,15 @@ export default class Report extends React.Component {
 		            value={radio.alias}
 		            checked={props.self.state.typeReport === radio.alias}
 		            onChange={(e) => props.self.toggleTypeTable(e.currentTarget.value)}
-		          >
+		          > 
 		            {radio.name}
 		          </ToggleButton>
 		        ))}
 		      </ButtonGroup>
+            <button style={props.self.state.stateChanged ? {display: "block"} : {display: "none"}} onClick={props.self.saveReport.bind(props.self)}>Save</button>
 		    </div>
 	    </div>
 		);
-	}
-
-	ItemTable(props){
-		let stateItem = props.self.state.stateEdit;
-		let inverseState = () => {
-			props.self.setState({stateEdit: !stateItem})
-		};
-		console.log(stateItem);
-		if(stateItem){
-			return (<td onClick={inverseState}><input className="item-data" value={props.data.element}/></td>);
-		}else{
-			return (<td onClick={inverseState}><span className="item-data">{props.data.element}</span></td>);
-		}
 	}
 	render() {
 		// console.log(this.getDates("03.03.21", [0, 1, 0, 0, 1, 1], 20));
@@ -188,6 +195,7 @@ export default class Report extends React.Component {
 		// this.getReportWithAccess({});
 		return (
 			<div className="table-wrap">
+            <ItemTable />
 				<div className="TABLE">
 					<this.PanelTable
 						self={this}
@@ -206,16 +214,17 @@ export default class Report extends React.Component {
 					  </thead>
 					  <tbody>
 						  {
-						  	this.state.table.data.map((row, indexRow) => 
+						  	this.state.table.data.map((row, Irow) => 
 						  		<tr>
 							  		{
-							  			row.map((el, indexColumn) => <this.ItemTable self={this} data={{indexRow: indexRow, indexColumn: indexColumn, element: el}} />)
+							  			row.map((el, Icol) => <ItemTable emmiter={this.emmiter} row={Irow} col={Icol} value={el} />)
 							  		}
 						  		</tr>
 						  	)
 						  }
 					  </tbody>
 					</Table>
+               
 				</div>
 			</div>
 		);
