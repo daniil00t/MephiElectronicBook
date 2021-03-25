@@ -1,4 +1,5 @@
 from Parser import *
+from Dates import *
 import re
 import json
 
@@ -40,3 +41,11 @@ def print_json(data):
 # 	getScheduleTeacher(data = linkers.getLinkersListTeacher(debug=False),
 # 	debug=True)
 # )
+
+print(dates.get_dates_update(
+	[1, 0, 1, 0, 0, 1],
+	"22.03.2021",
+	"17.04.2021",
+	# pattern = "%d.%m.%Y",
+	# count_days = 4
+))
