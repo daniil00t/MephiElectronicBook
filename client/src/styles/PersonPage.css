@@ -240,6 +240,7 @@ h4.schedule-name{
 	align-items: center;
 	justify-content: center;
 	margin: 20px 0;
+	padding: 0 0 70px 0;
 }
 .card{
 
@@ -277,4 +278,3 @@ footer p{
 span.markFooterGray{
 	color: #999;
 }
-

@@ -7,8 +7,13 @@ import ItemTable from "./ItemTable.jsx";
 import "../../../styles/Report.css";
 import * as CONFIG from "../../../config.json";
 
-export default class Report extends React.Component {
+// Redux is used
+import { connect } from "react-redux"
+import { changeTypeReport } from "../../../redux/actions"
 
+
+
+class Report extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -31,6 +36,7 @@ export default class Report extends React.Component {
 			stateChanged: false
 		};
 		this.emmiter = this.props.emmiter;
+		// this.listen();
 		this.listen = this.listen.bind(this);
 	}
 	isValidGetRequest(req){
@@ -67,6 +73,7 @@ export default class Report extends React.Component {
 	}
 	listen(){
 		this.emmiter.on("changeTypeTable", data => {
+			console.log(data.data);
 			this.setState({typeReport: data.data});
 			this.getReportWithAccess({typeReport: data.data});
 		});
@@ -90,6 +97,7 @@ export default class Report extends React.Component {
 
 	toggleTypeTable(type){
 		this.setState({typeReport: type});
+		this.props.changeTypeReport(type)
 		this.getReportWithAccess({typeReport: type});
 	}
 	replaceChar(el){
@@ -135,7 +143,13 @@ export default class Report extends React.Component {
 		let TYPES = props.compactSchedule.reduce((acc, cur) => {
 			return [...acc, cur.types];
 		}, []);
-		let indexName = names.indexOf(props.self.state.nameSubject);
+
+
+		let indexName;
+		~names.indexOf(props.self.state.nameSubject) ? 
+			indexName = names.indexOf(props.self.state.nameSubject):
+			indexName = names.indexOf(props.self.props.report.subject);
+
 		if(props.self.state.nameSubject != "" ){
 			groups = props.compactSchedule[indexName].groups;
 			types = props.compactSchedule[indexName].types;
@@ -147,7 +161,7 @@ export default class Report extends React.Component {
 						<option value={-1}>Choose subject</option>
 						{
 							names.map((el, index) => 
-								index == props.self.nameSubject ?
+								index == indexName ?
 								<option selected value={index}>{`${el} [${TYPES[index]}]`}</option> :
 								<option value={index}>{`${el} [${TYPES[index]}]`}</option>
 							)
@@ -172,12 +186,12 @@ export default class Report extends React.Component {
 					<ButtonGroup toggle>
 		        {CONFIG.TYPES_REPORTS.map((radio, idx) => (
 		          <ToggleButton
-					variant="light"
+						variant="light"
 		            key={idx}
 		            type="radio"
 		            name="radio"
 		            value={radio.alias}
-		            checked={props.self.state.typeReport === radio.alias}
+		            checked={props.self.props.report.typeReport === radio.alias}
 		            onChange={(e) => props.self.toggleTypeTable(e.currentTarget.value)}
 		          > 
 		            {radio.name}
@@ -230,3 +244,12 @@ export default class Report extends React.Component {
 		);
 	}
 }
+
+const mapStateToProps = state => ({
+	report: state.report
+})
+const mapDispatchToProps = dispatch => ({
+	changeTypeReport: type => dispatch(changeTypeReport(type))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Report)

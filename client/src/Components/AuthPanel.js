@@ -9,7 +9,11 @@ import { getListTeachers } from "../api.js";
 // import styles
 import "../styles/AuthPanel.css";
 
-export class AuthPanel extends React.Component {
+// use redux for change global name teacher
+import { connect } from "react-redux"
+import { changeNameTeacher, changeStateLogged, showNotification } from "../redux/actions"
+
+class AuthPanel extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -23,18 +27,29 @@ export class AuthPanel extends React.Component {
 	}
 
 	componentDidMount() {
-		getListTeachers(schedule => {
-			this.setState({listTeachers: schedule.data});
+		console.log(this.props);
+		getListTeachers(teachers => {
+			this.setState({listTeachers: teachers.data});
 		}, (err) => {
-			console.log(err);
+			this.props.showNotification({
+				title: "Error!",
+				content: "Please, check connect to server.",
+				type: "error"
+			})
 		});
 	}
 	handleLogin(e){
 		Cookies.set("id", this.state.id);
+		this.props.changeStateLogged()
 	}
 
 	handleChangeName(e){
-		this.setState({id: +e.target.value});
+		console.dir(+e.target.value)
+		this.setState({id: e.target.value});
+
+		(+e.target.value != -1) ?
+			this.props.changeNameTeacher(this.state.listTeachers[+e.target.value - 1][1]):
+			this.props.changeNameTeacher("")
 	}
 	render() {
 		return (
@@ -56,6 +71,15 @@ export class AuthPanel extends React.Component {
 					</Link>
 				</div>
 			</main>
-			);
-		}
+		);
 	}
+}
+
+const mapDispatchToProps = dispatch => ({
+	changeNameTeacher: name => dispatch(changeNameTeacher(name)),
+	changeStateLogged: () => dispatch(changeStateLogged()),
+	showNotification: (payload) => dispatch(showNotification(payload))
+})
+
+
+export default connect(null, mapDispatchToProps)(AuthPanel)
