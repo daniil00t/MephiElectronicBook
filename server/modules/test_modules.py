@@ -1,4 +1,5 @@
 from Parser import *
+from Dates import *
 import re
 import json
 
@@ -7,11 +8,7 @@ def print_json(data):
 
 
 # print_json(
-# 	linkers.getLinkersListTeacher(
-# 		main_link = "https://home.mephi.ru/ru/people", 
-# 		endProccess=3.6,
-# 		debug=False
-# 	)
+# 	linkers.getLinkersListTeacher(endProccess=1, debug=True)
 # )
 
 # print_json(getListLearners([
@@ -19,13 +16,12 @@ def print_json(data):
 # 	{'name': 'Б20-102', 'href': 'https://home.mephi.ru/study_groups/11123/schedule'}, 
 # 	# {'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'},
 # 	{'name': 'Б20-103', 'href': 'https://home.mephi.ru/study_groups/11124/schedule'}
-# ], {"login": "sdm009", "password": "P101119767688"}, debug=True))
+# ], {"login": "sdm129", "password": "е131147675234"}, debug=True))
 
 
 
 # print_json(getScheduleTeacher(data = linkers.getLinkersListTeacher(
-# 	main_link = "https://home.mephi.ru/ru/people", 
-# 	endProccess=3.8
+# 	endProccess=1, debug=True
 # ), debug=True))
 
 # print(linkers.getLinkersListTeacher(
@@ -41,7 +37,15 @@ def print_json(data):
 # ], debug=True))
 
 
-print_json(
-	getScheduleTeacher(data = linkers.getLinkersListTeacher(debug=False),
-	debug=True)
-)
+# print_json(
+# 	getScheduleTeacher(data = linkers.getLinkersListTeacher(debug=False),
+# 	debug=True)
+# )
+
+print(dates.get_dates_update(
+	[1, 0, 1, 0, 0, 1],
+	"22.03.2021",
+	"17.04.2021",
+	# pattern = "%d.%m.%Y",
+	# count_days = 4
+))

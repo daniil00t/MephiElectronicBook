@@ -1,0 +1,19 @@
+h2.home_welcome{
+   margin: 20px 0;
+   padding: 0;
+}
+.button_links{
+   margin-top: 20px;
+}
+.wrap_links{
+   width: 100%;
+   display: flex;
+   justify-content: space-between;
+}
+.dfjcc{
+   display: flex;
+   justify-content: center;
+}
+.card_home{
+   margin-top: 30px;
+}

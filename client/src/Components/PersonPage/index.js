@@ -5,19 +5,21 @@ import {Card, ListGroup} from 'react-bootstrap';
 
 // Components
 import { getScheduleTeacher } from "../../api.js";
-import { Header } from "./Header.js";
+import Header from "./Header";
 import { Schedule } from "./Schedule.js";
 import { PanelTeacher } from "./PanelTeacher.js";
 import { Footer } from "./Footer.js";
-import Report from "./Report.jsx";
+import Report from "./Report";
 import EventEmmiter from "../../EventEmmiter.js";
 
 // Styles
 import "../../styles/PersonPage.css";
+import { connect } from 'react-redux';
+import { changeSubject } from "../../redux/actions"
 
 
 
-export class PersonPage extends React.Component {
+class PersonPage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -124,6 +126,7 @@ export class PersonPage extends React.Component {
 
 
 	Switcher(self){
+		console.log(self.props)
 		switch(this.props.match){
 			case "main": {
 				return (
@@ -140,13 +143,13 @@ export class PersonPage extends React.Component {
 			case "groups": {
 				return <this.ListGroups 
 					groups={this.state.groups} 
-					handleClickOnLink={index => this.setState({activeGroupId: index})}
+					handleClickOnLink={subject => self.props.changeSubject(subject)}
 					/>;
 			};break;
 			case "subjects": {
 				return <this.ListSubjects 
 					subjects={this.state.subjects} 
-					handleClickOnLink={index => this.setState({activeSubjectId: index})} 
+					handleClickOnLink={subject => self.props.changeSubject(subject)} 
 					/>;
 			};break;
 			case "table-score":
@@ -213,7 +216,7 @@ export class PersonPage extends React.Component {
 								<Link 
 									data_index={index} 
 									onClick={
-										e => props.handleClickOnLink(+e.target.attributes.data_index.value)
+										e => props.handleClickOnLink(props.subjects[+e.target.attributes.data_index.value])
 									} 
 									className="list-group-item" 
 									to="/personalPage/tables/att"
@@ -239,3 +242,9 @@ export class PersonPage extends React.Component {
 		);
 	}
 }
+
+const mapDispatchToProps = dispatch => ({
+	changeSubject: subject => dispatch(changeSubject(subject))
+})
+
+export default connect(null, mapDispatchToProps)(PersonPage)
