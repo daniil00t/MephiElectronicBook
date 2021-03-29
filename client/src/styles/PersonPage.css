@@ -34,8 +34,16 @@ ul.navbar-nav.ml-auto li a{
 	border-radius: 3px;
 	text-decoration: none;
 }
-
-
+.spanLikeLink{
+	color: #007bff;
+	text-decoration: none;
+	background-color: transparent;
+}
+.spanLikeLink:hover {
+	color: #0056b3;
+	text-decoration: underline;
+	cursor: pointer;
+}
 main{
   flex-direction: column;
 
@@ -191,6 +199,7 @@ h4.schedule-name{
 	margin: 0 10px;
 	font-family: RobotoRegular;
 	min-width: 150px;
+	cursor: pointer;
 }
 
 .lessons .lesson .groups{

@@ -1,6 +1,6 @@
 // данный модуль предполагает наличие всех необходимых функций для вд с api
-import axios from 'axios';
-import * as CONFIG from "./config.json";
+import axios from 'axios'
+import * as CONFIG from "./config.json"
 
 const sendRequestGET = (url, data, callbackSuccess, callbackError) => {
 	axios.get(url, { params: data })

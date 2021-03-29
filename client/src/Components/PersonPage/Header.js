@@ -3,12 +3,11 @@ import { Nav, Navbar, NavDropdown, Form, FormControl, Button } from 'react-boots
 import { Link } from "react-router-dom";
 
 // Redux is used
-import { useDispatch, useSelector, connect } from "react-redux"
+import { useDispatch, connect } from "react-redux"
 import { changeTypeReport } from "../../redux/actions"
 
 
 const Header = (props) => {
-	const emmiter = props.emmiter
 	const dispatch = useDispatch()
 
 

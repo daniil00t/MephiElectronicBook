@@ -1,7 +1,10 @@
-import React from 'react'
-import { Link } from "react-router-dom"
-import { Button, Card } from "react-bootstrap"
-import Cookies from "js-cookie"
+import React 		from 'react'
+import { Link } 	from "react-router-dom"
+import { 
+	Button, 
+	Card } 			from "react-bootstrap"
+import Cookies		from "js-cookie"
+
 import "../styles/Home.css"
 
 export default class Home extends React.Component {
@@ -12,7 +15,7 @@ export default class Home extends React.Component {
 	switcher(){
 		if(Cookies.get("id") != -1){
 			return (
-					<Link to="/personalPage" class="button_links">
+					<Link to="/personalPage" className="button_links">
 						<Button variant="primary">
 							На страницу
 						</Button>
@@ -21,12 +24,12 @@ export default class Home extends React.Component {
 		}
 		else{
 			return (
-				<Link to="/auth" class="button_links">
+				<Link to="/auth" className="button_links">
 					<Button variant="success">
 						Авторизация
 					</Button>
 				</Link>
-		)
+			)
 		}
 	}
 	ItemCards(props){
@@ -47,7 +50,7 @@ export default class Home extends React.Component {
 		return (
 			<div className="container">
 					<div className="row wrap_links">
-						<h2 class="home_welcome">Добро пожаловать в ELBook!</h2>
+						<h2 className="home_welcome">Добро пожаловать в ELBook!</h2>
 						{this.switcher()}
 					</div>
 					<hr />
@@ -84,6 +87,6 @@ export default class Home extends React.Component {
 						</div>
 					</div>
 			</div>
-		);
+		)
 	}
 }

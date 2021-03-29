@@ -1,7 +1,7 @@
 // default imports libs
-import React from 'react';
-import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
+import React 		from 'react';
+import { Link } 	from "react-router-dom";
+import Cookies 	from "js-cookie";
 
 // import modules
 import { getListTeachers } from "../api.js";
@@ -14,7 +14,6 @@ import { connect } from "react-redux"
 import { changeNameTeacher, changeStateLogged, showNotification } from "../redux/actions"
 
 class AuthPanel extends React.Component {
-
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -30,13 +29,14 @@ class AuthPanel extends React.Component {
 		console.log(this.props);
 		getListTeachers(teachers => {
 			this.setState({listTeachers: teachers.data});
-		}, (err) => {
+		}, err => {
+			console.error(err)
 			this.props.showNotification({
 				title: "Error!",
 				content: "Please, check connect to server.",
 				type: "error"
 			})
-		});
+		})
 	}
 	handleLogin(e){
 		Cookies.set("id", this.state.id);
@@ -61,7 +61,7 @@ class AuthPanel extends React.Component {
 							this.state.listTeachers.map(teacher => <option value={teacher[0]}>{teacher[1]}</option>)
 						}
 					</select>
-					<Link 
+					<Link
 						to="/personalPage" 
 						style={this.state.id == -1 ? {pointerEvents: "none"} : {}} 
 						className="btn btn-primary go" 
@@ -78,7 +78,7 @@ class AuthPanel extends React.Component {
 const mapDispatchToProps = dispatch => ({
 	changeNameTeacher: name => dispatch(changeNameTeacher(name)),
 	changeStateLogged: () => dispatch(changeStateLogged()),
-	showNotification: (payload) => dispatch(showNotification(payload))
+	showNotification: payload => dispatch(showNotification(payload))
 })
 
 

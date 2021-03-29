@@ -4,6 +4,7 @@ import {
 	getReport, 
 	setReport } from "../../../api.js";
 import ItemTable from "./ItemTable.jsx";
+import PanelReport from "./PanelReport"
 import "../../../styles/Report.css";
 import * as CONFIG from "../../../config.json";
 
@@ -134,84 +135,12 @@ class Report extends React.Component {
          throw err;
       })
    }
-	PanelTable(props){
-		let groups 	= [];
-		let types 	= [];
-		let names = props.compactSchedule.reduce((acc, cur) => {
-			return [...acc, cur.name];
-		}, []);
-		let TYPES = props.compactSchedule.reduce((acc, cur) => {
-			return [...acc, cur.types];
-		}, []);
-
-
-		let indexName;
-		~names.indexOf(props.self.state.nameSubject) ? 
-			indexName = names.indexOf(props.self.state.nameSubject):
-			indexName = names.indexOf(props.self.props.report.subject);
-
-		if(props.self.state.nameSubject != "" ){
-			groups = props.compactSchedule[indexName].groups;
-			types = props.compactSchedule[indexName].types;
-		}
-		return (
-			<div className="panelHeadTable">
-				<div className="tableWrap">
-					<select onChange={e => props.self.changeSubject(e)} className="form-control subjects">
-						<option value={-1}>Choose subject</option>
-						{
-							names.map((el, index) => 
-								index == indexName ?
-								<option selected value={index}>{`${el} [${TYPES[index]}]`}</option> :
-								<option value={index}>{`${el} [${TYPES[index]}]`}</option>
-							)
-						}
-					</select>
-					<select onChange={e => props.self.changeType(e)} className="form-control types" style={{display: types.length > 1 ? "block" : "none"}}>
-						<option value={undefined}>Choose type</option>
-						{
-							types.map((type, index) => <option value={type}>{type}</option>)
-						}
-					</select>
-					<select onChange={e => props.self.changeGroup(e)} className="form-control groups">
-						<option value={-1}>Choose group</option>
-						{
-							groups.map((el, index) => 
-								index == props.self.nameGroup ?
-								<option selected value={el}>{el}</option> :
-								<option value={el}>{el}</option>
-							)
-						}
-					</select>
-					<ButtonGroup toggle>
-		        {CONFIG.TYPES_REPORTS.map((radio, idx) => (
-		          <ToggleButton
-						variant="light"
-		            key={idx}
-		            type="radio"
-		            name="radio"
-		            value={radio.alias}
-		            checked={props.self.props.report.typeReport === radio.alias}
-		            onChange={(e) => props.self.toggleTypeTable(e.currentTarget.value)}
-		          > 
-		            {radio.name}
-		          </ToggleButton>
-		        ))}
-		      </ButtonGroup>
-            <button style={props.self.state.stateChanged ? {display: "block"} : {display: "none"}} onClick={props.self.saveReport.bind(props.self)}>Save</button>
-		    </div>
-	    </div>
-		);
-	}
 	render() {
-		// console.log(this.getDates("03.03.21", [0, 1, 0, 0, 1, 1], 20));
-		// console.log(this.props.state);
-		// this.getReportWithAccess({});
 		return (
 			<div className="table-wrap">
             <ItemTable />
 				<div className="TABLE">
-					<this.PanelTable
+					<PanelReport
 						self={this}
 						name={this.props.name}
 						groups={this.props.groups}
@@ -238,7 +167,6 @@ class Report extends React.Component {
 						  }
 					  </tbody>
 					</Table>
-               
 				</div>
 			</div>
 		);

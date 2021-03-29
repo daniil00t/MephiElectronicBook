@@ -1,17 +1,34 @@
-import { GLOBAL_CHANGE_NAME, GLOBAL_TOGGLE_LOGGED } from "./types"
+import { 
+   GLOBAL_INIT,
+   GLOBAL_CHANGE_NAME_TEACHER, 
+   GLOBAL_TOGGLE_LOGGED
+} from "./types"
 
-export const nameTeacher = (state = "Загрузка...", action) => {
-   switch(action.type){
-      case GLOBAL_CHANGE_NAME:
-         return action.payload
-      default:
-         return state
-   }
+let startState = {
+   nameTeacher: "Загрузка...", 
+   linkOnHomeMephi: "http://home.mephi.ru/",
+   isLogged: false,
+   countSubject: 0,
+   countGroups: 0
 }
-export const logged = (state = false, action) => {
+
+export const GLOBAL = (state = startState, action) => {
    switch(action.type){
+      case GLOBAL_CHANGE_NAME_TEACHER:
+         return {
+            ...state,
+            nameTeacher: action.payload
+         }
       case GLOBAL_TOGGLE_LOGGED:
-         return !state.logged
+         return {
+            ...state,
+            isLogged: !state.isLogged
+         }
+      case GLOBAL_INIT:
+         return {
+            ...state,
+            ...action.payload
+         }
       default:
          return state
    }
