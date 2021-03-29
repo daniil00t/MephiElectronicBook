@@ -1,15 +1,16 @@
 import { combineReducers } from 'redux'
-import { nameTeacher, logged } from "./global"
+import { GLOBAL } from "./global"
+import { app } from "./app"
 import { reports } from "./reports"
-import { notifier } from "./notification"
+import { scheduler } from "./schedule"
 
 
 
 const rootReducer = combineReducers({
-   report: reports,
-   nameTeacher,
-   notification: notifier,
-   isLogged: logged
+	GLOBAL,
+	app: app,
+	report: reports,
+	schedule: scheduler
 })
  
 export default rootReducer

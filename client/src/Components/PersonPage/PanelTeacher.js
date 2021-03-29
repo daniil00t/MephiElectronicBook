@@ -10,26 +10,25 @@ export class PanelTeacher extends React.Component {
 
 	validNameGroups(count){
 		switch(count % 10){
-			case 1: return "Группа";break;
+			case 1: return "Группа";
 			case 2:
 			case 3:
-			case 4: return "Группы";break;
+			case 4: return "Группы";
 			default:
 				return "Групп";
 		}
 	}
 	validNameSubjects(count){
 		switch(count % 10){
-			case 1: return "Предмет";break;
+			case 1: return "Предмет";
 			case 2:
 			case 3:
-			case 4: return "Предмета";break;
+			case 4: return "Предмета";
 			default:
 				return "Предметов";
 		}
 	}
 	render() {
-		// console.log(this.validNameGroup(21));
 		return (
 			<div className="teacher-panel">
 				<div className="wrap-teacher-panel">
@@ -45,7 +44,7 @@ export class PanelTeacher extends React.Component {
 					</span>
 
 					<span className="right-floating">
-						<a href="#" className="link-homemephi">На страницу home.mephi.ru</a>
+						<a href={this.props.link} className="link-homemephi">На страницу home.mephi.ru</a>
 						<Link to="/auth"  className="logout" onClick={(e) => Cookies.set("id", -1)}>Выйти</Link>
 					</span>
 				</div>

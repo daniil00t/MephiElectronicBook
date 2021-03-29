@@ -4,16 +4,19 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import './styles/App.css';
-import PersonPage from "./Components/PersonPage"
-import AuthPanel from "./Components/AuthPanel"
-import { Footer } from "./Components/PersonPage/Footer"
-import Home from "./Components/Home";
+
+import PersonPage 	from "./Components/PersonPage"
+import AuthPanel 		from "./Components/AuthPanel"
+import Home 			from "./Components/Home";
+import { Footer } 	from "./Components/PersonPage/Footer"
+import Notification 	from "./Components/PersonPage/Notification"
+
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Notification from "./Components/PersonPage/Notification"
+import './styles/App.css';
 
 // use redux
-import { connect, useSelector } from "react-redux"
+import { initGlobal } from "./redux/actions"
+import { connect } from "react-redux"
 
 const App = (props) => {
 	// const notification = useSelector(state => state.notification)
@@ -58,7 +61,10 @@ const App = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-	notification: state.notification
+	notification: state.app.notification
+})
+const mapDispatchToProps = dispatch => ({
+	initGlobal: () => dispatch(initGlobal())
 })
 
 export default connect(mapStateToProps, null)(App);

@@ -1,6 +1,9 @@
 import React from 'react';
+import { connect } from "react-redux"
+import { changeGroup, changeSubject } from '../../redux/actions';
+import "../../styles/PersonPage.css"
 
-export class Schedule extends React.Component {
+class Schedule extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -12,21 +15,7 @@ export class Schedule extends React.Component {
 			default: 		return <div className="type type-none">Доп</div>;
 		}
 	}
-	compactLessons(day){
-		let newDay 				= [];
-		let arrayOfTime 	= [];
-		let iterForNewDay = -1;
-		day.map((lesson, index) => {
-			if(!arrayOfTime.includes(lesson.time)){
-				newDay.push(lesson);
-				arrayOfTime.push(lesson.time);
-				iterForNewDay++;
-			}else{
-				newDay[iterForNewDay].groups = newDay[iterForNewDay].groups.concat(lesson.groups);
-			}
-		});
-		return newDay;
-	}
+
 	sliceName(name){
 		const len = 60;
 		let res = "";
@@ -37,14 +26,14 @@ export class Schedule extends React.Component {
 	}
 
 	Lesson(props){
-		console.log(props.data.even);
+		console.log("PROPS: ", props.self.props);
 		return (
 			<div className="lesson" data-order={`#${1}`}>
 				<div className="time">{props.data.time}</div>
 				{props.self.getType(props.data.type)}
 				<div className="wday-wrap"><div className={`wday wday-${props.data.even}`}></div></div>
-				<div className="name">{props.self.sliceName(props.data.name)}</div>
-				{props.data.groups.map((obj, i) => <a href="#" className='link-group'>{obj}</a>)}
+				<div className="name" onClick={e => props.self.props.changeSubject(props.data.name)}>{props.self.sliceName(props.data.name)}</div>
+				{props.data.groups.map((obj, i) => <span onClick={e => props.self.props.changeGroup(obj)} className='link-group spanLikeLink'>{obj}</span>)}
 				<div className="duration">{props.data.duration == "ALL_SEMESTER" ? "Весь семестр" : props.data.duration}</div>
 				<div className="place" title={props.data.place}>{props.data.place}</div>
 			</div>
@@ -75,6 +64,7 @@ export class Schedule extends React.Component {
 			return <div></div>;
 		}
 	}
+
 	dynamicSort(property) {
     var sortOrder = 1;
     if(property[0] === "-") {
@@ -114,3 +104,13 @@ export class Schedule extends React.Component {
 		);
 	}
 }
+
+const mapStateToProps = state => ({
+	schedule: state.schedule.data
+})
+
+const mapDispatchToProps = dispatch => ({
+	changeGroup: group => dispatch(changeGroup(group)),
+	changeSubject: subject => dispatch(changeSubject(subject))
+})
+export default connect(mapStateToProps, mapDispatchToProps)(Schedule)

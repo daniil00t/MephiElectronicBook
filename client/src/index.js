@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider} from 'react-redux'
-import { createStore } from 'redux'
-import reducers from './redux/reducers'
+import React            from 'react';
+import ReactDOM         from 'react-dom';
+import { Provider}      from 'react-redux'
+import { createStore }  from 'redux'
+import reducers         from './redux/reducers'
+import reportWebVitals  from './reportWebVitals';
+import App              from './App';
 
 import './styles/index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
 const store = createStore(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 

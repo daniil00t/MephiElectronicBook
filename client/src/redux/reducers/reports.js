@@ -2,13 +2,15 @@ import {
    REPORT_CHANGE_TYPE,
    REPORT_CHANGE_SUBJECT,
    REPORT_CHANGE_GROUP,
-   REPORT_CHANGE_TYPE_SUBJECT
+   REPORT_CHANGE_TYPE_SUBJECT,
+   REPORT_SET_DATA
 } from "./types"
 export const reports = (state = {
    subject: "",
    group: "",
-   typeSubject: "",
-   typeReport: ""
+   typeSubject: "0",
+   typeReport: "att",
+   data: {}
 }, action) => {
    switch(action.type){
       case REPORT_CHANGE_TYPE:
@@ -30,6 +32,11 @@ export const reports = (state = {
          return {
             ...state,
             group: action.payload
+         }
+      case REPORT_SET_DATA:
+         return {
+            ...state,
+            data: action.payload
          }
       default: 
          return state

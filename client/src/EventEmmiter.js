@@ -4,18 +4,18 @@ export default class EventEmitter {
   }
 
   on(event, listener) {
-    if (!this.events[event]) {
-      this.events[event] = []
-    }
+    // if (!this.events[event]) {
+    //   this.events[event] = []
+    // }
 
-    this.events[event].push(listener)
+    // this.events[event].push(listener)
   }
 
   emit(event, payload) {
-    if (this.events[event]) {
-      this.events[event].forEach(listener => {
-        listener(payload)
-      })
-    }
+    // if (this.events[event]) {
+    //   this.events[event].forEach(listener => {
+    //     listener(payload)
+    //   })
+    // }
   }
 }

@@ -1,44 +1,47 @@
-import React from 'react';
-import Cookies from "js-cookie";
-import { Link } from "react-router-dom";
-import {Card, ListGroup} from 'react-bootstrap';
+import React 		from 'react'
+import Cookies 	from "js-cookie"
+import { Link } 	from "react-router-dom"
+import { Card, ListGroup } from 'react-bootstrap'
 
 // Components
-import { getScheduleTeacher } from "../../api.js";
-import Header from "./Header";
-import { Schedule } from "./Schedule.js";
-import { PanelTeacher } from "./PanelTeacher.js";
-import { Footer } from "./Footer.js";
-import Report from "./Report";
-import EventEmmiter from "../../EventEmmiter.js";
+import { getScheduleTeacher } 	from "../../api.js"
+import Header 							from "./Header"
+import Schedule 						from "./Schedule.js"
+import { PanelTeacher } 			from "./PanelTeacher.js"
+import { Footer } 					from "./Footer.js"
+import Report 							from "./Report"
+import EventEmmiter					from "../../EventEmmiter.js"
 
 // Styles
-import "../../styles/PersonPage.css";
-import { connect } from 'react-redux';
-import { changeSubject } from "../../redux/actions"
+import "../../styles/PersonPage.css"
+import { connect } from 'react-redux'
+import { 
+	setSchedule, 
+	changeSubject,
+	initGlobal
+ } from "../../redux/actions"
 
 
 
 class PersonPage extends React.Component {
 	constructor(props) {
-		super(props);
+		super(props)
+
+		let id = +Cookies.get("id")
 		this.state = {
-			// main info
-			id: +Cookies.get("id") || -1,
-			name: "",
+			// main
+			id: id || -1,
+
 			// schedule
 			schedule: [],
 			groups: [],
 			subjects: [],
 			durations: [],
 			compactSchedule: [],
-			// for tables
-			activeGroupId: -1,
-			activeSubjectId: -1
 		}
 		this.emmiter = new EventEmmiter();
-		console.clear();
 	}
+
 	addUniqueItem(items, arr){
 		items.map(item => { if(arr.indexOf(item) === -1) arr.push(item) });
 		return arr;
@@ -98,6 +101,7 @@ class PersonPage extends React.Component {
 		};
 	}
 	componentDidMount(){
+		console.log(this.props)
 		if(this.state.id != -1){
 			let id = this.state.id;
 			getScheduleTeacher(id, data => {
@@ -107,6 +111,9 @@ class PersonPage extends React.Component {
 				if(Cookies.get("id") == -1){
 					Cookies.set("id", this.props.id);
 				}
+
+				this.props.updateSchedule(schedule)
+
 				this.setState({
 					name: name,
 					schedule: schedule,
@@ -115,12 +122,21 @@ class PersonPage extends React.Component {
 					durations: this.solveCounts(schedule).durations,
 					compactSchedule: this.solveCounts(schedule).compacts
 				});
+
+				// Init global data redux
+				this.props.initGlobal({
+					nameTeacher: name,
+					isLogged: Cookies.get("id") != -1,
+					countSubject: this.solveCounts(schedule).subjects.length,
+					countGroups:  this.solveCounts(schedule).groups.length
+				})
+
 			}, err => {
 				console.log(err);
 			});
 		}
 		else{
-			document.location.replace('/auth');
+			// document.location.replace('/auth');
 		}
 	}
 
@@ -132,30 +148,31 @@ class PersonPage extends React.Component {
 				return (
 					<main>
 						<PanelTeacher 
-							countSubject={this.solveCounts(this.state.schedule).subjects.length} 
-							countGroups={this.solveCounts(this.state.schedule).groups.length} 
-							name={this.state.name}
+							countSubject={this.props.countSubjects} 
+							countGroups={this.props.countGroups} 
+							name={this.props.nameTeacher}
+							link={this.props.linkOnHomeMephi}
 						/>
-						<Schedule schedule={this.state.schedule}/>
+						<Schedule/>
 					</main>
 				)
-			};break;
+			}
 			case "groups": {
 				return <this.ListGroups 
 					groups={this.state.groups} 
 					handleClickOnLink={subject => self.props.changeSubject(subject)}
-					/>;
-			};break;
+					/>
+			}
 			case "subjects": {
 				return <this.ListSubjects 
 					subjects={this.state.subjects} 
 					handleClickOnLink={subject => self.props.changeSubject(subject)} 
-					/>;
-			};break;
+					/>
+			}
 			case "table-score":
-				this.emmiter.emit("initReportType", {activeTypeTable: 1});
+				this.emmiter.emit("initReportType", {activeTypeTable: 1})
 			case "table-att":{
-				this.emmiter.emit("initReportType", {activeTypeTable: 0});
+				this.emmiter.emit("initReportType", {activeTypeTable: 0})
 				return (
 					<main>
 						<PanelTeacher 
@@ -173,7 +190,7 @@ class PersonPage extends React.Component {
 						/>
 					</main>
 				)
-			};break;
+			}
 			default:
 				return "Not Found Match";
 		}
@@ -244,7 +261,17 @@ class PersonPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-	changeSubject: subject => dispatch(changeSubject(subject))
+	changeSubject: subject => dispatch(changeSubject(subject)),
+	updateSchedule: schedule => dispatch(setSchedule(schedule)),
+	initGlobal: initState => dispatch(initGlobal(initState))
 })
 
-export default connect(null, mapDispatchToProps)(PersonPage)
+const mapStateToProps = state => ({
+	nameTeacher: state.GLOBAL.nameTeacher,
+	countSubjects: state.GLOBAL.countSubject,
+	countGroups: state.GLOBAL.countGroups,
+	linkOnHomeMephi: state.GLOBAL.linkOnHomeMephi,
+	schedule: state.schedule.data
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(PersonPage)
