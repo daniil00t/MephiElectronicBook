@@ -242,16 +242,18 @@ class DB:
 
 
 
-		cmd   = '''INSERT INTO reports (teacher_id, subject_id,	team_id, type)''' \
-				'''VALUES ({}, {}, {}, \"{}\")''' \
+		cmd   = '''INSERT INTO reports (teacher_id, subject_id,	team_id, subject_type, report_type)''' \
+				'''VALUES ({}, {}, {}, \"{}\", \"{}\")''' \
 				'''ON DUPLICATE KEY UPDATE ''' \
 				'''teacher_id = VALUES(teacher_id),''' \
 				'''subject_id = VALUES(subject_id),''' \
 				'''team_id    = VALUES(team_id),''' \
-				'''type       = VALUES(type)'''.format(
+				'''subject_type = VALUES(subject_type),''' \
+				'''report_type  = VALUES(report_type)'''.format(
 					teacher_id,
 					subject_id,
 					team_id,
+					report_data["subject_type"],
 					report_data["report_type"]
 				)
 		self.__execute(cmd)
@@ -312,7 +314,6 @@ class DB:
 					"count" : student["id"]
 				})
 
-		#self.clear_table("students")
 		self.insert_students(students)
 		
 
@@ -363,7 +364,7 @@ class DB:
 			if self.__cache_exists("teachers_linkers") and not DB_DOWNLOAD_TEACHERS_LINKERS:
 				teachers_linkers = self.__cache_use("teachers_linkers")
 			else:
-				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT, debug=True)
+				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT, debug=False)
 				self.__cache_save("teachers_linkers", teachers_linkers)
 				print("[INFO] teachers_linkers:\n")
 				print_json(teachers_linkers)
@@ -515,10 +516,12 @@ class DB:
 				'''teacher_id = {} AND ''' \
 				'''subject_id = {} AND ''' \
 				'''team_id    = {} AND ''' \
-				'''type       = \"{}\"'''.format(
+				'''subject_type = \"{}\" AND ''' \
+				'''report_type = \"{}\"'''.format(
 					teacher_id,
 					subject_id,
 					team_id,
+					report_data["subject_type"],
 					report_data["report_type"]
 				)
 		result = self.__execute(cmd)

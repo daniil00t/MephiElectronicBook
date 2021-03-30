@@ -24,6 +24,7 @@ class RM():
 				"teacher_name" 		: report_data["nameTeacher"],
 				"subject_name" 		: report_data["nameSubject"],
 				"subject_duration" 	: report_data["durationSubject"],
+				"subject_type" 	    : report_data["typeSubject"],
 				"group_name" 		: report_data["nameGroup"],
 				"report_type" 		: report_data["typeReport"]
 			}
@@ -34,6 +35,7 @@ class RM():
 				"nameTeacher"		: report_data["teacher_name"],
 				"nameSubject"		: report_data["subject_name"],
 				"durationSubject" 	: report_data["subject_duration"],
+				"typeSubject" 	    : report_data["subject_type"],
 				"nameGroup" 		: report_data["group_name"],
 				"typeReport"		: report_data["report_type"]
 			}
@@ -54,32 +56,40 @@ class RM():
 		# 1) get dates
 		#[FEATURE] maybe use list of days?
 		#[FEATURE] what if pattern is empty?
-		pattern = []
-		duration = ""
+		pattern  = [[], [], [], [], [], [],
+					[], [], [], [], [], []]
+
 		for day in schedule:
 			for lesson in day:
-				print("[INFO] Current lesson:", lesson)
-				print("[INFO] Current report", report_data)
+				#[FEATURE] add type
 				if  (lesson["name"] == report_data["subject_name"]) and \
 					(lesson["duration"] == report_data["subject_duration"]) and \
+					(lesson["type"] == report_data["subject_type"]) and \
 					(report_data["group_name"] in lesson["groups"]):
+						
+						time = dates.parse_time(lesson["time"])
+						even = lesson["even"]
+						wday = lesson["wday"]
 
-						duration = lesson["duration"]
+						if even == 0:
+							pattern[wday].append(time)
+							pattern[6 + wday].append(time)
+						else:
+							pattern[6*(even - 1) + wday].append(time)
 
-						pattern.append({
-							"time" : lesson["time"],
-							"even" : lesson["even"],
-							"wday" : lesson["wday"]
-						})
+		for d in pattern:
+			d.sort()
 
-		dates_list = dates.get_dates(pattern, duration)
+		duration = dates.parse_duration(report_data["subject_duration"])
+
+		dates_list = dates.get_dates_times(pattern, duration)
 
 
 		# 2) create empty report
+		# [FEATURE] change thead considering report type (add percent)
 		thead = ["id", "name"]
 		thead.extend(dates_list)
 
-		print_json(students)
 		data = []
 		for s in students:
 			row = [s["id"], s["name"]]
@@ -93,7 +103,6 @@ class RM():
 		}
 		report.update(front_report_data)
 
-		print_json(report)
 		return report
 
 
@@ -153,7 +162,6 @@ class RM():
 			report_id = db.get_report_id(report_data)
 
 		if report_id:
-			print_json(report)
 			self.__write(report_id, report)
 			return True
 		else:

@@ -42,10 +42,21 @@ def print_json(data):
 # 	debug=True)
 # )
 
-print(dates.get_dates_update(
-	[1, 0, 1, 0, 0, 1],
-	"22.03.2021",
-	"17.04.2021",
-	# pattern = "%d.%m.%Y",
-	# count_days = 4
-))
+# print(dates.get_dates_update(
+# 	[1, 0, 1, 0, 0, 1],
+# 	"22.03.2021",
+# 	"17.04.2021",
+# 	# pattern = "%d.%m.%Y",
+# 	# count_days = 4
+# ))
+
+
+# # test dates
+# print(dates.get_dates([], "(28.02.2021 - 10.05.2021)"))
+# print(dates.get_dates([], "(28.02.2021 10.05.2021)"))
+# print(dates.get_dates([], "()"))
+# print(dates.get_dates([], "ALL_SEMESTER"))
+# print(dates.get_dates([], "(28.02.2021)")) 
+# print(dates.get_dates([], ""))
+
+get_dates(None, None)
