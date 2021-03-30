@@ -37,8 +37,6 @@ class Report extends React.Component {
 			stateChanged: false
 		};
 		this.emmiter = this.props.emmiter;
-		// this.listen();
-		this.listen = this.listen.bind(this);
 	}
 	isValidGetRequest(req){
 		let access = false;
@@ -63,7 +61,6 @@ class Report extends React.Component {
 				typeReport: this.state.typeReport
 			}, updateObject), data => {
 				this.setState({table: data});
-            this.listen();
 			}, err => {
 				console.error(err);
 			})
@@ -71,25 +68,6 @@ class Report extends React.Component {
 	}
 	updateObject(baseObject, appendObject){
 		return Object.assign({}, baseObject, appendObject);
-	}
-	listen(){
-		this.emmiter.on("changeTypeTable", data => {
-			console.log(data.data);
-			this.setState({typeReport: data.data});
-			this.getReportWithAccess({typeReport: data.data});
-		});
-      let self = this;
-      this.emmiter.on("changeReport", change => {
-         let table = self.state.table;
-         if(Array.isArray(table.data[change.row])){
-            table.data[+change.row][+change.col] = change.value;
-            self.setState({
-               stateChanged: change.state,
-               table: table
-            });
-         }
-         
-      })
 	}
 	componentDidMount(){
 		this.setState({nameTeacher: this.props.name});

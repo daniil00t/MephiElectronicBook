@@ -14,11 +14,15 @@
 	justify-content: center;
 	height: 100%;
 }
-.tableWrap .groups, .subjects{
-	max-width: 400px;
+.tableWrap .subjectToGroup{
+	display: flex;
+	flex-direction: row;
+}
+.tableWrap .subjectToGroup .groups, .subjects{
+	max-width: 60%;
 	margin-right: 10%;
 }
-.tableWrap .types{
+.tableWrap .subjectToGroup .types{
 	width: 100px;
 	margin-right: 10%;
 }

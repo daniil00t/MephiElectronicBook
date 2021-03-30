@@ -9,12 +9,27 @@ ul.navbar-nav.ml-auto li a{
 	margin-right: 15px;
 }
 
+#dropdown-button-drop-right{
+	width: 100%;
+	background-color: #fff;
+	color: #000;
+	text-align: left;
+	border: none;
+	border-bottom: 1px solid rgb(207, 207, 207);
+	outline: none;
+	box-shadow: none;
+	transition: all ease-in-out .1s;
+	border-radius: 0;
+}
+#dropdown-button-drop-right:hover{
+	background-color: rgb(240, 240, 240);
 
+}
+.dropdown-item.active{
+	background-color: #fff !important;
+}
 /*Styles fot lk page*/
 
-.person-page-container{
-	/*height: 100%;*/
-}
 .mark-span{
 	color: #159f46;
 }

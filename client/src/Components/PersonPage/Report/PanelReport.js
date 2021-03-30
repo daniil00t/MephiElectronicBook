@@ -1,60 +1,150 @@
 import { ButtonGroup, ToggleButton } from "react-bootstrap"
 import { connect } from "react-redux"
 import * as CONFIG from "../../../config.json"
-import { changeTypeReport, changeSubject, changeGroup, changeTypeSubject } from "../../../redux/actions"
+import { 
+   changeTypeReport, 
+   changeSubject, 
+   changeGroup, 
+   changeTypeSubject
+} from "../../../redux/actions"
+
+const SubjectToGroup = (props) => {
+   const subjects = props.schedule.subjectToGroup.reduce((acc, cur) => {
+      return [...acc, cur.name]
+   }, [])
+   var types = []
+
+   if (props.report.subject != "" && props.report.group != ""){
+      var indexSubject = subjects.indexOf(props.report.subject)
+      var groups = props.schedule.subjectToGroup[indexSubject].groups.reduce((acc, cur) => {
+         return [...acc, cur]
+      }, [])
+   
+      
+      var type = props.report.typeSubject
+      if(props.report.typeSubject == "undefined"){
+         types = props.schedule.subjectToGroup[indexSubject].types
+      }
+   }
+   else{
+      var indexSubject = -1
+      var groups = []
+   }
+   
+
+   return (
+      <div className="subjectToGroup">
+         <select className="form-control subjects">
+            <option value={-1}>Выберете предмет</option>
+            {
+               subjects.map((el, index) => 
+                  index == indexSubject ?
+                  <option selected value={index}>{`${el} [${types}]`}</option> :
+                  <option value={index}>{`${el} [${types}]`}</option>
+               )
+            }
+         </select>
+         {
+            types.length != 0 ?
+               (
+                  <select className="form-control types">
+                     <option value={-1}>Тип</option>
+                     {
+                        types.map((type, index) => <option value={type}>{type}</option>)
+                     }
+                  </select>
+               ):
+               (<></>)
+         }
+         
+         <select className="form-control groups">
+            <option value={-1}>Выберите группу</option>
+            {
+               groups.map((el, index) => 
+                  index == 0 ?
+                  <option selected value={el}>{el}</option> :
+                  <option value={el}>{el}</option>
+               )
+            }
+         </select>
+      </div>
+   )
+}
+const GroupToSubject = (props) => {
+   const groups = props.schedule.groupToSubject.reduce((acc, cur) => {
+      return [...acc, cur.group]
+   }, [])
+
+   if (props.report.subject != "" && props.report.group != ""){
+      var indexGroup = groups.indexOf(props.report.group)
+      var subjects = props.schedule.groupToSubject[indexGroup].subjects.reduce((acc, cur) => {
+         return [...acc, cur]
+      }, [])
+   
+      if(Array.isArray(props.report.types)){
+         const types = props.report.types
+      }else{
+         const type = props.report.types
+      }
+
+      var types = []
+      var type = props.report.typeSubject
+      if(props.report.typeSubject == "undefined"){
+         types = props.schedule.groupToSubject[indexGroup].types
+      }
+   }
+   else{
+      var indexGroup = -1
+      var subjects = []
+   }
+   
+
+   return (
+      <div className="subjectToGroup">
+         <select className="form-control subjects">
+            {
+               groups.map((el, index) => 
+                  index == indexGroup ?
+                  <option selected value={el}>{el}</option> :
+                  <option value={el}>{el}</option>
+               )
+            }
+         </select>
+         {
+            types.length != 0 ?
+               (
+                  <select className="form-control types">
+                     <option value={-1}>Тип</option>
+                     {
+                        types.map((type, index) => <option value={type}>{type}</option>)
+                     }
+                  </select>
+               ):
+               (<></>)
+         }
+         <select className="form-control groups"> 
+            <option value={-1}>Выберете предмет</option>
+            {
+               subjects.map((el, index) => 
+                  index == 0 ?
+                  <option selected value={index}>{`${el} []`}</option> :
+                  <option value={index}>{`${el} []`}</option>
+               )
+            }
+         </select>
+      </div>
+   )
+}
 
 const PanelReport = (props) => {
-   let groups 	= [];
-   let types 	= [];
-   let names = props.compactSchedule.reduce((acc, cur) => {
-      return [...acc, cur.name];
-   }, []);
-
-   let TYPES = props.compactSchedule.reduce((acc, cur) => {
-      return [...acc, cur.types];
-   }, []);
-
-   console.log(props)
-
-   let indexName;
-   ~names.indexOf(props.self.state.nameSubject) ? 
-      indexName = names.indexOf(props.self.state.nameSubject):
-      indexName = names.indexOf(props.self.props.report.subject);
-
-   if(props.self.state.nameSubject != "" ){
-      groups = props.compactSchedule[indexName].groups;
-      types = props.compactSchedule[indexName].types;
-   }
-
    return (
       <div className="panelHeadTable">
          <div className="tableWrap">
-            <select onChange={e => props.self.changeSubject(e)} className="form-control subjects">
-               <option value={-1}>Choose subject</option>
-               {
-                  names.map((el, index) => 
-                     index == indexName ?
-                     <option selected value={index}>{`${el} [${TYPES[index]}]`}</option> :
-                     <option value={index}>{`${el} [${TYPES[index]}]`}</option>
-                  )
-               }
-            </select>
-            <select onChange={e => props.self.changeType(e)} className="form-control types">
-               <option value={undefined}>Choose type</option>
-               {
-                  types.map((type, index) => <option value={type}>{type}</option>)
-               }
-            </select>
-            <select onChange={e => props.self.changeGroup(e)} className="form-control groups">
-               <option value={-1}>Choose group</option>
-               {
-                  groups.map((el, index) => 
-                     index == props.self.nameGroup ?
-                     <option selected value={el}>{el}</option> :
-                     <option value={el}>{el}</option>
-                  )
-               }
-            </select>
+            {
+               props.report.priority == "subjects" ? 
+                  (<SubjectToGroup report={props.report} schedule={props.schedule}/>) :
+                  (<GroupToSubject report={props.report} schedule={props.schedule}/>)
+            }
             <ButtonGroup toggle>
                {CONFIG.TYPES_REPORTS.map((radio, idx) => (
                   <ToggleButton
@@ -77,10 +167,8 @@ const PanelReport = (props) => {
 }
 
 const mapStateToProps = state => ({
-   subject: state.report.subject,
-   group: state.report.group,
-   typeReport: state.report.typeReport,
-   typeSubject: state.report.typeReport
+   schedule: state.schedule,
+   report: state.report
 })
 
 const mapDispatchToProps = dispatch => ({
