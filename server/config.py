@@ -38,6 +38,7 @@ DB_CACHE_FOLDER = './server/cache/parser/'
 
 # PATHES
 RP_FOLDER = './server/data/reports/'
+RP_TEMPLATES_FOLDER = './server/data/reports/templates/'
 
 
 #----------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ def __get_report():
 	print_json(data)
 
 	# KOSTILY
-	data["typeSubject"] = "Лек"
+	#data["typeSubject"] = "Лек"
 
 	with RM() as rm:
 		result = rm.get(data)
@@ -68,7 +68,7 @@ def __set_report():
 	print_json(data)
 
 	# KOSTILY
-	data["typeSubject"] = "Лек"
+	# data["typeSubject"] = "Лек"
 
 	with RM() as rm:
 		result = rm.set(data)
