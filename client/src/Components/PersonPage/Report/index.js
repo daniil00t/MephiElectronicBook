@@ -70,6 +70,7 @@ class Report extends React.Component {
 		return Object.assign({}, baseObject, appendObject);
 	}
 	componentDidMount(){
+		console.log("Report updated!")
 		this.setState({nameTeacher: this.props.name});
 		this.getReportWithAccess({nameTeacher: this.props.name});
 	}

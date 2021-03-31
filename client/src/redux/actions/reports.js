@@ -4,7 +4,7 @@ import {
    REPORT_CHANGE_GROUP,
    REPORT_CHANGE_TYPE_SUBJECT,
    REPORT_CHANGE_PRIORITY,
-   REPORT_SET_DATA
+   REPORT_GET_DATA
    
 } from "../reducers/types"
 
@@ -33,7 +33,7 @@ export const changePriority = subOrGr => ({
    payload: subOrGr
 })
 
-export const setReport = report => ({
-   type: REPORT_SET_DATA,
-   payload: report
+export const getReport = (nameTeacher) => ({
+   type: REPORT_GET_DATA,
+   payload: nameTeacher
 })
