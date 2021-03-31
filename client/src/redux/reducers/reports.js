@@ -9,15 +9,15 @@ import {
 
 import { getReport } from "../../api"
 
-var isValidGetRequest = (state, payload) => {
+var isValidGetRequest = (state, nameTeacher) => {
    console.log(state)
    let access = false;
-   if(   typeof payload 	               !== "undefined" && payload 	               != "" &&
+   if(   typeof nameTeacher 	            !== "undefined" && nameTeacher 	            != "" &&
          typeof state.group 			      !== "undefined" && state.group			      != "" &&
          typeof state.subject 		      !== "undefined" && state.subject		         != "" &&
          typeof state.duration 	         !== "undefined" && state.duration 	         != "" &&
          typeof state.typeReport 	      !== "undefined" && state.typeReport 	      != "" &&
-         typeof state.typeSubject 	      !== "undefined" && state.typeSubject	      != "" 
+         typeof state.typeSubject 	      !== "undefined" && (state.typeSubject	      != "" || state.typeSubject != "-1")
    ){
       access = true;
    }
@@ -71,6 +71,7 @@ export const reports = (state = {
       case REPORT_GET_DATA:
          {
             getRequestWithAccess(state, action.payload, data => {
+					console.log(data)
                return {
                   ...state,
                   data: data
