@@ -1,21 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { addChangeToReport, changeStateEdit } from '../../../redux/actions';
 
-export default class ItemTable extends Component {
+class ItemTable extends Component {
    constructor(props) {
       super(props);
       this.state = { 
-			activeRow: this.props.row || -1,
-			activeCol: this.props.col || -1,  
+			activeRow: this.props.row,
+			activeCol: this.props.col,  
 			activeState: false,
 			value: this.props.value || "" 
 		};
-		this.emmiter = this.props.emmiter;
+		this.textInput = React.createRef();
    }
 	activeItemTable(e){
-		console.log(this);
-		this.setState({
-			activeState: true
-		});
+		if(!this.props.repedit.isEdit){
+			this.setState({
+				activeState: true
+			});
+			this.props.activate()
+			
+		}
+	}
+	componentDidMount(){
+		if(this.state.activeState){
+			this.textInput.current.focus()
+		}
 	}
 	updateObject(baseObject, appendObject){
 		return Object.assign({}, baseObject, appendObject);
@@ -26,23 +36,38 @@ export default class ItemTable extends Component {
 				value: e.target.value,
 				activeState: false
 			});
+			this.props.activate()
+			this.props.addChange({
+				col: this.state.activeCol,
+				row: this.state.activeRow,
+				value: e.target.value
+			})
 			let nowState = this.updateObject(this.state, {
 				value: e.target.value
 			})
-			this.emmiter.emit("changeReport", {type: "bool", state: true, col: nowState.activeCol, row: nowState.activeRow, value: nowState.value});
-			console.log({col: this.state.activeCol, row: this.state.activeRow, value: this.state.value});
 		}
 	}
 	exitLabel(){
 		this.setState({
 			activeState: false
 		})
+		this.props.activate()
 	}
    render() {
 		if(!this.state.activeState){
 			return (<td onClick={this.activeItemTable.bind(this)}><span className="item-data">{this.state.value}</span></td>);
 		}else{
-			return (<td><input onKeyDown={this.pressKey.bind(this)} type="text" defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
+			return (<td><input ref={this.textInput} onKeyDown={this.pressKey.bind(this)} type="text" defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
 		}
    }
 }
+
+const mapStateToProps = state => ({
+	repedit: state.report.edit
+})
+const mapDispatchToProps = dispatch => ({
+	activate: () => dispatch(changeStateEdit()),
+	addChange: change => dispatch(addChangeToReport(change))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ItemTable)

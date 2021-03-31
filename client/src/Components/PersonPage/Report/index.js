@@ -115,11 +115,6 @@ class Report extends React.Component {
       })
    }
 	render() {
-		this.props.report.data.data.map((row, Irow) => {
-			row.map((el, Icol) => {
-				console.log(Irow, el)
-			})
-		})
 		return (
 			<div className="table-wrap">
             <ItemTable />

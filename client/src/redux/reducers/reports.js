@@ -4,13 +4,19 @@ import {
    REPORT_CHANGE_GROUP,
    REPORT_CHANGE_TYPE_SUBJECT,
    REPORT_CHANGE_PRIORITY,
+
    REPORT_GET_DATA,
-	REPORT_RENDER_DATA
+	REPORT_RENDER_DATA,
+   REPORT_SAVE_DATA,
+   
+   REPORT_EDIT_CHANGE_STATE,
+   REPORT_EDIT_ADD_CHANGE,
+   REPORT_EDIT_TO_BACK
 } from "./types"
 
 import { renderReport, getReport as actionGetReport, showNotification } from "../actions"
 
-import { getReport } from "../../api"
+import { getReport, setReport } from "../../api"
 
 var isValidGetRequest = (req) => {
    let access = false;
@@ -49,6 +55,14 @@ export const reports = (state = {
    data: {
       data: [],
       thead: []
+   },
+   edit: {
+      changes: [],
+      isEdit: false,
+      active: {
+         row: -1,
+         col: -1
+      }
    }
 }, action) => {
 
@@ -98,6 +112,50 @@ export const reports = (state = {
 				...state,
 				data: action.payload
 			}
+
+      case REPORT_SAVE_DATA:
+         console.log(action.payload)
+         let table = action.payload.report.data
+         action.payload.changes.map(change => {
+            table[change.row][change.col] = change.value
+         })
+         setReport({
+            ...action.payload.report,
+            data: table
+         }, success => {
+            console.log('yes!!!')
+         }, error => {
+            console.error(error)
+         })
+         return {
+            ...state
+         }
+      // edit report and sending it on server
+      case REPORT_EDIT_CHANGE_STATE:
+         return {
+            ...state,
+            edit: {
+               // isEdit: action.payload
+               ...state.edit,
+               isEdit: !state.edit.isEdit
+            }
+         }
+      case REPORT_EDIT_ADD_CHANGE:
+         return{
+            ...state,
+            edit: {
+               ...state.edit,
+               changes: [...state.edit.changes, action.payload]
+            }
+         }
+      case REPORT_EDIT_TO_BACK:
+         return {
+            ...state,
+            edit: {
+               ...state.edit,
+               changes: state.edit.changes.pop()
+            }
+         }
       default: 
          return state
    }
