@@ -37,18 +37,53 @@ const App = (props) => {
 				</Route>
 				<Route path="/personalPage/tables/att">
 					<PersonPage match={"table-att"}/>
+					<Notification 
+						type={props.notification.type}
+						title={props.notification.title} 
+						time="1 second ago" 
+						description={props.notification.content} 
+						visible={props.notification.visible}
+					/>
 				</Route>
 				<Route path="/personalPage/tables/score">
 					<PersonPage match={"table-score"}/>
+					<Notification 
+						type={props.notification.type}
+						title={props.notification.title} 
+						time="1 second ago" 
+						description={props.notification.content} 
+						visible={props.notification.visible}
+					/>
 				</Route>
 				<Route path="/personalPage/groups">
 					<PersonPage match={"groups"}/>
+					<Notification 
+						type={props.notification.type}
+						title={props.notification.title} 
+						time="1 second ago" 
+						description={props.notification.content} 
+						visible={props.notification.visible}
+					/>
 				</Route>
 				<Route path="/personalPage/subjects">
 					<PersonPage match={"subjects"}/>
+					<Notification 
+						type={props.notification.type}
+						title={props.notification.title} 
+						time="1 second ago" 
+						description={props.notification.content} 
+						visible={props.notification.visible}
+					/>
 				</Route>
 				<Route path="/personalPage">
 					<PersonPage match={"main"}/>
+					<Notification 
+						type={props.notification.type}
+						title={props.notification.title} 
+						time="1 second ago" 
+						description={props.notification.content} 
+						visible={props.notification.visible}
+					/>
 				</Route>
 
 				<Route path="/">

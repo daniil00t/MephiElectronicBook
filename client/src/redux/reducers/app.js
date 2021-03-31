@@ -28,7 +28,10 @@ export const app = (state = startState, action) => {
       case NOTIF_CLOSE:
          return {
             ...state,
-            visible: false
+            visible: false,
+            title: "",
+            content: "",
+            type: ""
          }
       default:
          return state

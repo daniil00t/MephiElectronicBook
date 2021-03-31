@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux"
 import { changeGroup, changeSubject } from '../../redux/actions';
+import { Link } from "react-router-dom"
 import "../../styles/PersonPage.css"
 
 class Schedule extends React.Component {
@@ -12,7 +13,7 @@ class Schedule extends React.Component {
 			case "Лаб": return <div className="type type-lab">{type}</div>;break;
 			case "Пр": 	return <div className="type type-practice">{type}</div>;break;
 			case "Лек": return <div className="type type-lecture">{type}</div>;break;
-			default: 		return <div className="type type-none">Доп</div>;
+			default: 	return <div className="type type-none">Доп</div>;
 		}
 	}
 
@@ -32,8 +33,10 @@ class Schedule extends React.Component {
 				<div className="time">{props.data.time}</div>
 				{props.self.getType(props.data.type)}
 				<div className="wday-wrap"><div className={`wday wday-${props.data.even}`}></div></div>
-				<div className="name" onClick={e => props.self.props.changeSubject(props.data.name)}>{props.self.sliceName(props.data.name)}</div>
-				{props.data.groups.map((obj, i) => <span onClick={e => props.self.props.changeGroup(obj)} className='link-group spanLikeLink'>{obj}</span>)}
+
+				<Link to="/personalPage/tables/att" className="name" onClick={e => props.self.props.changeSubject(props.data.name)}>{props.self.sliceName(props.data.name)}</Link>
+				{props.data.groups.map((obj, i) => <Link to="/personalPage/tables/att" onClick={e => props.self.props.changeGroup(obj)} className='link-group spanLikeLink'>{obj}</Link>)}
+				
 				<div className="duration">{props.data.duration == "ALL_SEMESTER" ? "Весь семестр" : props.data.duration}</div>
 				<div className="place" title={props.data.place}>{props.data.place}</div>
 			</div>

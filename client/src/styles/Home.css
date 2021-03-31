@@ -6,7 +6,6 @@ h2.home_welcome{
    margin-top: 20px;
 }
 .wrap_links{
-   width: 100%;
    display: flex;
    justify-content: space-between;
 }

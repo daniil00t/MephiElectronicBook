@@ -7,8 +7,8 @@ class Notification extends Component {
    constructor(props){
       super(props);
       this.state = {
-         visible: props.visible
-      };
+         visible: false
+      }
    }
    handleClose(){
       this.props.closeNotification()
@@ -31,7 +31,11 @@ class Notification extends Component {
             return {}
       }
    }
-
+   componentDidMount(){
+      this.props.notif.visible != this.state.visible ?
+         this.setState({visible: this.props.notif.visible}):
+         console.log("dfsdf")
+   }
    render() {
       return ( 
          <div
@@ -42,20 +46,20 @@ class Notification extends Component {
             }}
             >
             <Toast 
-               show={this.props.visible} 
+               show={this.state.visible} 
                onClose={this.handleClose.bind(this)} 
                // style={this.state.visible ? {display: "block"} : {display: "none"}}
                animation={true}
                delay={300}
-               style={this.switcherType(this.props.type)}
+               style={this.switcherType(this.props.notif.type)}
                // autohide={true}
             >
                <Toast.Header>
                <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
-               <strong className="mr-auto">{this.props.title}</strong>
+               <strong className="mr-auto">{this.props.notif.title}</strong>
                <small>{this.props.time}</small>
                </Toast.Header>
-               <Toast.Body>{this.props.description}</Toast.Body>
+               <Toast.Body>{this.props.notif.content}</Toast.Body>
             </Toast>
          </div>
        );
@@ -65,4 +69,7 @@ class Notification extends Component {
 const mapDispatchToProps = dispatch => ({
    closeNotification: () => dispatch(closeNotification())
 })
-export default connect(null, mapDispatchToProps)(Notification);
+const mapStateToProps = state => ({
+   notif: state.app.notification
+})
+export default connect(mapStateToProps, mapDispatchToProps)(Notification);

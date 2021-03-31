@@ -106,12 +106,12 @@ const Header = (props) => {
 				{/* <Link to="/personalPage/subjects" className="nav-link">Мои предметы</Link> */}
 				<NavDropdown title="Мои предметы" id="basic-nav-dropdown">
 					{
-						schedule.subjectToGroup.map(subject => (
+						schedule.subjectToGroup.map((subject, index) => (
 							<ItemDropdownSubjects 
 								subject={subject.name} 
 								groups={subject.groups}
 								typeSubject={subject.types} 
-								changeSubject={subject => dispatch(changeSubject(subject))} 
+								changeSubject={subjectName => dispatch(changeSubject(subjectName, subject.durations[0]))} 
 								changeGroup={group => dispatch(changeGroup(group))}
 								changeTypeSubject={group => dispatch(changeTypeSubject(group))}
 								changePriority={subOrGr => dispatch(changePriority(subOrGr))}

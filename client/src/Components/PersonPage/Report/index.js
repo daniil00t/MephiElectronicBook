@@ -115,6 +115,11 @@ class Report extends React.Component {
       })
    }
 	render() {
+		this.props.report.data.data.map((row, Irow) => {
+			row.map((el, Icol) => {
+				console.log(Irow, el)
+			})
+		})
 		return (
 			<div className="table-wrap">
             <ItemTable />
@@ -130,16 +135,18 @@ class Report extends React.Component {
 					  <thead>
 					    <tr>
 					    	{
-					    		this.state.table.thead.map(el => <th>{el}</th>)
+					    		this.props.report.data.thead.map(el => <th>{el}</th>)
 					    	}
 					    </tr>
 					  </thead>
 					  <tbody>
 						  {
-						  	this.state.table.data.map((row, Irow) => 
+						  	this.props.report.data.data.map((row, Irow) => 
 						  		<tr>
 							  		{
-							  			row.map((el, Icol) => <ItemTable emmiter={this.emmiter} row={Irow} col={Icol} value={el} />)
+							  			row.map((el, Icol) => 
+										  <ItemTable emmiter={this.emmiter} row={Irow} col={Icol} value={el} />
+										)
 							  		}
 						  		</tr>
 						  	)

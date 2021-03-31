@@ -1,7 +1,8 @@
 import React from "react"
-import { ButtonGroup, ToggleButton } from "react-bootstrap"
+import { ButtonGroup, ToggleButton, Button } from "react-bootstrap"
 import { connect } from "react-redux"
 import * as CONFIG from "../../../config.json"
+import { getReport as _getReport, setReport } from "../../../api"
 import { 
    changeTypeReport, 
    changeSubject, 
@@ -32,14 +33,35 @@ const SubjectToGroup = (props) => {
       var indexSubject = -1
       var groups = []
    }
-
+   var isValidGetRequest = (state, nameTeacher) => {
+      console.log(state)
+      let access = false;
+      if(   typeof nameTeacher 	            !== "undefined" && nameTeacher 	            != "" &&
+            typeof state.group 			      !== "undefined" && state.group			      != "" &&
+            typeof state.subject 		      !== "undefined" && state.subject		         != "" &&
+            typeof state.duration 	         !== "undefined" && state.duration 	         != "" &&
+            typeof state.typeReport 	      !== "undefined" && state.typeReport 	      != "" &&
+            typeof state.typeSubject 	      !== "undefined" && (state.typeSubject	      != "undefined" || state.typeSubject != "-1")
+      ){
+         access = true;
+      }
+      return access;
+   }
    
-   console.log("UPDATE")
-   props.dispatcher.getReport(props.nameTeacher)
+   // console.log("UPDATE")
+   // const report = {
+   //    nameTeacher: props.nameTeacher,
+   //    nameSubject: props.report.subject,
+   //    nameGroup: props.report.group,
+   //    typeReport: props.report.typeReport,
+   //    typeSubject: props.report.typeSubject,
+   //    durationSubject: props.report.duration
+   // }
+   // props.dispatcher.getReport(props.nameTeacher)
    // console.log("sdfsdfsdf", props.dispather.changeSubject)
    return (
       <div className="subjectToGroup">
-         <select className="form-control subjects" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value])}>
+         <select className="form-control subjects" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}>
             <option value={-1}>Выберете предмет</option>
             {
                subjects.map((el, index) => 
@@ -148,7 +170,10 @@ class PanelReport extends React.Component{
 
    componentDidMount(){
       console.log("UPDATE")
-      this.props.getReport(this.props.nameTeacher)
+      // this.props.getReport(this.props.nameTeacher)
+   }
+   loadReport(e){
+      console.log(this.props.getReport(this.props.nameTeacher))
    }
    render(){
       return( 
@@ -174,7 +199,8 @@ class PanelReport extends React.Component{
                      </ToggleButton>
                   ))}
                </ButtonGroup>
-               <button>Save</button>
+               <Button className="reportButton loadReport" onClick={e => this.loadReport(e)}>Load</Button>
+               <Button className="reportButton saveReport" >Save</Button>
             </div>
          </div>
       )
@@ -188,7 +214,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-   changeSubject: subject => dispatch(changeSubject(subject)),
+   changeSubject: (subject, duration) => dispatch(changeSubject(subject, duration)),
    changeGroup: group => dispatch(changeGroup(group)),
    changeTypeReport: type => dispatch(changeTypeReport(type)),
    changeTypeSubject: type => dispatch(changeTypeSubject(type)),
