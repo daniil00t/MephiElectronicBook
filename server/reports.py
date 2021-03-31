@@ -4,7 +4,7 @@ from .modules import Dates as dates
 import os
 import json
 
-# [FEATURE] add
+# [FEATURE] check type of lesson too!!!
 class RM():
 	def __init__(self):
 		pass
@@ -24,6 +24,7 @@ class RM():
 				"teacher_name" 		: report_data["nameTeacher"],
 				"subject_name" 		: report_data["nameSubject"],
 				"subject_duration" 	: report_data["durationSubject"],
+				"subject_type" 	    : report_data["typeSubject"],
 				"group_name" 		: report_data["nameGroup"],
 				"report_type" 		: report_data["typeReport"]
 			}
@@ -34,6 +35,7 @@ class RM():
 				"nameTeacher"		: report_data["teacher_name"],
 				"nameSubject"		: report_data["subject_name"],
 				"durationSubject" 	: report_data["subject_duration"],
+				"typeSubject" 	    : report_data["subject_type"],
 				"nameGroup" 		: report_data["group_name"],
 				"typeReport"		: report_data["report_type"]
 			}
@@ -42,46 +44,114 @@ class RM():
 		else:
 			return None
 
+	#-------------/ READ AND WRITE /-------------------------------------------------------------
+
+	def __write_report(self, report_id, report):
+		# [FEATURE] write json as bytes, save space
+		path = RP_FOLDER + str(report_id) + '.json'
+
+		with open(path, 'w', encoding='utf-8') as f:
+			json.dump(report, f, ensure_ascii=False, indent=4)
 
 
-	def __create(self, report_data):
-		with DB() as db:
-			teacher_id = db.get_teacher_id(report_data["teacher_name"])
-			schedule = db.get_schedule(teacher_id)["data"]
-			students = db.get_students(report_data["group_name"])["data"]
+	def __read_report(self, report_id):
+		path = RP_FOLDER + str(report_id) + '.json'
+
+		if os.path.isfile(path):
+			with open(path, 'r') as f:
+				report = json.load(f)
+			return report
+		else:
+			print("[INFO] Report {} not found in \"{}\"".format(report_id, path))
+			return None
 
 
-		# 1) get dates
-		#[FEATURE] maybe use list of days?
-		pattern = []
-		duration = ""
+	def __read_templates(self, report_type):
+		path = RP_TEMPLATES_FOLDER + "templates" + ".json"
+		if os.path.isfile(path):
+			with open(path, 'r') as f:
+				templates = json.load(f)
+		else:
+			print("[INFO] Templates not found in \"{}\"".format(path))
+
+		return templates
+
+	#-------------/ CREATE /-------------------------------------------------------------
+	
+	def __get_dates_times(self, report_data, schedule):
+		pattern  = [[], [], [], [], [], [],
+					[], [], [], [], [], []]
+
 		for day in schedule:
 			for lesson in day:
+				#[FEATURE] add type
 				if  (lesson["name"] == report_data["subject_name"]) and \
 					(lesson["duration"] == report_data["subject_duration"]) and \
+					(lesson["type"] == report_data["subject_type"]) and \
 					(report_data["group_name"] in lesson["groups"]):
+						
+						time = dates.parse_time(lesson["time"])
+						even = lesson["even"]
+						wday = lesson["wday"]
 
-						duration = lesson["duration"]
+						if even == 0:
+							pattern[wday].append(time)
+							pattern[6 + wday].append(time)
+						else:
+							pattern[6*(even - 1) + wday].append(time)
 
-						pattern.append({
-							"time" : lesson["time"],
-							"even" : lesson["even"],
-							"wday" : lesson["wday"]
-						})
+		for d in pattern:
+			d.sort()
 
-		dates_list = dates.get_dates(pattern, duration)
+		duration = dates.parse_duration(report_data["subject_duration"])
+		dates_times = dates.get_dates_times(pattern, duration)
+
+		return dates_times
 
 
-		# 2) create empty report
-		thead = ["id", "name"]
-		thead.extend(dates_list)
+	def __get_thead(self, report_data):
+		report_type = report_data["report_type"]
+		templates = self.__read_templates(report_type)
+		thead_scheme = templates[report_type]
 
-		print_json(students)
-		data = []
-		for s in students:
-			row = [s["id"], s["name"]]
-			row.extend([ "" for i in range(0, len(dates_list))])
-			data.append(row)
+		thead = []
+		for h in thead_scheme:
+			if h == "dates":
+				with DB() as db:
+					teacher_id = db.get_teacher_id(report_data["teacher_name"])
+					schedule = db.get_schedule(teacher_id)["data"]
+				dates_times = self.__get_dates_times(report_data, schedule)
+				thead.extend(dates_times)
+			else:
+				thead.append(h)
+
+		return thead
+
+
+	def __get_rows(self, report_data, thead):
+		with DB() as db:
+			students = db.get_students(report_data["group_name"])["data"]
+
+		rows = []
+		rows.extend([ [] for i in range(0, len(students))])
+
+		for h in thead:
+			if h == "id":
+				for i, s in enumerate(students):
+					rows[i].append(s["id"])
+			elif h == "name":
+				for i, s in enumerate(students):
+					rows[i].append(s["name"])
+			else:
+				for i, s in enumerate(students):
+					rows[i].append("")
+
+		return rows
+
+
+	def __create_report(self, report_data):
+		thead = self.__get_thead(report_data)
+		data = self.__get_rows(report_data, thead)
 
 		front_report_data = self.__convert_report_data(report_data, convert_to="front")
 		report = {
@@ -94,28 +164,7 @@ class RM():
 		return report
 
 
-
-	def __read(self, report_id):
-		path = RP_FOLDER + str(report_id) + '.json'
-
-		if os.path.isfile(path):
-			with open(path, 'r') as f:
-				report = json.load(f)
-			return report
-		else:
-			print("[INFO] Report {} not found".format(report_id))
-			return None
-
-
-
-	def __write(self, report_id, report):
-		# [FEATURE] write json as bytes, save space
-		path = RP_FOLDER + str(report_id) + '.json'
-
-		with open(path, 'w', encoding='utf-8') as f:
-			json.dump(report, f, ensure_ascii=False, indent=4)
-
-
+	#----------------/ INTERFACE /----------------------------------------------------------------
 
 	def get(self, report_data):
 		report_data = self.__convert_report_data(report_data, convert_to="back")
@@ -124,20 +173,20 @@ class RM():
 			report_id = db.get_report_id(report_data)
 
 		if report_id:
-			report = self.__read(report_id)
+			report = self.__read_report(report_id)
 			if not report:
-				report = self.__create(report_data)
-				self.__write(report_id, report)
+				report = self.__create_report(report_data)
+				self.__write_report(report_id, report)
 
 			return report
 		else:
-			report = self.__create(report_data)
+			report = self.__create_report(report_data)
 
 			with DB() as db:
 				db.insert_report(report_data)
 				report_id = db.get_report_id(report_data) # dont't use SCOPE_IDENTITY (synchronization)
 
-			self.__write(report_id, report)
+			self.__write_report(report_id, report)
 
 			return report
 
@@ -150,8 +199,7 @@ class RM():
 			report_id = db.get_report_id(report_data)
 
 		if report_id:
-			print_json(report)
-			self.__write(report_id, report)
+			self.__write_report(report_id, report)
 			return True
 		else:
 			return None

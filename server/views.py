@@ -41,12 +41,24 @@ def __get_students():
 @app.route('/__get_report', methods=['POST'])
 def __get_report():
 	data = request.json
+
+	print("[INFO] Sent from frontend:\n")
 	print_json(data)
+
+	# KOSTILY
+	#data["typeSubject"] = "Лек"
 
 	with RM() as rm:
 		result = rm.get(data)
 
-	return jsonify(result)
+	print("[INFO] Sent from backend:\n")
+	print_json(result)
+
+	if result:
+		return jsonify(result)
+	else:
+		status_code = Response(status=500)
+		return status_code
 
 
 
@@ -54,6 +66,9 @@ def __get_report():
 def __set_report():
 	data = request.json
 	print_json(data)
+
+	# KOSTILY
+	# data["typeSubject"] = "Лек"
 
 	with RM() as rm:
 		result = rm.set(data)

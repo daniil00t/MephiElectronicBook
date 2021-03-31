@@ -72,10 +72,11 @@ CREATE TABLE reports (
 	teacher_id INT NOT NULL,
 	subject_id INT NOT NULL,
 	team_id INT NOT NULL,
-	type VARCHAR(10) NOT NULL,
+	subject_type VARCHAR(10) NOT NULL,
+	report_type VARCHAR(10) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (teacher_id) REFERENCES teachers(id),
 	FOREIGN KEY (subject_id) REFERENCES subjects(id),
 	FOREIGN KEY (team_id) REFERENCES teams(id),
-	UNIQUE KEY unkey (teacher_id, subject_id, team_id, type)
+	UNIQUE KEY unkey (teacher_id, subject_id, team_id, subject_type, report_type)
 );

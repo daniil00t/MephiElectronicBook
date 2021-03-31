@@ -38,6 +38,7 @@ DB_CACHE_FOLDER = './server/cache/parser/'
 
 # PATHES
 RP_FOLDER = './server/data/reports/'
+RP_TEMPLATES_FOLDER = './server/data/reports/templates/'
 
 
 #----------------------------------------------------------------------------------
@@ -53,3 +54,11 @@ DEBUG = True
 # DB_UPDATE_SUBJECTS = True
 # DB_UPDATE_STUDENTS = True
 # DB_UPDATE_LESSONS = True
+
+# DB_DOWNLOAD_GROUPS_LINKERS 		= True
+# DB_DOWNLOAD_TEACHERS_LINKERS 	= True
+# DB_DOWNLOAD_TEACHERS_SCHEDULES 	= True
+# DB_DOWNLOAD_GROUPS_LISTS 		= True
+
+# DB_GROUPS_LIMIT 	= r"\w\d\d-\d\d\d"
+# DB_TEACHERS_LIMIT 	= 20
