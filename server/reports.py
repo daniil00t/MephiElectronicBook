@@ -58,7 +58,7 @@ class RM():
 		path = RP_FOLDER + str(report_id) + '.json'
 
 		if os.path.isfile(path):
-			with open(path, 'r') as f:
+			with open(path, 'r', encoding="utf-8") as f:
 				report = json.load(f)
 			return report
 		else:
