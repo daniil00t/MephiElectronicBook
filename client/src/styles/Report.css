@@ -34,7 +34,25 @@
 }
 .TABLE table{
 	border-radius: 0 0 5px 5px;
+	overflow-x: scroll;
+	display: block;
+
+}
+.TABLE table td.main{
+	padding: 5px 12px;
+	position: relative;
+	width: 50px;
+	height: 100%;
 	overflow: hidden;
+}
+.TABLE table td.main input{
+	width: 100%;
+	height: 35px;
+}
+.TABLE table td.main button{
+	position: absolute;
+	right: 0px;
+	top: 4px;
 }
 .reportButton{
 	margin-left: 20px;
