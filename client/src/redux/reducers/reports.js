@@ -96,6 +96,7 @@ export const reports = (state = {
 			}
       case REPORT_GET_DATA:
 			getRequestWithAccess({...state, nameTeacher: action.payload}, (data)=>{
+				action.asyncDispatch(renderReport({data: [], thead:[]}))
 				action.asyncDispatch(renderReport(data))
 			}, (error)=>{
             action.asyncDispatch(renderReport({data: [], thead:[]}))

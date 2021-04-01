@@ -117,8 +117,7 @@ class Report extends React.Component {
 	render() {
 		return (
 			<div className="table-wrap">
-            <ItemTable />
-				<div className="TABLE">
+				<div className="TABLE table-wrapper-scroll-x my-custom-scrollbar">
 					<PanelReport
 						self={this}
 						name={this.props.name}
@@ -126,7 +125,7 @@ class Report extends React.Component {
 						subjects={this.props.subjects}
 						compactSchedule={this.props.compactSchedule}
 					/>
-					<Table striped bordered hover>
+					<Table striped bordered hover style={{width: "100vw"}}>
 					  <thead>
 					    <tr>
 					    	{

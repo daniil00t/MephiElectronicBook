@@ -24,8 +24,6 @@ const SubjectToGroup = (props) => {
          return [...acc, cur]
       }, [])
    
-      
-      var type = props.report.typeSubject
       types = props.schedule.subjectToGroup[indexSubject].types
       // if(props.report.typeSubject == "undefined"){
       // }
@@ -41,8 +39,8 @@ const SubjectToGroup = (props) => {
             {
                subjects.map((el, index) => 
                   index == indexSubject ?
-                  <option selected value={index}>{`${el} ${types.length > 0 ? `[${types}]` : `${type}`}`}</option> :
-                  <option value={index}>{`${el} ${types.length > 0 ? `[${types}]` : `${type}`}`}</option>
+                  <option selected value={index}>{`${el} [${types}]`}</option> :
+                  <option value={index}>{`${el} [${types}]`}</option>
                )
             }
          </select>
@@ -50,9 +48,13 @@ const SubjectToGroup = (props) => {
             types.length != 0 ?
                (
                   <select className="form-control types" onChange={e => props.dispatcher.changeTypeSubject(e.target.value)}>
-                     <option value={-1}>Тип</option>
+                     <option value="undefined">Тип</option>
                      {
-                        types.map((type, index) => <option value={type}>{type}</option>)
+                        types.map((type, index) => 
+                           type == props.report.typeSubject ? 
+                              (<option selected value={type}>{type}</option>):
+                              (<option value={type}>{type}</option>)
+                        )
                      }
                   </select>
                ):

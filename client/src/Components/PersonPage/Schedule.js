@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux"
-import { changeGroup, changeSubject } from '../../redux/actions';
+import { changeGroup, changeSubject, changeTypeSubject } from '../../redux/actions';
 import { Link } from "react-router-dom"
 import "../../styles/PersonPage.css"
 
@@ -28,14 +28,24 @@ class Schedule extends React.Component {
 
 	Lesson(props){
 		console.log("PROPS: ", props.self.props);
+		const clickGroup = i => {
+			props.self.props.changeSubject(props.data.name, props.data.duration)
+			props.self.props.changeTypeSubject(props.data.type)
+			props.self.props.changeGroup(props.data.groups[i])
+			console.log(props.data.groups[i])
+		}
+		const clickSubject = (e) =>{
+			props.self.props.changeSubject(props.data.name, props.data.duration)
+			props.self.props.changeTypeSubject(props.data.type)
+		}
 		return (
 			<div className="lesson" data-order={`#${1}`}>
 				<div className="time">{props.data.time}</div>
 				{props.self.getType(props.data.type)}
 				<div className="wday-wrap"><div className={`wday wday-${props.data.even}`}></div></div>
 
-				<Link to="/personalPage/tables/att" className="name" onClick={e => props.self.props.changeSubject(props.data.name)}>{props.self.sliceName(props.data.name)}</Link>
-				{props.data.groups.map((obj, i) => <Link to="/personalPage/tables/att" onClick={e => props.self.props.changeGroup(obj)} className='link-group spanLikeLink'>{obj}</Link>)}
+				<Link to="/personalPage/tables/att" className="name" onClick={e => clickSubject(e)}>{props.self.sliceName(props.data.name)}</Link>
+				{props.data.groups.map((obj, i) => <Link to="/personalPage/tables/att" onClick={e => clickGroup(i)} className='link-group spanLikeLink'>{obj}</Link>)}
 				
 				<div className="duration">{props.data.duration == "ALL_SEMESTER" ? "Весь семестр" : props.data.duration}</div>
 				<div className="place" title={props.data.place}>{props.data.place}</div>
@@ -114,6 +124,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
 	changeGroup: group => dispatch(changeGroup(group)),
-	changeSubject: subject => dispatch(changeSubject(subject))
+	changeSubject: (subject, duration) => dispatch(changeSubject(subject, duration)),
+	changeTypeSubject: type => dispatch(changeTypeSubject(type))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule)
