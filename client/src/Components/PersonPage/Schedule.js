@@ -27,12 +27,10 @@ class Schedule extends React.Component {
 	}
 
 	Lesson(props){
-		console.log("PROPS: ", props.self.props);
 		const clickGroup = i => {
 			props.self.props.changeSubject(props.data.name, props.data.duration)
 			props.self.props.changeTypeSubject(props.data.type)
 			props.self.props.changeGroup(props.data.groups[i])
-			console.log(props.data.groups[i])
 		}
 		const clickSubject = (e) =>{
 			props.self.props.changeSubject(props.data.name, props.data.duration)

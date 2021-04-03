@@ -36,7 +36,13 @@
 	border-radius: 0 0 5px 5px;
 	overflow-x: scroll;
 	display: block;
-
+	table-layout: fixed;
+	word-wrap: break-word;
+}
+.TABLE table th .itemTH{
+	display: block;
+	width: 60px;
+	text-align: center;
 }
 .TABLE table td.main{
 	padding: 5px 12px;
@@ -44,6 +50,9 @@
 	width: 50px;
 	height: 100%;
 	overflow: hidden;
+}
+.TABLE table td.time{
+	width: 10% !important;
 }
 .TABLE table td.main input{
 	width: 100%;

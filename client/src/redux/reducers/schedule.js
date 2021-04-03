@@ -43,7 +43,6 @@ const groupToSubject = schedule => {
             let tmpGroups = result.reduce((acc, cur) => {
                return [...acc, cur.group]
             }, [])
-            console.log(tmpGroups)
             let indexGroup = tmpGroups.indexOf(group)
             if(indexGroup == -1){
                result.push({
@@ -54,12 +53,9 @@ const groupToSubject = schedule => {
                })
             }
             else{
-               console.log(result[indexGroup].subjects)
                result[indexGroup].subjects = addUniqueItem([lesson.name], result[indexGroup].subjects)
                result[indexGroup].types = addUniqueItem([lesson.type], result[indexGroup].types)
             }
-
-            
          })
       })
    })

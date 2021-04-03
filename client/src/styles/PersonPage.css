@@ -9,7 +9,7 @@ ul.navbar-nav.ml-auto li a{
 	margin-right: 15px;
 }
 
-#dropdown-button-drop-right{
+#dropdown-button-drop-left, #dropdown-button-drop-right{
 	width: 100%;
 	background-color: #fff;
 	color: #000;
@@ -21,7 +21,7 @@ ul.navbar-nav.ml-auto li a{
 	transition: all ease-in-out .1s;
 	border-radius: 0;
 }
-#dropdown-button-drop-right:hover{
+#dropdown-button-drop-left:hover, #dropdown-button-drop-right:hover{
 	background-color: rgb(240, 240, 240);
 
 }

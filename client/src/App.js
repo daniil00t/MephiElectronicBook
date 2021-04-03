@@ -102,4 +102,4 @@ const mapDispatchToProps = dispatch => ({
 	initGlobal: () => dispatch(initGlobal())
 })
 
-export default connect(mapStateToProps, null)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
