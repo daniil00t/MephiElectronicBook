@@ -1,0 +1,16 @@
+# Нужно игнорировать __pycache__
+**/__pycache__
+/venv
+/tmp
+**/*.config
+/documentation/*.html
+/server/modules/config.json
+/server/config_auth.py
+/server/cache
+/server/data
+/server/db_test.sql
+/test
+show.sql
+logs_temp.txt
+/client/node_modules
+.vscode

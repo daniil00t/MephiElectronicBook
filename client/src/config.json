@@ -1,0 +1,27 @@
+{
+	"HOST": "http://localhost:5000/",
+	"URLS_API": {
+		"urlScheduleTeacher": "__get_schedule",
+		"urlListTeachers": "__get_teachers",
+		"urlListLearners": "__getListLearners",
+		"urlGetReport": "__get_report",
+		"urlSendReport": "__set_report"
+	},
+	"TYPES_REPORTS": [
+		{
+			"id": 0,
+			"name": "Посещаемость",
+			"alias": "att"
+		},
+		{
+			"id": 1,
+			"name": "Оценки",
+			"alias": "score"
+		},
+		{
+			"id": 2,
+			"name": "Итоги",
+			"alias": "ch"
+		}
+	]
+}

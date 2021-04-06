@@ -1,0 +1,46 @@
+html, body{
+	width: 100%;
+	height: 100%;
+}
+main{
+	position: relative;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100%;
+	height: 100%;
+	padding-bottom: 80px;
+}
+
+
+.wrap {
+	width: 400px;
+	height: 500px;
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0px 0px 14px 0px rgb(34 60 80 / 27%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	position: relative;
+}
+.wrap::before {
+	content: "Hello, Teacher!";
+	position: absolute;
+	top: 40px;
+	font-family: RobotoBlack;
+	font-size: 24px;
+}
+
+.teacher_name{
+	width: 70% !important;
+	margin-bottom: 40px;
+}
+.teacher_name option{
+	width: 70% !important;
+}
+
+a.go {
+	width: 70%;
+}

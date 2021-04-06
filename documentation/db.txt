@@ -1,0 +1,34 @@
+ГОТОВЫЕ РЕШЕНИЯ:
+
+ПОДРОБНО:
+
+	удалить текущую БД и создать заново пустую:
+		DB_CLEAR = True
+
+	очистить весь кэш парсера:
+		DB_CLEAR_CACHE = True
+
+	заново заполнить БД, не очищая ее:
+		DB_FULL_UPDATE = True
+
+	если True, то таблица обновится во время full_update:
+		DB_UPDATE_GROUPS = False
+		DB_UPDATE_TEACHERS = False
+		DB_UPDATE_SUBJECTS = False
+		DB_UPDATE_STUDENTS = False
+		DB_UPDATE_LESSONS = False
+
+	если True, то при обновлении данные обязательно скачаются заново;
+	если False, то будет использован кэш, если возможно:
+		DB_DOWNLOAD_GROUPS_LINKERS = False
+		DB_DOWNLOAD_TEACHERS_LINKERS = False
+		DB_DOWNLOAD_TEACHERS_SCHEDULES = False
+		DB_DOWNLOAD_GROUPS_LISTS = False
+
+
+
+	группы, которые будут добавлены в БД:
+		DB_GROUPS_LIMIT = r"Б20-5\d3"
+
+	процент учителей, которые будут добавлены в БД со страницы people:
+		DB_TEACHERS_LIMIT = 7
