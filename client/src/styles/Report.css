@@ -1,0 +1,68 @@
+.panelHeadTable{
+	/*width: 100%;*/
+	height: 70px;
+	/*margin-bottom: 20px;*/
+	background-color: #af08b2;
+	box-shadow: 0px 0px 14px 0px rgb(34 60 80 / 27%);
+	padding: 10px 30px;
+	border-radius: 5px 5px 0 0;
+}
+.panelHeadTable .tableWrap {
+	/*width: 200px;*/
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+.tableWrap .subjectToGroup{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+}
+.tableWrap .subjectToGroup .groups, .subjects{
+	max-width: 80%;
+	margin-right: 10%;
+}
+.tableWrap .subjectToGroup .types{
+	width: 100px;
+	margin-right: 10%;
+}
+.table-wrap{
+	width: 100%;
+	padding: 0 30px;
+	margin-top: 15px;
+}
+.TABLE table{
+	border-radius: 0 0 5px 5px;
+	overflow-x: scroll;
+	display: block;
+	table-layout: fixed;
+	word-wrap: break-word;
+}
+.TABLE table th .itemTH{
+	display: block;
+	width: 60px;
+	text-align: center;
+}
+.TABLE table td.main{
+	padding: 5px 12px;
+	position: relative;
+	width: 50px;
+	height: 100%;
+	overflow: hidden;
+}
+.TABLE table td.time{
+	width: 10% !important;
+}
+.TABLE table td.main input{
+	width: 100%;
+	height: 35px;
+}
+.TABLE table td.main button{
+	position: absolute;
+	right: 0px;
+	top: 4px;
+}
+.reportButton{
+	margin-left: 20px;
+}
