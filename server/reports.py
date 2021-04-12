@@ -136,10 +136,10 @@ class RM():
 		rows.extend([ [] for i in range(0, len(students))])
 
 		for h in thead:
-			if h == "id":
+			if h == "№":
 				for i, s in enumerate(students):
 					rows[i].append(s["id"])
-			elif h == "name":
+			elif h == "ФИО":
 				for i, s in enumerate(students):
 					rows[i].append(s["name"])
 			else:
