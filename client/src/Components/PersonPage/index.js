@@ -10,7 +10,6 @@ import Schedule 						from "./Schedule.js"
 import { PanelTeacher } 			from "./PanelTeacher.js"
 import { Footer } 					from "./Footer.js"
 import Report 							from "./Report"
-import EventEmmiter					from "../../EventEmmiter.js"
 
 // Styles
 import "../../styles/PersonPage.css"
@@ -39,7 +38,6 @@ class PersonPage extends React.Component {
 			durations: [],
 			compactSchedule: [],
 		}
-		this.emmiter = new EventEmmiter();
 	}
 
 	addUniqueItem(items, arr){
@@ -170,15 +168,14 @@ class PersonPage extends React.Component {
 					/>
 			}
 			case "table-score":
-				this.emmiter.emit("initReportType", {activeTypeTable: 1})
 			case "table-att":{
-				this.emmiter.emit("initReportType", {activeTypeTable: 0})
 				return (
 					<main>
 						<PanelTeacher 
-							countSubject={this.solveCounts(this.state.schedule).subjects.length} 
-							countGroups={this.solveCounts(this.state.schedule).groups.length} 
-							name={this.state.name}
+							countSubject={this.props.countSubjects} 
+							countGroups={this.props.countGroups} 
+							name={this.props.nameTeacher}
+							link={this.props.linkOnHomeMephi}
 						/>
 						<Report
 							compactSchedule={this.state.compactSchedule}
@@ -186,7 +183,6 @@ class PersonPage extends React.Component {
 							subjects={this.state.subjects}
 							durations={this.state.durations}
 							name={this.state.name}
-							emmiter={this.emmiter}
 						/>
 					</main>
 				)
@@ -250,7 +246,7 @@ class PersonPage extends React.Component {
 	render() {
 		return (
 			<div className="person-page-container">
-				<Header groups={this.state.groups} subjects={this.state.subjects} emmiter={this.emmiter}/>
+				<Header groups={this.state.groups} subjects={this.state.subjects}/>
 				{
 					this.Switcher(this)
 				}

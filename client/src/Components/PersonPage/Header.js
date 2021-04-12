@@ -7,7 +7,6 @@ import { useDispatch, useSelector, connect } from "react-redux"
 import { changeTypeReport, changeTypeSubject, changeGroup, changeSubject, changePriority } from "../../redux/actions"
 
 const ItemDropdownSubjects = (props) => {
-	console.log(props.groups)
 	const click = (subject, group) => {
 		props.changeSubject(subject)
 		props.changeGroup(group)
@@ -19,9 +18,9 @@ const ItemDropdownSubjects = (props) => {
 	return (
 		<DropdownButton
 			// as={ButtonGroup}
-			key={"right"}
-			id={`dropdown-button-drop-${"right"}`}
-			drop={"right"}
+			key={"left"}
+			id={`dropdown-button-drop-${"left"}`}
+			drop={"left"}
 			variant="secondary"
 			title={props.subject}
 		>
@@ -37,7 +36,6 @@ const ItemDropdownSubjects = (props) => {
 }
 
 const ItemDropdownGroups = (props) => {
-	console.log(props.groups)
 	const click = (subject, group) => {
 		props.changeSubject(subject)
 		props.changeGroup(group)

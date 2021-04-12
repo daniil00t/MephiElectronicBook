@@ -56,19 +56,25 @@ class ItemTable extends Component {
 	}
 	pressKey(e){
 		if(e.key == "Enter"){
-			this.setState({
-				value: e.target.value,
-				activeState: false
-			});
-			this.props.activate()
-			this.props.addChange({
-				col: this.state.activeCol,
-				row: this.state.activeRow,
-				value: e.target.value
-			})
-			let nowState = this.updateObject(this.state, {
-				value: e.target.value
-			})
+			if(!!e.target.value){
+				this.setState({
+					value: e.target.value,
+					activeState: false
+				})
+				this.props.activate()
+				this.props.addChange({
+					col: this.state.activeCol,
+					row: this.state.activeRow,
+					value: e.target.value
+				})
+			}
+			else{
+				this.setState({
+					activeState: false
+				})
+				this.props.activate()
+			}
+			
 		}
 	}
 	exitLabel(){
@@ -80,18 +86,18 @@ class ItemTable extends Component {
    render() {
 		switch(this.props.typeReport){
 			case "att":
-				return (<td className="main" style={this.props.col == 3 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span className="item-data">{this.state.value}</span></td>);
+				return (<td className="main" style={this.props.col == 3 ? {width: "320px", display: "block", height: "100%"} : {width: "40px", textAlign: "center", cursor: "pointer"}} onClick={this.activeItemTable.bind(this)}><span className="item-data" style={this.props.col > 3 ? (this.state.value == "+"? {color: "green"} : {color: "red"}) : {}}>{this.state.value}</span></td>);
 			case "score":
 				if(!this.state.activeState){
-					return (<td className="main" style={this.props.col == 3 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span className="item-data">{this.state.value}</span></td>);
+					return (<td  className={this.props.col > 3? "main time" : "main"} style={this.props.col == 3 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span>{this.state.value}</span></td>);
 				}else{
 					return (<td className="main" style={{width: "50px", padding: 0, color: "red"}}><input autoFocus ref={input => this.textInput = input} type="number" onKeyDown={this.pressKey.bind(this)} defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
 				}
 			case "ch":
 				if(!this.state.activeState){
-					return (<td className="main" style={this.props.col == 1 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span className="item-data">{this.state.value}</span></td>);
+					return (<td  className={this.props.col > 1? "main time" : "main"} style={this.props.col == 1 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span>{this.state.value}</span></td>);
 				}else{
-					return (<td className="main" style={{width: "50px", padding: 0, color: "red"}}><input ref={this.textInput} type="number" onKeyDown={this.pressKey.bind(this)} defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
+					return (<td className="main" style={{width: "50px", padding: 0, color: "red"}}><input autoFocus ref={input => this.textInput = input} type="number" onKeyDown={this.pressKey.bind(this)} defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
 				}
 		}
 		

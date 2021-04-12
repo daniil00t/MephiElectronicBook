@@ -70,7 +70,16 @@ export const reports = (state = {
       case REPORT_CHANGE_TYPE:
          return {
             ...state,
-            typeReport: action.payload
+            typeReport: action.payload,
+            data: {data: [], thead: []},
+            edit: {
+               changes: [],
+               isEdit: false,
+               active: {
+                  row: -1,
+                  col: -1
+               }
+            }
          }
       case REPORT_CHANGE_SUBJECT:
          return{
