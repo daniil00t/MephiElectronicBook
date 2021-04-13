@@ -58,7 +58,7 @@ class RM():
 		path = RP_FOLDER + str(report_id) + '.json'
 
 		if os.path.isfile(path):
-			with open(path, 'r') as f:
+			with open(path, 'r', encoding="utf-8") as f:
 				report = json.load(f)
 			return report
 		else:
@@ -136,10 +136,10 @@ class RM():
 		rows.extend([ [] for i in range(0, len(students))])
 
 		for h in thead:
-			if h == "id":
+			if h == "№":
 				for i, s in enumerate(students):
 					rows[i].append(s["id"])
-			elif h == "name":
+			elif h == "ФИО":
 				for i, s in enumerate(students):
 					rows[i].append(s["name"])
 			else:
