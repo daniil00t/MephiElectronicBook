@@ -105,6 +105,7 @@ class ItemTable extends Component {
 }
 
 const mapStateToProps = state => ({
+	report: state.report,
 	repedit: state.report.edit,
 	typeReport: state.report.typeReport
 })

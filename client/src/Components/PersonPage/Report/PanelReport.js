@@ -9,7 +9,8 @@ import {
    changeGroup, 
    changeTypeSubject,
    getReport,
-   saveReport
+   saveReport,
+   addChangeToReport
 } from "../../../redux/actions"
 
 const SubjectToGroup = (props) => {
@@ -79,6 +80,7 @@ const GroupToSubject = (props) => {
    var types = props.schedule.groupToSubject.reduce((acc, cur) => {
       return [...acc, cur.types]
    }, [])
+
    var typesRender = []
 
    if (props.report.group != ""){
@@ -94,7 +96,8 @@ const GroupToSubject = (props) => {
 
    return (
       <div className="subjectToGroup">
-         <select className="form-control subjects">
+         <select className="form-control subjects" onChange={e => props.dispatcher.changeGroup(e.target.value)}>
+         <option value={-1}>Выберите группу</option>
             {
                groups.map((el, index) => 
                   index == indexGroup ?
@@ -119,7 +122,7 @@ const GroupToSubject = (props) => {
                ):
                (<></>)
          }
-         <select className="form-control groups"> 
+         <select className="form-control groups" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}> 
             <option value={-1}>Выберете предмет</option>
             {
                subjects.map((el, index) => 

@@ -86,7 +86,7 @@ export const reports = (state = {
             ...state,
             subject: action.payload.subject,
             duration: action.payload.duration,
-            group: ""
+            // group: ""
          }
       case REPORT_CHANGE_TYPE_SUBJECT:
             return {
@@ -107,7 +107,7 @@ export const reports = (state = {
 			getRequestWithAccess({...state, nameTeacher: action.payload}, (data)=>{
 				action.asyncDispatch(renderReport({data: [], thead:[]}))
 				action.asyncDispatch(renderReport(data))
-			}, (error)=>{
+			}, error => {
             action.asyncDispatch(renderReport({data: [], thead:[]}))
             action.asyncDispatch(showNotification({
                title: "Ошибка вышла",
@@ -153,6 +153,10 @@ export const reports = (state = {
       case REPORT_EDIT_ADD_CHANGE:
          return{
             ...state,
+            data: {
+               ...state.data,
+               // data: data
+            },
             edit: {
                ...state.edit,
                changes: [...state.edit.changes, action.payload]
@@ -163,7 +167,7 @@ export const reports = (state = {
             ...state,
             edit: {
                ...state.edit,
-               changes: state.edit.changes.pop()
+               changes: state.edit.changes.slice(0, state.edit.changes.length-1)
             }
          }
       default: 

@@ -6,7 +6,7 @@ import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport } from "../../../redux/actions"
 
 
 
@@ -55,6 +55,16 @@ class Report extends React.Component {
 		}
 		return result
 	}
+	pickAllCol(index){
+		for (let i = 0; i < this.props.report.data.data.length; i++) {
+			console.log(i)
+			this.props.addChangeToReport({
+				row: i,
+				col: index,
+				value: "+"
+			})
+		}
+	}
 	render() {
 		return (
 			<div className="table-wrap">
@@ -70,7 +80,20 @@ class Report extends React.Component {
 					  <thead>
 					    <tr>
 					    	{
-					    		this.props.report.data.thead.map((el, index) => <th><span className="itemTH">{this.filterTime(el, index)}</span></th>)
+					    		this.props.report.data.thead.map((el, index) => {
+										switch(this.props.report.typeReport){
+											case "att":
+												if(index > 3)
+													return <th onClick={e => this.pickAllCol(index)}>
+																<span className="itemTH">{this.filterTime(el, index)}</span>
+															</th>
+											case "score":
+												return <th><span className="itemTH">{this.filterTime(el, index)}</span></th>
+											case "ch":
+												return <th><span className="itemTH">{el}</span></th>
+										}
+									}
+								)
 					    	}
 					    </tr>
 					  </thead>
@@ -98,7 +121,8 @@ const mapStateToProps = state => ({
 	report: state.report
 })
 const mapDispatchToProps = dispatch => ({
-	changeTypeReport: type => dispatch(changeTypeReport(type))
+	changeTypeReport: type => dispatch(changeTypeReport(type)),
+	addChangeToReport: change => dispatch(addChangeToReport(change))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Report)

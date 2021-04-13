@@ -155,20 +155,7 @@ class PersonPage extends React.Component {
 					</main>
 				)
 			}
-			case "groups": {
-				return <this.ListGroups 
-					groups={this.state.groups} 
-					handleClickOnLink={subject => self.props.changeSubject(subject)}
-					/>
-			}
-			case "subjects": {
-				return <this.ListSubjects 
-					subjects={this.state.subjects} 
-					handleClickOnLink={subject => self.props.changeSubject(subject)} 
-					/>
-			}
-			case "table-score":
-			case "table-att":{
+			case "table":{
 				return (
 					<main>
 						<PanelTeacher 
@@ -187,6 +174,17 @@ class PersonPage extends React.Component {
 					</main>
 				)
 			}
+			case "constructor":
+				return (
+					<main>
+						<PanelTeacher 
+							countSubject={this.props.countSubjects} 
+							countGroups={this.props.countGroups} 
+							name={this.props.nameTeacher}
+							link={this.props.linkOnHomeMephi}
+						/>
+					</main>
+				)
 			default:
 				return "Not Found Match";
 		}
