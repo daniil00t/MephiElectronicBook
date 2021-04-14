@@ -7,7 +7,7 @@
 /server/modules/config.json
 /server/config_auth.py
 /server/cache
-# /server/data
+/server/data
 /server/db_test.sql
 /test
 show.sql

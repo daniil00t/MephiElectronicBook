@@ -26,12 +26,16 @@ export const app = (state = startState, action) => {
             }  
          }
       case NOTIF_CLOSE:
+         console.log('close')
          return {
             ...state,
-            visible: false,
-            title: "",
-            content: "",
-            type: ""
+            notification: {
+               visible: false,
+               title: "",
+               content: "",
+               type: ""
+            }
+            
          }
       default:
          return state

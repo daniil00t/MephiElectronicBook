@@ -41,7 +41,7 @@
 }
 .TABLE table th .itemTH{
 	display: block;
-	width: 60px;
+	min-width: 70px;
 	text-align: center;
 }
 .TABLE table td.main{

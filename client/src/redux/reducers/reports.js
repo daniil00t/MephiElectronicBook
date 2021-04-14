@@ -133,9 +133,17 @@ export const reports = (state = {
             ...action.payload.report,
             data: table
          }, success => {
-            console.log('yes!!!')
+            action.asyncDispatch(showNotification({
+               title: `Вел дан!`,
+               content: "Ведомость сохранена",
+               type: "success"
+            }))
          }, error => {
-            console.error(error)
+            action.asyncDispatch(showNotification({
+               title: `Ошибка вышла`,
+               content: "Не удалось сохранить ведомость",
+               type: "error"
+            }))
          })
          return {
             ...state

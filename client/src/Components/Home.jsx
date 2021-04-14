@@ -2,8 +2,9 @@ import React 		from 'react'
 import { Link } 	from "react-router-dom"
 import { 
 	Button, 
-	Card } 			from "react-bootstrap"
+	Card} 			from "react-bootstrap"
 import Cookies		from "js-cookie"
+import Tooltip 	from "./Tooltip"
 
 import "../styles/Home.css"
 
@@ -54,6 +55,9 @@ export default class Home extends React.Component {
 						{this.switcher()}
 					</div>
 					<hr />
+					<Tooltip>
+						<div onMouseEnter={e => this.props.handler}>Hello!</div>
+					</Tooltip>
 					<div className="row">
 						<div className="col-lg-4 col-md-6 dfjcc">
 							<this.ItemCards 

@@ -10,6 +10,7 @@ import Schedule 						from "./Schedule.js"
 import { PanelTeacher } 			from "./PanelTeacher.js"
 import { Footer } 					from "./Footer.js"
 import Report 							from "./Report"
+import Tooltip 						from "../Tooltip"
 
 // Styles
 import "../../styles/PersonPage.css"
@@ -17,8 +18,10 @@ import { connect } from 'react-redux'
 import { 
 	setSchedule, 
 	changeSubject,
-	initGlobal
+	initGlobal,
+	showNotification
  } from "../../redux/actions"
+import Constructor from './Report/Constructor'
 
 
 
@@ -130,7 +133,11 @@ class PersonPage extends React.Component {
 				})
 
 			}, err => {
-				console.log(err);
+				this.props.showNotification({
+					title: "Error!",
+					content: "Please, check connect to server.",
+					type: "error"
+				})
 			});
 		}
 		else{
@@ -183,6 +190,7 @@ class PersonPage extends React.Component {
 							name={this.props.nameTeacher}
 							link={this.props.linkOnHomeMephi}
 						/>
+						<Constructor />
 					</main>
 				)
 			default:
@@ -257,7 +265,8 @@ class PersonPage extends React.Component {
 const mapDispatchToProps = dispatch => ({
 	changeSubject: subject => dispatch(changeSubject(subject)),
 	updateSchedule: schedule => dispatch(setSchedule(schedule)),
-	initGlobal: initState => dispatch(initGlobal(initState))
+	initGlobal: initState => dispatch(initGlobal(initState)),
+	showNotification: data => dispatch(showNotification(data))
 })
 
 const mapStateToProps = state => ({
