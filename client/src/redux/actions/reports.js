@@ -8,7 +8,8 @@ import {
    REPORT_SAVE_DATA,
    REPORT_RENDER_DATA,
    REPORT_EDIT_CHANGE_STATE,
-   REPORT_EDIT_ADD_CHANGE
+   REPORT_EDIT_ADD_CHANGE,
+   REPORT_EDIT_TO_BACK
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -60,4 +61,7 @@ export const changeStateEdit = () => ({
 export const addChangeToReport = change => ({
    type: REPORT_EDIT_ADD_CHANGE,
    payload: change
+})
+export const backChange = () => ({
+   type: REPORT_EDIT_TO_BACK
 })

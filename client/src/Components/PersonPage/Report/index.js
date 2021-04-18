@@ -6,7 +6,7 @@ import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport, backChange } from "../../../redux/actions"
 
 
 
@@ -14,15 +14,42 @@ class Report extends React.Component {
 	constructor(props) {
 		super(props);
 
-		function* putScoresTHead(minIndex, n){
-			for (let index = 0; index < n; index++) {
-				if(index > minIndex)
-					yield 50
-				else
-					yield 0
-			}
+		function* putScoresTHead(n){
+			for (let index = 0; index < n; index++)
+				yield 50
 		}
-
+		// Idea: i think that it will be able to better recieve from server to client 
+		// not string, but needed return object which exist the next parametres:
+		// thead = [
+		// 	{
+		// 		name: "ФИО",
+		// 		type: "string",
+		// 		enable: false
+		// 	},
+		// 	...
+		// 	{
+		// 		name: "Раздел 1",
+		// 		type: "number",
+		// 		enable: true,
+		// 		maxValue?: 50
+		// 	},
+		// 	{
+		// 		name: "Аттестация",
+		// 		type: "choose",
+		// 		enable: true,
+		// 		choosers: "а/н"
+		// 	}
+		// 	...
+		// 	{
+		// 		{
+		// 			name: "Сумма",
+		// 			type: "number",
+		// 			enable: false,
+		//				maxValue: 100,
+		// 			formula: "summ(#1, #2)" -> where #1 - start col, #2 - end col
+		// 		}
+		// 	}
+		// ]
 		this.state = {
 			// Schedule
 			table: {
@@ -32,12 +59,11 @@ class Report extends React.Component {
 				meta: {},
 				data: []
 			},
-			// state for items table
-			stateChanged: false,
-			showTT: false,
-			targets: [],
-			activeTarget: -1,
-			valuesScores: [...putScoresTHead(1, this.props.report.data.thead.length || 20)]
+			// state vars for ch report
+			showTT: false,	// state show pop-up
+			targets: [],	// linked <th /> for pop-up
+			activeTarget: -1,	// active index <th />
+			valuesScores: [...putScoresTHead(this.props.report.data.thead.length || 20)] // default value = 50 and count elements = 20
 		};
 		this.lastTime = ""
 	}
@@ -70,9 +96,7 @@ class Report extends React.Component {
 		return result
 	}
 	pickAllCol(index){
-		
 		for (let i = 0; i < this.props.report.data.data.length; i++) {
-			console.log(i)
 			this.props.addChangeToReport({
 				row: i,
 				col: index,
@@ -88,25 +112,39 @@ class Report extends React.Component {
 		this.setState({
 			valuesScores: arr
 		})
-		// this.forceUpdate()
+	}
+	componentDidMount(){
+		console.log(this.props.edit)
+	}
+	concatChanges(row, col){
+		if(this.props.changes.length > 0){
+			for (let i = this.props.changes.length - 1; i >= 0; i--) {
+				let item = this.props.changes[i]
+				if(item.row == row && item.col == col) return item.value
+			}
+		}
+		return this.props.report.data.data[row][col]
 	}
 	render() {
+		console.log(this.props.changes)
 		return (
 			<div className="table-wrap">
 				<Overlay
 					show={this.state.showTT}
 					target={this.state.targets[this.state.activeTarget]}
 					placement="bottom"
-					// container={ref.current}
 					containerPadding={20}
+					
 					>
-					<Popover id="popover-contained" onMouseLeave={e => this.setState({ showTT: !this.state.showTT })}>
+					<Popover id="popover-contained" onMouseEnter={e => this.setState({ showTT: true })} onMouseLeave={e => this.setState({ showTT: false })}>
 						<Popover.Title as="h3">Изменение границы оценок</Popover.Title>
 						<Popover.Content>
-							<input type="range" defaultValue={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" onChange={e => this.changeRange(e)}/>
+							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" onChange={e => this.changeRange(e)}/>
 						</Popover.Content>
 					</Popover>
 				</Overlay>
+
+
 				<div className="TABLE table-wrapper-scroll-x my-custom-scrollbar">
 					<PanelReport
 						self={this}
@@ -119,24 +157,27 @@ class Report extends React.Component {
 					  <thead>
 					    <tr>
 					    	{
+								
 					    		this.props.report.data.thead.map((el, index) => {
 										switch(this.props.report.typeReport){
 											case "att":
 												if(index > 2)
-													return <th data-key={index} onClick={e => this.pickAllCol(index)} onMouseEnter={e => this.setState({ activeTarget: index-3, showTT: !this.state.showTT })} ref={el => this.state.targets.push(el)}>
-																<span className="itemTH">{`${this.filterTime(el, index)} (${this.state.valuesScores[index]})`}</span>
+													return <th onClick={e => this.pickAllCol(index)} style={{cursor: "pointer"}}>
+																<span className="itemTH">{`${this.filterTime(el, index)}`}</span>
 															</th>
+												else return <th><span>{el}</span></th>
 											case "score":
 												if(index > 2)
-												return <th data-key={index} onClick={e => this.pickAllCol(index)} onMouseEnter={e => this.setState({ activeTarget: index-3, showTT: !this.state.showTT })} ref={el => this.state.targets.push(el)}>
-															<span className="itemTH">{`${this.filterTime(el, index)} (${this.state.valuesScores[index]})`}</span>
-														</th>
+													return <th>
+																<span className="itemTH">{`${this.filterTime(el, index)}`}</span>
+															</th>
+												else return <th><span>{el}</span></th>
 											case "ch":
 												if(index < 2)
 													return <th><span className="itemTH">{el}</span></th>
 												else
-													return <th data-key={index} onClick={e => this.pickAllCol(index)} onMouseEnter={e => this.setState({ activeTarget: index-2, showTT: !this.state.showTT })} ref={el => this.state.targets.push(el)}>
-															<span className="itemTH">{`${el} (${this.state.valuesScores[index]})`}</span>
+													return <th onMouseEnter={e => this.setState({ activeTarget: index-2, showTT: true })} onMouseLeave={e => this.setState({ showTT: false })} ref={el => this.state.targets[index-2] = el}>
+															<span className="itemTH">{el}<span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span></span>
 														</th>
 										}
 									}
@@ -150,7 +191,7 @@ class Report extends React.Component {
 						  		<tr>
 							  		{
 							  			row.map((el, Icol) => 
-										  <ItemTable row={Irow} col={Icol} value={el} />
+										  <ItemTable row={Irow} col={Icol} value={this.concatChanges(Irow, Icol)} maxValue={this.state.valuesScores[Icol]}/>
 										)
 							  		}
 						  		</tr>
@@ -165,11 +206,14 @@ class Report extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	report: state.report
+	report: state.report,
+	changes: state.report.edit.changes
 })
 const mapDispatchToProps = dispatch => ({
 	changeTypeReport: type => dispatch(changeTypeReport(type)),
-	addChangeToReport: change => dispatch(addChangeToReport(change))
+	addChangeToReport: change => dispatch(addChangeToReport(change)),
+
+	backChange: () => dispatch(backChange())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Report)

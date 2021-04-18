@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, ButtonGroup, ToggleButton } from "react-bootstrap"
+import { Table, ButtonGroup, ToggleButton, Overlay, Popover } from "react-bootstrap"
 
 class Constructor extends Component {
 	constructor(props) {
@@ -8,10 +8,18 @@ class Constructor extends Component {
 			// main data which will be able to recieve to server in the future
 			// but this needed upgrade: replace string to object -> "ФИО" -> {name: "ФИО", type: "number", maxValue: 50}
 			// then when we would render data we can write "ФИО[number](50)"
-			thead: ["№", "ФИО"],
-			test: [`студ #`, "Иванов Иван Иванович", ""],
-			newColIndex: 2,
-			stateEdit: false
+			thead: [
+				{
+					name: "№"
+				},
+				{ 
+					name: "ФИО"
+				}
+			],
+			test: ["студ #", "Иванов Иван Иванович", ""],
+			stateEdit: false,
+			showTT: true,
+			targetPointer: null
 		}
 		this.inputRef = React.createRef()
 		this.inputRefNumber = React.createRef()
@@ -19,19 +27,26 @@ class Constructor extends Component {
 	range(start, end) {
 		return Array.from({ length: end - start }, (_, i) => i)
 	}
-	changeEditState(){
+	addTheadItem(name){
 		this.setState({
-			stateEdit: !this.state.stateEdit
+			stateEdit: !this.state.stateEdit,
+			thead: [...this.state.thead,  
+				{
+					name: name,
+					type: "text",
+					enable: true,
+					formula: ""
+				}
+			],
+			test: [...this.state.test, ""],
 		})
-		// this.inputRef.current.focus()
 	}
-	changeEditStateKey(e){
+	changeEditState(){
+		this.setState({ stateEdit: !this.state.stateEdit })
+	}
+	addTheadKey(e){
 		if(e.key == "Enter")
-			this.setState({
-				stateEdit: !this.state.stateEdit,
-				thead: [...this.state.thead, this.inputRef.value + "("+ this.inputRefNumber.value +")"],
-				test: [...this.state.test, ""],
-			})
+			this.addTheadItem(this.inputRef.value)
 	}
    render() { 
 		return ( 
@@ -40,13 +55,13 @@ class Constructor extends Component {
 					<thead>
 						<tr>
 							{
-								this.state.thead.map((item, index) => <th>{item}</th>)
+								this.state.thead.map((item, index) => <th>{item.name}</th>)
 							}
 							{
 								!this.state.stateEdit?
 									(
 										<th>
-											<button onClick={e => this.changeEditState(e)}>+</button>
+											<button style={{width: "70px"}} onClick={e => this.changeEditState(e)}>+</button>
 										</th>
 									):
 									(
@@ -56,30 +71,48 @@ class Constructor extends Component {
 												type="text" 
 												placeholder="name column"
 												ref={input => (this.inputRef = input)} 
-												onKeyPress={e => this.changeEditStateKey(e)}
+												onKeyPress={e => this.addTheadKey(e)}
 											/>
-											<ButtonGroup toggle>
-												{["text", "number"].map((radio, idx) => (
-													<ToggleButton
-														variant="light"
-														key={idx}
-														type="radio"
-														name="radio"
-														value={radio}
-														checked={false}
-														onChange={(e) => console.log(e)}
-													> 
-														{radio}
-													</ToggleButton>
-												))}
-											</ButtonGroup>
-											<input 
-												// autoFocus 
-												type="number" 
-												placeholder="max value"
-												ref={input => (this.inputRefNumber = input)} 
-												// onKeyPress={e => this.changeEditStateKey(e)}
-											/>
+											<button onClick={e => this.addTheadItem(this.inputRef.value)}>Add</button>
+											<Overlay
+												show={this.state.showTT}
+												target={this.state.targetPointer}
+												placement="bottom"
+												containerPadding={20}
+												
+												>
+												<Popover id="popover-contained">
+													<Popover.Title as="h3">Дополнительные настройки</Popover.Title>
+													<Popover.Content>
+													<ButtonGroup toggle>
+														{["text", "number", "choose"].map((radio, idx) => (
+															<ToggleButton
+																variant="light"
+																key={idx}
+																type="radio"
+																name="radio"
+																value={radio}
+																checked={false}
+																onChange={(e) => console.log(e)}
+															> 
+																{radio}
+															</ToggleButton>
+														))}
+													</ButtonGroup>
+													<label>
+														<input type="checkbox" />
+														Enable
+													</label>
+													<input 
+														// autoFocus 
+														type="number" 
+														placeholder="max value"
+														ref={input => (this.inputRefNumber = input)} 
+														// onKeyPress={e => this.changeEditStateKey(e)}
+													/>
+													</Popover.Content>
+												</Popover>
+											</Overlay>
 										</th>
 									)
 							}

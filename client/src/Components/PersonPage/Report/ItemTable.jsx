@@ -44,10 +44,44 @@ const ScoreItem = props => {
 				<input 
 					autoFocus 
 					ref={input => props.textInput(input)} 
-					type="number" 
+					type="text" 
 					onKeyDown={props.pressKey} 
 					defaultValue={props.value} 
 					className="item-data"
+				/>
+				<button onClick={props.exitLabel}>X</button>
+			</td>
+		)
+	}
+}
+
+
+const ChItem = props => {
+	if(!props.activeState){
+		return (<td 
+			className={props.col > 1? "main time" : "main"} 
+			style={props.col == 1 ? 
+				{width: "320px", display: "block", height: "100%"}: 
+				{width: "50px"}} 
+			onClick={props.activeItemTable}
+		>
+			<span>
+				{props.value}
+			</span>
+		</td>
+		)
+	}
+	else {
+		return (
+			<td className="main" style={{width: "50px", padding: 0, color: "red"}}>
+				<input 
+					autoFocus 
+					ref={input => props.textInput(input)} 
+					type="text" 
+					onKeyDown={props.pressKey} 
+					defaultValue={props.value} 
+					className="item-data"
+					style={props.errorValue? {border: "2px solid red"}: {border: "2px solid transparent"}}
 				/>
 				<button onClick={props.exitLabel}>X</button>
 			</td>
@@ -64,7 +98,7 @@ class ItemTable extends Component {
 			activeRow: this.props.row,
 			activeCol: this.props.col,  
 			activeState: false,
-			value: this.props.value
+			errorValue: false
 		};
 		// new Ref for extraction value from input and focus on that
 		this.textInput = React.createRef();
@@ -89,7 +123,7 @@ class ItemTable extends Component {
 				// считаем, что editColMin: 3 (col > 3 - можно редактировать)
 				if(this.props.col >= enableEditAtt){
 					// if this field is empty then we can put uniquely value -> "+"
-					if(this.state.value == ""){
+					if(this.props.value == ""){
 						this.setValue("+")
 					}
 					else{
@@ -114,16 +148,36 @@ class ItemTable extends Component {
 	pressKey(e){
 		if(e.key == "Enter"){
 			if(!!e.target.value){
-				this.setState({
-					value: e.target.value,
-					activeState: false
-				})
-				this.props.activate()
-				this.props.addChange({
-					col: this.state.activeCol,
-					row: this.state.activeRow,
-					value: e.target.value
-				})
+				if(Number.isInteger(+e.target.value)){
+					if(+e.target.value > this.props.maxValue){
+						this.setState({ errorValue: true })
+					}
+					else{
+						this.setState({
+							value: +e.target.value,
+							activeState: false
+						})
+						this.props.activate()
+						this.props.addChange({
+							col: this.state.activeCol,
+							row: this.state.activeRow,
+							value: +e.target.value
+						})
+					}
+				}
+				else{
+					this.setState({
+						value: e.target.value,
+						activeState: false
+					})
+					this.props.activate()
+					this.props.addChange({
+						col: this.state.activeCol,
+						row: this.state.activeRow,
+						value: e.target.value
+					})
+				}
+
 			}
 			else{
 				this.setState({ activeState: false })
@@ -138,23 +192,28 @@ class ItemTable extends Component {
    render() {
 		switch(this.props.typeReport){
 			case "att":
-				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.state.value} />;
+				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} />;
 			case "score":
 				return <ScoreItem 
 					activeState={this.state.activeState}
 					col={this.props.col}
-					value={this.state.value}
-					activeItemTable={this.activeItemTable.bind(this)}
+					value={this.props.value}
 					textInput={input => this.textInput = input}
+					activeItemTable={this.activeItemTable.bind(this)}
 					pressKey={this.pressKey.bind(this)}
 					exitLabel={this.exitLabel.bind(this)}
 				/>
 			case "ch":
-				if(!this.state.activeState){
-					return (<td  className={this.props.col > 1? "main time" : "main"} style={this.props.col == 1 ? {width: "320px", display: "block", height: "100%"} : {width: "50px"}} onClick={this.activeItemTable.bind(this)}><span>{this.state.value}</span></td>);
-				}else{
-					return (<td className="main" style={{width: "50px", padding: 0, color: "red"}}><input autoFocus ref={input => this.textInput = input} type="number" onKeyDown={this.pressKey.bind(this)} defaultValue={this.state.value} className="item-data"/><button onClick={this.exitLabel.bind(this)}>X</button></td>);
-				}
+				return <ChItem 
+					activeState={this.state.activeState}
+					col={this.props.col}
+					value={this.props.value}
+					errorValue={this.state.errorValue}
+					textInput={input => this.textInput = input}
+					activeItemTable={this.activeItemTable.bind(this)}
+					pressKey={this.pressKey.bind(this)}
+					exitLabel={this.exitLabel.bind(this)}
+				/>
 		}
 		
    }

@@ -31,10 +31,19 @@ const asyncDispatchMiddleware = store => next => action => {
  
    return res;
  };
+const composeEnhancers = composeWithDevTools({ 
+	trace: true, 
+	traceLimit: 25 
+}); 
+const store = createStore(rootReducer, composeEnhancers(
+  applyMiddleware(thunkMiddleware, asyncDispatchMiddleware)
+))
 
-const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, asyncDispatchMiddleware))
+
+
+// const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware, asyncDispatchMiddleware))
 
 
 // The store now has the ability to accept thunk functions in `dispatch`
-const store = createStore(rootReducer, composedEnhancer)
+// const store = createStore(rootReducer, composedEnhancer)
 export default store

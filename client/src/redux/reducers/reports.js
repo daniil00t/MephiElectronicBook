@@ -48,7 +48,7 @@ var getRequestWithAccess = (req, accessCB, errorCB) => {
 export const reports = (state = {
    subject: "",
    group: "",
-   typeSubject: "Лек",
+   typeSubject: "NONE_TYPE",
    typeReport: "att",
    priority: "subjects",
    duration: "ALL_SEMESTER",
@@ -71,6 +71,7 @@ export const reports = (state = {
          return {
             ...state,
             typeReport: action.payload,
+            // clear fields
             data: {data: [], thead: []},
             edit: {
                changes: [],
@@ -117,7 +118,7 @@ export const reports = (state = {
          })
 			return state
 		case REPORT_RENDER_DATA:
-			console.log(action.payload)
+			console.log("кто-то использует ее..", action.payload)
 			return {
 				...state,
 				data: action.payload
@@ -159,12 +160,9 @@ export const reports = (state = {
             }
          }
       case REPORT_EDIT_ADD_CHANGE:
+         console.log(state)
          return{
             ...state,
-            data: {
-               ...state.data,
-               // data: data
-            },
             edit: {
                ...state.edit,
                changes: [...state.edit.changes, action.payload]

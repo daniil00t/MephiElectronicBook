@@ -2,6 +2,7 @@ import React 		from 'react'
 import Cookies 	from "js-cookie"
 import { Link } 	from "react-router-dom"
 import { Card, ListGroup } from 'react-bootstrap'
+import Hotkeys from 'react-hot-keys'
 
 // Components
 import { getScheduleTeacher } 	from "../../api.js"
@@ -19,7 +20,8 @@ import {
 	setSchedule, 
 	changeSubject,
 	initGlobal,
-	showNotification
+	showNotification,
+	backChange
  } from "../../redux/actions"
 import Constructor from './Report/Constructor'
 
@@ -249,9 +251,18 @@ class PersonPage extends React.Component {
 			</div>
 		);
 	}
+	onKeyDown(){
+		console.log("back")
+		this.props.backChange()
+	}
 	render() {
 		return (
 			<div className="person-page-container">
+				 <Hotkeys 
+					keyName="ctrl+z, ctrl+я" 
+					onKeyDown={this.onKeyDown.bind(this)}
+					// onKeyUp={this.onKeyUp.bind(this)}
+					></Hotkeys>
 				<Header groups={this.state.groups} subjects={this.state.subjects}/>
 				{
 					this.Switcher(this)
@@ -266,7 +277,9 @@ const mapDispatchToProps = dispatch => ({
 	changeSubject: subject => dispatch(changeSubject(subject)),
 	updateSchedule: schedule => dispatch(setSchedule(schedule)),
 	initGlobal: initState => dispatch(initGlobal(initState)),
-	showNotification: data => dispatch(showNotification(data))
+	showNotification: data => dispatch(showNotification(data)),
+
+	backChange: () => dispatch(backChange())
 })
 
 const mapStateToProps = state => ({

@@ -38,8 +38,8 @@ const SubjectToGroup = (props) => {
             {
                subjects.map((el, index) => 
                   index == indexSubject ?
-                  <option selected value={index}>{`${el} [${types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index]}]`}</option>
+                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )
             }
          </select>
@@ -51,8 +51,8 @@ const SubjectToGroup = (props) => {
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type}</option>):
-                              (<option value={type}>{type}</option>)
+                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
@@ -114,8 +114,8 @@ const GroupToSubject = (props) => {
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type}</option>):
-                              (<option value={type}>{type}</option>)
+                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
@@ -127,8 +127,8 @@ const GroupToSubject = (props) => {
             {
                subjects.map((el, index) => 
                   index == indexGroup ?
-                  <option selected value={index}>{`${el} [${types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index]}]`}</option>
+                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )   
             }
          </select>

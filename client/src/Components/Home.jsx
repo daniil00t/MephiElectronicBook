@@ -55,9 +55,6 @@ export default class Home extends React.Component {
 						{this.switcher()}
 					</div>
 					<hr />
-					<Tooltip>
-						<div onMouseEnter={e => this.props.handler}>Hello!</div>
-					</Tooltip>
 					<div className="row">
 						<div className="col-lg-4 col-md-6 dfjcc">
 							<this.ItemCards 
