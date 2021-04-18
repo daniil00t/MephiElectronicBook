@@ -25,8 +25,8 @@ DB_DOWNLOAD_TEACHERS_LINKERS 	= False
 DB_DOWNLOAD_TEACHERS_SCHEDULES 	= False
 DB_DOWNLOAD_GROUPS_LISTS 		= False
 
-DB_GROUPS_LIMIT 	= r"Б20-523"
-DB_TEACHERS_LIMIT 	= 20
+DB_GROUPS_LIMIT 	= r"\w\d\d-\d\d\d"
+DB_TEACHERS_LIMIT 	= 101
 
 
 # PATHES
@@ -45,20 +45,3 @@ RP_TEMPLATES_FOLDER = './server/data/reports/templates/'
 #------------------------------/ OVERWRITTEN /-------------------------------------
 #----------------------------------------------------------------------------------
 DEBUG = True
-
-# DB_CLEAR = True
-# DB_FULL_UPDATE = True
-
-# DB_UPDATE_GROUPS = True
-# DB_UPDATE_TEACHERS = True
-# DB_UPDATE_SUBJECTS = True
-# DB_UPDATE_STUDENTS = True
-# DB_UPDATE_LESSONS = True
-
-# DB_DOWNLOAD_GROUPS_LINKERS 		= True
-# DB_DOWNLOAD_TEACHERS_LINKERS 	= True
-# DB_DOWNLOAD_TEACHERS_SCHEDULES 	= True
-# DB_DOWNLOAD_GROUPS_LISTS 		= True
-
-# DB_GROUPS_LIMIT 	= r"\w\d\d-\d\d\d"
-# DB_TEACHERS_LIMIT 	= 20

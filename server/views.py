@@ -45,9 +45,6 @@ def __get_report():
 	print("[INFO] Sent from frontend:\n")
 	print_json(data)
 
-	# KOSTILY
-	#data["typeSubject"] = "Лек"
-
 	with RM() as rm:
 		result = rm.get(data)
 
@@ -66,9 +63,7 @@ def __get_report():
 def __set_report():
 	data = request.json
 	print_json(data)
-
-	# KOSTILY
-	# data["typeSubject"] = "Лек"
+	
 
 	with RM() as rm:
 		result = rm.set(data)
