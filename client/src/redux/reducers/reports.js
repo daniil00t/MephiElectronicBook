@@ -137,7 +137,8 @@ export const reports = (state = {
             action.asyncDispatch(showNotification({
                title: `Вел дан!`,
                content: "Ведомость сохранена",
-               type: "success"
+               type: "success",
+               autohide: true
             }))
          }, error => {
             action.asyncDispatch(showNotification({

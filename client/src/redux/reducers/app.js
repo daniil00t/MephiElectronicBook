@@ -22,7 +22,8 @@ export const app = (state = startState, action) => {
                visible: true,
                title: action.payload.title,
                content: action.payload.content,
-               type: action.payload.type
+               type: action.payload.type,
+               autohide: action.payload.autohide
             }  
          }
       case NOTIF_CLOSE:
@@ -33,7 +34,8 @@ export const app = (state = startState, action) => {
                visible: false,
                title: "",
                content: "",
-               type: ""
+               type: "",
+               autohide: false
             }
             
          }

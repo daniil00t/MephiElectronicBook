@@ -5,9 +5,11 @@ class Constructor extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			// main data which will be able to recieve to server in the future
-			// but this needed upgrade: replace string to object -> "ФИО" -> {name: "ФИО", type: "number", maxValue: 50}
-			// then when we would render data we can write "ФИО[number](50)"
+			/* 
+			* main data which will be able to recieve to server in the future
+			* but this needed upgrade: replace string to object -> "ФИО" -> {name: "ФИО", type: "number", maxValue: 50}
+			* then when we would render data we can write "ФИО[number] (50)"
+			*/
 			thead: [
 				{
 					name: "№"

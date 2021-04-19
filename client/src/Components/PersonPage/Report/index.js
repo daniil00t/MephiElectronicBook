@@ -162,7 +162,7 @@ class Report extends React.Component {
 										switch(this.props.report.typeReport){
 											case "att":
 												if(index > 2)
-													return <th onClick={e => this.pickAllCol(index)} style={{cursor: "pointer"}}>
+													return <th onClick={e => this.pickAllCol(index)} style={{cursor: "pointer"}} title="Нажмите, чтобы заполнить весь столбец">
 																<span className="itemTH">{`${this.filterTime(el, index)}`}</span>
 															</th>
 												else return <th><span>{el}</span></th>

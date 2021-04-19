@@ -26,13 +26,11 @@ class Notification extends Component {
             return {}
       }
    }
-   componentDidMount(){
-      if(this.props.visible)
+   render() {
+      if(this.props.notif.autohide)
          setTimeout(() => {
             this.props.closeNotification()
-         }, 3000)
-   }
-   render() {
+         }, 2000)
       return ( 
          <div
             style={{
@@ -48,7 +46,7 @@ class Notification extends Component {
                animation={true}
                delay={300}
                style={this.switcherType(this.props.notif.type)}
-               // autohide={5000}
+               // autohide={this.props.notif.autohide}
             >
                <Toast.Header>
 						<img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />

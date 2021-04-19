@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addChangeToReport, changeStateEdit } from '../../../redux/actions';
+import { addChangeToReport, changeStateEdit, showNotification } from '../../../redux/actions';
 
 const AttItem = (props) => {
 	return(
@@ -151,11 +151,13 @@ class ItemTable extends Component {
 				if(Number.isInteger(+e.target.value)){
 					if(+e.target.value > this.props.maxValue){
 						this.setState({ errorValue: true })
+						this.onError()
 					}
 					else{
 						this.setState({
 							value: +e.target.value,
-							activeState: false
+							activeState: false,
+							errorValue: false
 						})
 						this.props.activate()
 						this.props.addChange({
@@ -189,6 +191,14 @@ class ItemTable extends Component {
 		this.setState({ activeState: false })
 		this.props.activate()
 	}
+	onError(){
+		this.props.showNotification({
+			title: `Ошибка`,
+			content: "Значение не может больше ее предела",
+			type: "error",
+			autohide: true
+		})
+	}
    render() {
 		switch(this.props.typeReport){
 			case "att":
@@ -213,6 +223,7 @@ class ItemTable extends Component {
 					activeItemTable={this.activeItemTable.bind(this)}
 					pressKey={this.pressKey.bind(this)}
 					exitLabel={this.exitLabel.bind(this)}
+					onError={this.onError.bind(this)}
 				/>
 		}
 		
@@ -226,7 +237,8 @@ const mapStateToProps = state => ({
 })
 const mapDispatchToProps = dispatch => ({
 	activate: () => dispatch(changeStateEdit()),
-	addChange: change => dispatch(addChangeToReport(change))
+	addChange: change => dispatch(addChangeToReport(change)),
+	showNotification: not => dispatch(showNotification(not))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ItemTable)
