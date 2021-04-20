@@ -24,3 +24,6 @@ export const REPORT_EDIT_CHANGE_STATE     = "REPORT/EDIT_CHANGE_STATE"
 export const REPORT_EDIT_ADD_CHANGE       = "REPORT/EDIT_ADD_CHANGE"
 export const REPORT_EDIT_TO_BACK          = "REPORT/EDIT_TO_BACK"
 
+// template
+export const TEMPLATE_TOGGLE_EDIT         = "TEMPLATE/TOGGLE_EDIT"
+export const TEMPLATE_SAVE                = "TEMPLATE/SAVE"

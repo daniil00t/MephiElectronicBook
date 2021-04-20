@@ -192,7 +192,12 @@ class PersonPage extends React.Component {
 							name={this.props.nameTeacher}
 							link={this.props.linkOnHomeMephi}
 						/>
-						<Constructor />
+						<Constructor 
+							groups={this.state.groups}
+							subjects={this.state.subjects}
+							durations={this.state.durations}
+							name={this.state.name}
+						/>
 					</main>
 				)
 			default:

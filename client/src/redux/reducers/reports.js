@@ -11,7 +11,8 @@ import {
    
    REPORT_EDIT_CHANGE_STATE,
    REPORT_EDIT_ADD_CHANGE,
-   REPORT_EDIT_TO_BACK
+   REPORT_EDIT_TO_BACK,
+   TEMPLATE_TOGGLE_EDIT
 } from "./types"
 
 import { renderReport, getReport as actionGetReport, showNotification } from "../actions"
@@ -52,6 +53,10 @@ export const reports = (state = {
    typeReport: "att",
    priority: "subjects",
    duration: "ALL_SEMESTER",
+   template: {
+      isEdit: false,
+      data: []
+   },
    data: {
       data: [],
       thead: []
@@ -118,7 +123,6 @@ export const reports = (state = {
          })
 			return state
 		case REPORT_RENDER_DATA:
-			console.log("кто-то использует ее..", action.payload)
 			return {
 				...state,
 				data: action.payload
@@ -175,6 +179,18 @@ export const reports = (state = {
             edit: {
                ...state.edit,
                changes: state.edit.changes.slice(0, state.edit.changes.length-1)
+            }
+         }
+      
+
+      // TEMPLATE
+
+      case TEMPLATE_TOGGLE_EDIT:
+         return {
+            ...state,
+            template: {
+               ...state.template,
+               isEdit: !state.template.isEdit
             }
          }
       default: 

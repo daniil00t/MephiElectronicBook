@@ -9,7 +9,8 @@ import {
    REPORT_RENDER_DATA,
    REPORT_EDIT_CHANGE_STATE,
    REPORT_EDIT_ADD_CHANGE,
-   REPORT_EDIT_TO_BACK
+   REPORT_EDIT_TO_BACK,
+   TEMPLATE_TOGGLE_EDIT
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -64,4 +65,10 @@ export const addChangeToReport = change => ({
 })
 export const backChange = () => ({
    type: REPORT_EDIT_TO_BACK
+})
+
+// TEMPLATE
+
+export const toggleTemplateEdit = () => ({
+   type: TEMPLATE_TOGGLE_EDIT
 })

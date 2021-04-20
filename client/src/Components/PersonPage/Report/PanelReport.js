@@ -10,7 +10,8 @@ import {
    changeTypeSubject,
    getReport,
    saveReport,
-   addChangeToReport
+   addChangeToReport,
+   toggleTemplateEdit
 } from "../../../redux/actions"
 
 const SubjectToGroup = (props) => {
@@ -162,6 +163,7 @@ class PanelReport extends React.Component{
                         nameTeacher={this.props.nameTeacher}
                         />)
                }
+               
                <ButtonGroup toggle>
                   {CONFIG.TYPES_REPORTS.map((radio, idx) => (
                      <ToggleButton
@@ -171,12 +173,22 @@ class PanelReport extends React.Component{
                         name="radio"
                         value={radio.alias}
                         checked={this.props.report.typeReport === radio.alias}
-                        onChange={(e) => this.props.self.toggleTypeTable(e.currentTarget.value)}
+                        onChange={(e) => this.props.changeTypeReport(e.currentTarget.value)}
                      > 
                         {radio.name}
                      </ToggleButton>
                   ))}
                </ButtonGroup>
+               {
+                  this.props.report.typeReport == "ch"?
+                     <label className="switch" title="Редактирование">
+                        <input type="checkbox" checked={this.props.template.isEdit} onChange={e => this.props.toggleTemplateEdit()}/>
+                        <span className="slider round"></span>
+                     </label>:
+                     <></>
+               }
+               
+               
                <Button className="reportButton loadReport" onClick={e => this.loadReport(e)}>Load</Button>
                <Button className="reportButton saveReport" onClick={e => this.props.saveReport(this.props.report.data, this.props.report.edit.changes)}>Save</Button>
             </div>
@@ -188,7 +200,8 @@ class PanelReport extends React.Component{
 const mapStateToProps = state => ({
    schedule: state.schedule,
    report: state.report,
-   nameTeacher: state.GLOBAL.nameTeacher
+   nameTeacher: state.GLOBAL.nameTeacher,
+   template: state.report.template
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -197,7 +210,10 @@ const mapDispatchToProps = dispatch => ({
    changeTypeReport: type => dispatch(changeTypeReport(type)),
    changeTypeSubject: type => dispatch(changeTypeSubject(type)),
    getReport: nameTeacher => dispatch(getReport(nameTeacher)),
-   saveReport: (report, changes) => dispatch(saveReport(report, changes))
+   saveReport: (report, changes) => dispatch(saveReport(report, changes)),
+
+   // template
+   toggleTemplateEdit: () => dispatch(toggleTemplateEdit())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PanelReport)

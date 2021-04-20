@@ -147,7 +147,7 @@ class Report extends React.Component {
 
 				<div className="TABLE table-wrapper-scroll-x my-custom-scrollbar">
 					<PanelReport
-						self={this}
+						typeEdit="report"
 						name={this.props.name}
 						groups={this.props.groups}
 						subjects={this.props.subjects}
