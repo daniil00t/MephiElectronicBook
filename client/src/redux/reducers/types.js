@@ -26,4 +26,9 @@ export const REPORT_EDIT_TO_BACK          = "REPORT/EDIT_TO_BACK"
 
 // template
 export const TEMPLATE_TOGGLE_EDIT         = "TEMPLATE/TOGGLE_EDIT"
+export const TEMPLATE_CHANGE_PROPS			= "TEMPLATE/TOGGLE_EDIT"
+export const TEMPLATE_ADD_PART				= "TEMPLATE/ADD_PART"
+export const TEMPLATE_ADD_STUDENT			= "TEMPLATE/ADD_STUDENT"
+export const TEMPLATE_DELETE_COL				= "TEMPLATE/DELETE_COL"
+
 export const TEMPLATE_SAVE                = "TEMPLATE/SAVE"

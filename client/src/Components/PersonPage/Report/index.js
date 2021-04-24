@@ -6,7 +6,7 @@ import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport, backChange } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent } from "../../../redux/actions"
 
 
 
@@ -63,7 +63,10 @@ class Report extends React.Component {
 			showTT: false,	// state show pop-up
 			targets: [],	// linked <th /> for pop-up
 			activeTarget: -1,	// active index <th />
-			valuesScores: [...putScoresTHead(this.props.report.data.thead.length || 20)] // default value = 50 and count elements = 20
+			valuesScores: [...putScoresTHead(this.props.report.data.thead.length || 20)], // default value = 50 and count elements = 20
+
+			editNewStudent: false,
+			editNewPart: false,
 		};
 		this.lastTime = ""
 	}
@@ -96,13 +99,11 @@ class Report extends React.Component {
 		return result
 	}
 	pickAllCol(index){
-		for (let i = 0; i < this.props.report.data.data.length; i++) {
-			this.props.addChangeToReport({
-				row: i,
-				col: index,
-				value: "+"
-			})
-		}
+		this.props.addChangeToReport({
+			col: index,
+			value: "+",
+			allCol: true
+		})
 	}
 	changeRange(e){
 		// console.log(e)
@@ -120,6 +121,7 @@ class Report extends React.Component {
 		if(this.props.changes.length > 0){
 			for (let i = this.props.changes.length - 1; i >= 0; i--) {
 				let item = this.props.changes[i]
+				if(!!item.allCol && item.col == col) return item.value
 				if(item.row == row && item.col == col) return item.value
 			}
 		}
@@ -139,7 +141,7 @@ class Report extends React.Component {
 					<Popover id="popover-contained" onMouseEnter={e => this.setState({ showTT: true })} onMouseLeave={e => this.setState({ showTT: false })}>
 						<Popover.Title as="h3">Изменение границы оценок</Popover.Title>
 						<Popover.Content>
-							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" onChange={e => this.changeRange(e)}/>
+							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" min="0" max="100" step="5" onChange={e => this.changeRange(e)}/>
 						</Popover.Content>
 					</Popover>
 				</Overlay>
@@ -177,12 +179,27 @@ class Report extends React.Component {
 													return <th><span className="itemTH">{el}</span></th>
 												else
 													return <th onMouseEnter={e => this.setState({ activeTarget: index-2, showTT: true })} onMouseLeave={e => this.setState({ showTT: false })} ref={el => this.state.targets[index-2] = el}>
-															<span className="itemTH">{el}<span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span></span>
+																<div className="wrapTd" style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+																	{this.props.template.isEdit ? <button>x</button>: <></>}
+																	<span className="itemTH">{el}<span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span></span>
+																</div>
 														</th>
 										}
 									}
 								)
 					    	}
+							{
+								this.props.template.isEdit? 
+									<th>
+										<button onClick={e => this.setState({ editNewPart: !this.state.editNewPart })}>New Part</button>
+										{
+										this.state.editNewPart?
+											<div><input type="text" onKeyPress={e => e.key == "Enter"? this.props.addPart(e.target.value): console.log('f')}/><button>add</button></div>:
+											<></>
+										}
+									</th>:
+									<></>
+							}
 					    </tr>
 					  </thead>
 					  <tbody>
@@ -197,6 +214,20 @@ class Report extends React.Component {
 						  		</tr>
 						  	)
 						  }
+						  {
+								this.props.template.isEdit?
+									<tr>
+										<td><button onClick={e => this.setState({ editNewStudent: !this.state.editNewStudent })}>+</button></td>
+										{
+											this.state.editNewStudent?
+												<td><input type="text" onKeyPress={e => e.key == "Enter"? this.props.addStudent(e.target.value): console.log('f')}/></td>:
+												<></>
+										}
+									</tr>:
+									<></>
+
+						  }
+						  
 					  </tbody>
 					</Table>
 				</div>
@@ -207,13 +238,17 @@ class Report extends React.Component {
 
 const mapStateToProps = state => ({
 	report: state.report,
-	changes: state.report.edit.changes
+	changes: state.report.edit.changes,
+	template: state.report.template
 })
 const mapDispatchToProps = dispatch => ({
 	changeTypeReport: type => dispatch(changeTypeReport(type)),
 	addChangeToReport: change => dispatch(addChangeToReport(change)),
 
-	backChange: () => dispatch(backChange())
+	backChange: () => dispatch(backChange()),
+
+	addPart: name => dispatch(template__addPart(name)),
+	addStudent: name => dispatch(template__addStudent(name))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Report)

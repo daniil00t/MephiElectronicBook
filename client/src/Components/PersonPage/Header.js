@@ -122,7 +122,7 @@ const Header = (props) => {
 					<Link onClick={e => changeTypeTable("score")} to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
 					<Link onClick={e => changeTypeTable("ch")} to="/personalPage/tables/score" className="dropdown-item">Итоговая ведомость</Link>
 					<NavDropdown.Divider />
-					<Link to="/personalPage/constructor" className="dropdown-item">Конструктор</Link>
+					<Link to="/personalPage/constructor" className="dropdown-item" style={{pointerEvents: "none", cursor: "default"}}>Конструктор</Link>
 				</NavDropdown>
 				
 				<Nav.Link href="#home">Помощь</Nav.Link>

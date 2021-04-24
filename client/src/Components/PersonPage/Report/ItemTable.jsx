@@ -149,7 +149,7 @@ class ItemTable extends Component {
 		if(e.key == "Enter"){
 			if(!!e.target.value){
 				if(Number.isInteger(+e.target.value)){
-					if(+e.target.value > this.props.maxValue){
+					if(+e.target.value > this.props.maxValue || +e.target.value < 0){
 						this.setState({ errorValue: true })
 						this.onError()
 					}
@@ -194,7 +194,7 @@ class ItemTable extends Component {
 	onError(){
 		this.props.showNotification({
 			title: `Ошибка`,
-			content: "Значение не может больше ее предела",
+			content: "Значение не может больше ее предела или меньше нуля",
 			type: "error",
 			autohide: true
 		})

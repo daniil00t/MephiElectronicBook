@@ -11,7 +11,6 @@ import Schedule 						from "./Schedule.js"
 import { PanelTeacher } 			from "./PanelTeacher.js"
 import { Footer } 					from "./Footer.js"
 import Report 							from "./Report"
-import Tooltip 						from "../Tooltip"
 
 // Styles
 import "../../styles/PersonPage.css"
