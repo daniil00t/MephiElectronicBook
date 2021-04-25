@@ -40,7 +40,7 @@ if(typeof(String.prototype.trim) === "undefined"){
 }
 
 
-const compileFormula = (formula) => {
+const compileFormula = (formula, curCol) => {
 	let alias 			= ""
 	let arg1 			= -1
 	let arg2 			= -1
@@ -49,8 +49,10 @@ const compileFormula = (formula) => {
 		case "summ": 				alias = SUMM_RANGE;break
 		case "summ_separate": 	alias = SUMM_SEPARATE;break
 		case "procents": 			alias = PROCENTS;break
+		// case "percent": 			alias = PROCENTS;break
 		case "count": 				alias = COUNT;break
 		case "average": 			alias = AVERAGE;break
+		// case "avarage": 			alias = AVERAGE;break
 		case "convert": 			alias = CONVERT;break
 		case "trashold": 			alias = TRASHOLD;break
 		case "ratio": 				alias = RATIO;break
@@ -63,7 +65,7 @@ const compileFormula = (formula) => {
 	}
 	else{
 		arg1 = _arguments[0]
-		arg2 = _arguments[1]
+		arg2 = _arguments[1] == "#curCol"? curCol: _arguments[1]
 	}
 
 	return {
@@ -74,8 +76,8 @@ const compileFormula = (formula) => {
 	}
 }
 
-const compileAndMake = (formula) => {
-	const cmp = compileFormula(formula)
+const compileAndMake = (formula, curCol) => {
+	const cmp = compileFormula(formula, curCol)
 	const convert = [
 		{
 			ECTS: "A",
@@ -130,16 +132,20 @@ const compileAndMake = (formula) => {
 				return summ
 			}
 		case SUMM_SEPARATE:
+			console.log(cmp)
 			return (table, i) => {
 				let summ = 0
-				cmp.separateCols.map(col => summ += +table[i][col])
+				cmp.separateCols.length != 0?
+					cmp.separateCols.map(col => summ += +table[i][col]):
+					summ = +table[i][+cmp.arg1] + (+table[i][+cmp.arg2])
 				return summ
 			}
 		case PROCENTS:
+			console.log(cmp)
 			return (table, i) => {
-				let countCommon = cmp.arg2 - cmp.arg1 + 1
+				let countCommon = +cmp.arg2 - cmp.arg1 + 1
 				let count = 0
-				for (let index = cmp.arg1; index <= cmp.arg2; index++) {
+				for (let index = +cmp.arg1; index <= +cmp.arg2; index++) {
 					if(!!table[i][index]) count++
 				}
 				return Math.round(count / countCommon * 100)
@@ -153,15 +159,16 @@ const compileAndMake = (formula) => {
 				return count
 			}
 		case AVERAGE:
+			console.log(cmp)
 			return (table, i) => {
-				let count = table[i].filter((el, index) => index >= cmp.separateCols[0] && !!el).reduce((acc, cur) => acc + 1, 0)
+				let count = table[i].filter((el, index) => index >= cmp.separateCols[0] && !!el).length
 				let summ = table[i].filter((el, index) => index >= cmp.separateCols[0] && !!el).reduce((acc, cur) => acc + (+cur), 0)
 
 				console.log(count, summ)
 				// for (let index = cmp.separateCols[0]; index < table[i].length; index++) {
 				// 	if(!!table[i][index]) summ += +table[i][index]
 				// }
-				return Math.round(summ / count)
+				return +((summ / count).toFixed(2)) || 0
 			}
 		case CONVERT:
 			return (table, i) => {
@@ -193,16 +200,16 @@ const compileAndMake = (formula) => {
 	}
 }
 
-// test table
-const table = [
-	["+", "10", "", "", "40"],
-	["25", "", "", "", "91"],
-	["", "", "14", "", "80"]
-]
-for (let i = 0; i < table.length; i++) {
-	// table[i][3] = compileAndMake("trashold(0, 100, a, н/a)")(table, i)
-	table[i][3] = compileAndMake("ratio(0, 1)")(table, i)
-}
-console.log(table)
+// // test table
+// const table = [
+// 	["+", "10", "", "", "40"],
+// 	["25", "", "", "", "91"],
+// 	["", "", "14", "", "80"]
+// ]
+// for (let i = 0; i < table.length; i++) {
+// 	// table[i][3] = compileAndMake("trashold(0, 100, a, н/a)")(table, i)
+// 	table[i][3] = compileAndMake("ratio(0, #curCol)", 0)(table, i)
+// }
+// console.log(table)
 
-// export default compileAndMake
+export default compileAndMake

@@ -22,6 +22,7 @@ export const REPORT_RENDER_DATA           = "REPORT/RENDER_DATA"
 // Edit report
 export const REPORT_EDIT_CHANGE_STATE     = "REPORT/EDIT_CHANGE_STATE"
 export const REPORT_EDIT_ADD_CHANGE       = "REPORT/EDIT_ADD_CHANGE"
+export const REPORT_FULLUPDATE_DATA       = "REPORT/FULLUPDATE_DATA"
 export const REPORT_EDIT_TO_BACK          = "REPORT/EDIT_TO_BACK"
 
 // template

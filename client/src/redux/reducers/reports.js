@@ -14,10 +14,12 @@ import {
 	REPORT_EDIT_TO_BACK,
 	TEMPLATE_TOGGLE_EDIT,
 	TEMPLATE_ADD_PART,
-	TEMPLATE_ADD_STUDENT
+	TEMPLATE_ADD_STUDENT,
+	REPORT_FULLUPDATE_DATA
 } from "./types"
 
-import { renderReport, getReport as actionGetReport, showNotification } from "../actions"
+import { renderReport, getReport as actionGetReport, showNotification, fullUpdate } from "../actions"
+import compileAndMake from "../../Components/PersonPage/Report/compile"
 
 import { getReport, setReport } from "../../api"
 
@@ -67,8 +69,14 @@ export const reports = (state = {
 		lastColIndex: 3
 	},
 	data: {
-		data: [],
-		thead: []
+		thead: [],
+		meta: {
+			curCol: 0
+		},
+		xlsx: {
+			data: [],
+			columns: []
+		}
 	},
 	edit: {
 		changes: [],
@@ -86,7 +94,7 @@ export const reports = (state = {
 				...state,
 				typeReport: action.payload,
 				// clear fields
-				data: {data: [], thead: []},
+				data: {xlsx: {data: [], columns: []}, thead: [], meta: {curCol: 0}},
 				edit: {
 					changes: [],
 					isEdit: false,
@@ -120,10 +128,10 @@ export const reports = (state = {
 			}
 		case REPORT_GET_DATA:
 			getRequestWithAccess({...state, nameTeacher: action.payload}, (data)=>{
-				action.asyncDispatch(renderReport({data: [], thead:[]}))
+				// action.asyncDispatch(renderReport({data: [], thead:[]}))
 				action.asyncDispatch(renderReport(data))
 			}, error => {
-				action.asyncDispatch(renderReport({data: [], thead:[]}))
+				action.asyncDispatch(renderReport({xlsx: {data: [], columns: []}}))
 				action.asyncDispatch(showNotification({
 					title: "Ошибка вышла",
 					content: "Не удалось загрузить ведомость",
@@ -132,6 +140,7 @@ export const reports = (state = {
 			})
 			return state
 		case REPORT_RENDER_DATA:
+			console.log(action.payload)
 			return {
 				...state,
 				data: action.payload
@@ -139,22 +148,25 @@ export const reports = (state = {
 
 		case REPORT_SAVE_DATA:
 			console.log(action.payload)
-			let table = action.payload.report.data
+			let table = state.data.xlsx.data
 			action.payload.changes.map(change => {
+				console.log(!!change.allCol)
 				if(!!change.allCol){
 					console.log(change, table)
 					for (let i = 0; i < table.length; i++)
 						table[i][change.col] = change.value
-
 				}
 				else{
 					table[change.row][change.col] = change.value
-					// console.log('not all col')
 				}
 			})
 			setReport({
-				...action.payload.report,
-				data: table
+				...state.data.report_data,
+				...state.data,
+				xlsx: {
+					...state.data.xlsx,
+					data: table
+				}
 			}, success => {
 				action.asyncDispatch(showNotification({
 					title: `Вел дан!`,
@@ -190,13 +202,13 @@ export const reports = (state = {
 			const changes = state.edit.changes
 			let indexCol = -1
 			changes.map((item, index) => {
-				if(item.col == action.payload.col) indexCol = index
+				if(item.col == action.payload.col && !!item.allCol) indexCol = index
 			})
 			if(~indexCol)
 				changes[indexCol].value = !!changes[indexCol].value? "": "+"
 			else
 				changes.push(action.payload)
-			console.log(changes)
+			action.asyncDispatch(fullUpdate())
 			return{
 				...state,
 				edit: {
@@ -212,7 +224,42 @@ export const reports = (state = {
 					changes: state.edit.changes.slice(0, state.edit.changes.length-1)
 				}
 			}
-		
+		case REPORT_FULLUPDATE_DATA:
+			const thead = state.data.thead
+			const curCol = state.data.meta.curCol
+			const concatChanges = (row, col) => {
+				if(state.edit.changes.length > 0){
+					for (let i = state.edit.changes.length - 1; i >= 0; i--) {
+						let item = state.edit.changes[i]
+						// if(!!item.allCol && item.col == col) return item.value // for all col
+						if(item.row == row && item.col == col) return item.value
+					}
+				}
+				return state.data.xlsx.data[row][col]
+			}
+			let _table = []
+			state.data.xlsx.data.map((row, Irow) => {
+				_table[Irow] = []
+				row.map((col, Icol) => _table[Irow].push(concatChanges(Irow, Icol)))
+			})
+
+			thead.map((th, Icol) => {
+				if(!!th.formula){
+					_table.map((row, Irow) => {
+						_table[Irow][Icol] = compileAndMake(th.formula, curCol)(_table, Irow)
+					})
+				}
+			})
+			return {
+				...state,
+				data: {
+					...state.data,
+					xlsx: {
+						...state.data.xlsx,
+						data: _table
+					}
+				}
+			}
 
 		// TEMPLATE
 

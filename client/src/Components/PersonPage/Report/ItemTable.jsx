@@ -6,7 +6,7 @@ const AttItem = (props) => {
 	return(
 		<td 
 			className="main" 
-			style={props.col == 2 ? 
+			style={props.col == 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
 				{width: "40px", textAlign: "center", cursor: "pointer"}
 			} 
@@ -14,7 +14,7 @@ const AttItem = (props) => {
 		>
 			<span 
 				className="item-data" 
-				style={props.col > 2 ? (props.value == "+"? {color: "green"} : {color: "red"}) : {}}
+				style={props.col > 3 ? (props.value == "+"? {color: "green"} : {color: "red"}) : {}}
 			>
 				{props.value}
 			</span>
@@ -27,7 +27,7 @@ const ScoreItem = props => {
 	if(!props.activeState){
 		return (<td 
 			className={props.col > 2? "main time" : "main"} 
-			style={props.col == 2 ? 
+			style={props.col == 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
 				{width: "50px"}} 
 			onClick={props.activeItemTable}
