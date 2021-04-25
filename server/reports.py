@@ -239,7 +239,7 @@ class RM():
 
 
 	def set(self, report):
-		report_data = self.__convert_report_data(report, convert_to="back")
+		report_data = self.__convert_report_data(report["report_data"], convert_to="back")
 
 		with DB() as db:
 			report_id = db.get_report_id(report_data)
