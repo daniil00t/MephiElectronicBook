@@ -9,7 +9,9 @@ import {
    changeGroup, 
    changeTypeSubject,
    getReport,
-   saveReport
+   saveReport,
+   addChangeToReport,
+   toggleTemplateEdit
 } from "../../../redux/actions"
 
 const SubjectToGroup = (props) => {
@@ -37,8 +39,8 @@ const SubjectToGroup = (props) => {
             {
                subjects.map((el, index) => 
                   index == indexSubject ?
-                  <option selected value={index}>{`${el} [${types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index]}]`}</option>
+                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )
             }
          </select>
@@ -50,8 +52,8 @@ const SubjectToGroup = (props) => {
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type}</option>):
-                              (<option value={type}>{type}</option>)
+                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
@@ -79,6 +81,7 @@ const GroupToSubject = (props) => {
    var types = props.schedule.groupToSubject.reduce((acc, cur) => {
       return [...acc, cur.types]
    }, [])
+
    var typesRender = []
 
    if (props.report.group != ""){
@@ -94,7 +97,8 @@ const GroupToSubject = (props) => {
 
    return (
       <div className="subjectToGroup">
-         <select className="form-control subjects">
+         <select className="form-control subjects" onChange={e => props.dispatcher.changeGroup(e.target.value)}>
+         <option value={-1}>Выберите группу</option>
             {
                groups.map((el, index) => 
                   index == indexGroup ?
@@ -111,21 +115,21 @@ const GroupToSubject = (props) => {
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type}</option>):
-                              (<option value={type}>{type}</option>)
+                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
                ):
                (<></>)
          }
-         <select className="form-control groups"> 
+         <select className="form-control groups" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}> 
             <option value={-1}>Выберете предмет</option>
             {
                subjects.map((el, index) => 
                   index == indexGroup ?
-                  <option selected value={index}>{`${el} [${types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index]}]`}</option>
+                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )   
             }
          </select>
@@ -159,6 +163,7 @@ class PanelReport extends React.Component{
                         nameTeacher={this.props.nameTeacher}
                         />)
                }
+               
                <ButtonGroup toggle>
                   {CONFIG.TYPES_REPORTS.map((radio, idx) => (
                      <ToggleButton
@@ -168,12 +173,22 @@ class PanelReport extends React.Component{
                         name="radio"
                         value={radio.alias}
                         checked={this.props.report.typeReport === radio.alias}
-                        onChange={(e) => this.props.self.toggleTypeTable(e.currentTarget.value)}
+                        onChange={(e) => this.props.changeTypeReport(e.currentTarget.value)}
                      > 
                         {radio.name}
                      </ToggleButton>
                   ))}
                </ButtonGroup>
+               {
+                  this.props.report.typeReport == "ch"?
+                     <label className="switch" title="Редактирование">
+                        <input type="checkbox" checked={this.props.template.isEdit} onChange={e => this.props.toggleTemplateEdit()}/>
+                        <span className="slider round"></span>
+                     </label>:
+                     <></>
+               }
+               
+               
                <Button className="reportButton loadReport" onClick={e => this.loadReport(e)}>Load</Button>
                <Button className="reportButton saveReport" onClick={e => this.props.saveReport(this.props.report.data, this.props.report.edit.changes)}>Save</Button>
             </div>
@@ -185,7 +200,8 @@ class PanelReport extends React.Component{
 const mapStateToProps = state => ({
    schedule: state.schedule,
    report: state.report,
-   nameTeacher: state.GLOBAL.nameTeacher
+   nameTeacher: state.GLOBAL.nameTeacher,
+   template: state.report.template
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -194,7 +210,10 @@ const mapDispatchToProps = dispatch => ({
    changeTypeReport: type => dispatch(changeTypeReport(type)),
    changeTypeSubject: type => dispatch(changeTypeSubject(type)),
    getReport: nameTeacher => dispatch(getReport(nameTeacher)),
-   saveReport: (report, changes) => dispatch(saveReport(report, changes))
+   saveReport: (report, changes) => dispatch(saveReport(report, changes)),
+
+   // template
+   toggleTemplateEdit: () => dispatch(toggleTemplateEdit())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PanelReport)

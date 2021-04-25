@@ -6,21 +6,16 @@ import { closeNotification } from "../../redux/actions"
 class Notification extends Component {
    constructor(props){
       super(props);
-      this.state = {
-         visible: false
-      }
    }
    handleClose(){
       this.props.closeNotification()
-      this.setState({
-         visible: false
-      })
    }
    switcherType(type){
       switch(this.props.type) {
-         case "warning": 
+         case "success": 
             return {
-               backgroundColor: "yellow",
+               backgroundColor: "green",
+               color: "white"
             }
          case "error":
             return {
@@ -31,12 +26,11 @@ class Notification extends Component {
             return {}
       }
    }
-   componentDidMount(){
-      this.props.notif.visible != this.state.visible ?
-         this.setState({visible: this.props.notif.visible}):
-         console.log("dfsdf")
-   }
    render() {
+      if(this.props.notif.autohide)
+         setTimeout(() => {
+            this.props.closeNotification()
+         }, 2000)
       return ( 
          <div
             style={{
@@ -46,18 +40,18 @@ class Notification extends Component {
             }}
             >
             <Toast 
-               show={this.state.visible} 
+               show={this.props.visible} 
                onClose={this.handleClose.bind(this)} 
                // style={this.state.visible ? {display: "block"} : {display: "none"}}
                animation={true}
                delay={300}
                style={this.switcherType(this.props.notif.type)}
-               // autohide={true}
+               // autohide={this.props.notif.autohide}
             >
                <Toast.Header>
-               <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
-               <strong className="mr-auto">{this.props.notif.title}</strong>
-               <small>{this.props.time}</small>
+						<img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
+						<strong className="mr-auto">{this.props.notif.title}</strong>
+						<small>{this.props.time}</small>
                </Toast.Header>
                <Toast.Body>{this.props.notif.content}</Toast.Body>
             </Toast>

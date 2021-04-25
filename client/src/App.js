@@ -35,8 +35,8 @@ const App = (props) => {
 					/>
 					<Footer />
 				</Route>
-				<Route path="/personalPage/tables/att">
-					<PersonPage match={"table-att"}/>
+				<Route path="/personalPage/tables">
+					<PersonPage match={"table"}/>
 					<Notification 
 						type={props.notification.type}
 						title={props.notification.title} 
@@ -45,28 +45,8 @@ const App = (props) => {
 						visible={props.notification.visible}
 					/>
 				</Route>
-				<Route path="/personalPage/tables/score">
-					<PersonPage match={"table-score"}/>
-					<Notification 
-						type={props.notification.type}
-						title={props.notification.title} 
-						time="1 second ago" 
-						description={props.notification.content} 
-						visible={props.notification.visible}
-					/>
-				</Route>
-				<Route path="/personalPage/groups">
-					<PersonPage match={"groups"}/>
-					<Notification 
-						type={props.notification.type}
-						title={props.notification.title} 
-						time="1 second ago" 
-						description={props.notification.content} 
-						visible={props.notification.visible}
-					/>
-				</Route>
-				<Route path="/personalPage/subjects">
-					<PersonPage match={"subjects"}/>
+				<Route path="/personalPage/constructor">
+					<PersonPage match={"constructor"}/>
 					<Notification 
 						type={props.notification.type}
 						title={props.notification.title} 

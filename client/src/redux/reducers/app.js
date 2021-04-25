@@ -22,16 +22,22 @@ export const app = (state = startState, action) => {
                visible: true,
                title: action.payload.title,
                content: action.payload.content,
-               type: action.payload.type
+               type: action.payload.type,
+               autohide: action.payload.autohide
             }  
          }
       case NOTIF_CLOSE:
+         console.log('close')
          return {
             ...state,
-            visible: false,
-            title: "",
-            content: "",
-            type: ""
+            notification: {
+               visible: false,
+               title: "",
+               content: "",
+               type: "",
+               autohide: false
+            }
+            
          }
       default:
          return state

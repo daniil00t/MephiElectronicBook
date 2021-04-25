@@ -9,7 +9,8 @@ export const showNotification = (payload) => {
       payload: {
          title: payload.title,
          content: payload.content,
-         type: payload.type
+         type: payload.type,
+         autohide: payload.autohide
       }
    }
 }

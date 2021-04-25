@@ -2,8 +2,9 @@ import React 		from 'react'
 import { Link } 	from "react-router-dom"
 import { 
 	Button, 
-	Card } 			from "react-bootstrap"
+	Card} 			from "react-bootstrap"
 import Cookies		from "js-cookie"
+import Tooltip 	from "./Tooltip"
 
 import "../styles/Home.css"
 

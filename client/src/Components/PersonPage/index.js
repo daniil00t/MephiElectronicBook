@@ -2,6 +2,7 @@ import React 		from 'react'
 import Cookies 	from "js-cookie"
 import { Link } 	from "react-router-dom"
 import { Card, ListGroup } from 'react-bootstrap'
+import Hotkeys from 'react-hot-keys'
 
 // Components
 import { getScheduleTeacher } 	from "../../api.js"
@@ -17,8 +18,11 @@ import { connect } from 'react-redux'
 import { 
 	setSchedule, 
 	changeSubject,
-	initGlobal
+	initGlobal,
+	showNotification,
+	backChange
  } from "../../redux/actions"
+import Constructor from './Report/Constructor'
 
 
 
@@ -130,7 +134,11 @@ class PersonPage extends React.Component {
 				})
 
 			}, err => {
-				console.log(err);
+				this.props.showNotification({
+					title: "Error!",
+					content: "Please, check connect to server.",
+					type: "error"
+				})
 			});
 		}
 		else{
@@ -155,20 +163,7 @@ class PersonPage extends React.Component {
 					</main>
 				)
 			}
-			case "groups": {
-				return <this.ListGroups 
-					groups={this.state.groups} 
-					handleClickOnLink={subject => self.props.changeSubject(subject)}
-					/>
-			}
-			case "subjects": {
-				return <this.ListSubjects 
-					subjects={this.state.subjects} 
-					handleClickOnLink={subject => self.props.changeSubject(subject)} 
-					/>
-			}
-			case "table-score":
-			case "table-att":{
+			case "table":{
 				return (
 					<main>
 						<PanelTeacher 
@@ -187,6 +182,23 @@ class PersonPage extends React.Component {
 					</main>
 				)
 			}
+			case "constructor":
+				return (
+					<main>
+						<PanelTeacher 
+							countSubject={this.props.countSubjects} 
+							countGroups={this.props.countGroups} 
+							name={this.props.nameTeacher}
+							link={this.props.linkOnHomeMephi}
+						/>
+						<Constructor 
+							groups={this.state.groups}
+							subjects={this.state.subjects}
+							durations={this.state.durations}
+							name={this.state.name}
+						/>
+					</main>
+				)
 			default:
 				return "Not Found Match";
 		}
@@ -243,9 +255,18 @@ class PersonPage extends React.Component {
 			</div>
 		);
 	}
+	onKeyDown(){
+		console.log("back")
+		this.props.backChange()
+	}
 	render() {
 		return (
 			<div className="person-page-container">
+				 <Hotkeys 
+					keyName="ctrl+z, ctrl+я" 
+					onKeyDown={this.onKeyDown.bind(this)}
+					// onKeyUp={this.onKeyUp.bind(this)}
+					></Hotkeys>
 				<Header groups={this.state.groups} subjects={this.state.subjects}/>
 				{
 					this.Switcher(this)
@@ -259,7 +280,10 @@ class PersonPage extends React.Component {
 const mapDispatchToProps = dispatch => ({
 	changeSubject: subject => dispatch(changeSubject(subject)),
 	updateSchedule: schedule => dispatch(setSchedule(schedule)),
-	initGlobal: initState => dispatch(initGlobal(initState))
+	initGlobal: initState => dispatch(initGlobal(initState)),
+	showNotification: data => dispatch(showNotification(data)),
+
+	backChange: () => dispatch(backChange())
 })
 
 const mapStateToProps = state => ({
