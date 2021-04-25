@@ -10,9 +10,10 @@ import {
 	REPORT_EDIT_CHANGE_STATE,
 	REPORT_EDIT_ADD_CHANGE,
 	REPORT_EDIT_TO_BACK,
+	REPORT_FULLUPDATE_DATA,
 	TEMPLATE_TOGGLE_EDIT,
 	TEMPLATE_ADD_PART,
-	TEMPLATE_ADD_STUDENT
+	TEMPLATE_ADD_STUDENT,
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -64,6 +65,10 @@ export const changeStateEdit = () => ({
 export const addChangeToReport = change => ({
 	type: REPORT_EDIT_ADD_CHANGE,
 	payload: change
+})
+export const fullUpdate = table => ({
+	type: REPORT_FULLUPDATE_DATA,
+	payload: table
 })
 
 

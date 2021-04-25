@@ -2,11 +2,12 @@ import React from 'react';
 import { Table, Overlay, Popover } from "react-bootstrap";
 import ItemTable from "./ItemTable.jsx";
 import PanelReport from "./PanelReport"
+import compileAndMake from "./compile"
 import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate } from "../../../redux/actions"
 
 
 
@@ -63,7 +64,7 @@ class Report extends React.Component {
 			showTT: false,	// state show pop-up
 			targets: [],	// linked <th /> for pop-up
 			activeTarget: -1,	// active index <th />
-			valuesScores: [...putScoresTHead(this.props.report.data.thead.length || 20)], // default value = 50 and count elements = 20
+			valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 20)], // default value = 50 and count elements = 20
 
 			editNewStudent: false,
 			editNewPart: false,
@@ -81,7 +82,7 @@ class Report extends React.Component {
 	filterTime(element, index){
 		let result = ""
 		const filter = res => res.slice(5, 10)
-		if(index > 3){
+		if(index > 4){
 			if(this.lastTime == element.slice(10)){
 				result = filter(element)
 			}
@@ -89,7 +90,7 @@ class Report extends React.Component {
 				result = element
 			}
 		}
-		else if(index == 3){
+		else if(index == 4){
 			this.lastTime = element.slice(10)
 			result = filter(element)
 		}
@@ -121,14 +122,14 @@ class Report extends React.Component {
 		if(this.props.changes.length > 0){
 			for (let i = this.props.changes.length - 1; i >= 0; i--) {
 				let item = this.props.changes[i]
-				if(!!item.allCol && item.col == col) return item.value
+				// if(!!item.allCol && item.col == col) return item.value // for all col
 				if(item.row == row && item.col == col) return item.value
 			}
 		}
-		return this.props.report.data.data[row][col]
+		return this.props.report.data.xlsx.data[row][col]
 	}
 	render() {
-		console.log(this.props.changes)
+		console.log("render")
 		return (
 			<div className="table-wrap">
 				<Overlay
@@ -160,10 +161,10 @@ class Report extends React.Component {
 					    <tr>
 					    	{
 								
-					    		this.props.report.data.thead.map((el, index) => {
+					    		this.props.report.data.xlsx.columns.map((el, index) => {
 										switch(this.props.report.typeReport){
 											case "att":
-												if(index > 2)
+												if(index > 3)
 													return <th onClick={e => this.pickAllCol(index)} style={{cursor: "pointer"}} title="Нажмите, чтобы заполнить весь столбец">
 																<span className="itemTH">{`${this.filterTime(el, index)}`}</span>
 															</th>
@@ -204,7 +205,7 @@ class Report extends React.Component {
 					  </thead>
 					  <tbody>
 						  {
-						  	this.props.report.data.data.map((row, Irow) => 
+						  	this.props.report.data.xlsx.data.map((row, Irow) => 
 						  		<tr>
 							  		{
 							  			row.map((el, Icol) => 
@@ -244,7 +245,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 	changeTypeReport: type => dispatch(changeTypeReport(type)),
 	addChangeToReport: change => dispatch(addChangeToReport(change)),
-
+	fullUpdate: table => dispatch(fullUpdate(table)),
 	backChange: () => dispatch(backChange()),
 
 	addPart: name => dispatch(template__addPart(name)),
