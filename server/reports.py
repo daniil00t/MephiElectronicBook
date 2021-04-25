@@ -99,9 +99,11 @@ class RM():
 		pattern  = [[], [], [], [], [], [],
 					[], [], [], [], [], []]
 
+		print(report_data)
 		for day in schedule:
 			for lesson in day:
 				#[FEATURE] add type
+				print(lesson)
 				if  (lesson["name"] == report_data["subject_name"]) and \
 					(lesson["duration"] == report_data["subject_duration"]) and \
 					(lesson["type"] == report_data["subject_type"]) and \
