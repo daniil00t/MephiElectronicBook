@@ -1,10 +1,14 @@
-from server.config import *
+from .config import *
+from .config_reports import *
 from .db import *
 from .modules import Dates as dates
 import os
 import json
 
-# [FEATURE] check type of lesson too!!!
+import pandas as pd
+import numpy as np
+
+
 class RM():
 	def __init__(self):
 		pass
@@ -46,15 +50,30 @@ class RM():
 
 	#-------------/ READ AND WRITE /-------------------------------------------------------------
 
+	# def __write_book(self, report_id, book):
+	# 	path = RP_BOOKS_FOLDER + str(report_id) + '.xlsx'
+	# 	book.save(path)
+
+
+	# def __read_book(self, report_id):
+	# 	path = RP_BOOKS_FOLDER + str(report_id) + '.xlsx'
+	# 	if os.path.isfile(path):
+	# 		book = openpyxl.load_workbook(path)
+	# 		return book
+	# 	else:
+	# 		print("[INFO] Book {} not found in \"{}\"".format(report_id, path))
+	# 		return None
+
+
 	def __write_report(self, report_id, report):
-		path = RP_FOLDER + str(report_id) + '.json'
+		path = RP_REPORTS_FOLDER + str(report_id) + '.json'
 
 		with open(path, 'w', encoding='utf-8') as f:
 			json.dump(report, f, ensure_ascii=False, indent=4)
 
 
 	def __read_report(self, report_id):
-		path = RP_FOLDER + str(report_id) + '.json'
+		path = RP_REPORTS_FOLDER + str(report_id) + '.json'
 
 		if os.path.isfile(path):
 			with open(path, 'r', encoding="utf-8") as f:
@@ -65,18 +84,17 @@ class RM():
 			return None
 
 
-	def __read_templates(self, report_type):
-		path = RP_TEMPLATES_FOLDER + "templates" + ".json"
-		if os.path.isfile(path):
-			with open(path, 'r', encoding="utf-8") as f:
-				templates = json.load(f)
-		else:
-			print("[INFO] Templates not found in \"{}\"".format(path))
-
-		return templates
 
 	#-------------/ CREATE /-------------------------------------------------------------
 	
+	def __load_report(self, report_id):
+		return self.__read_report(report_id)
+		
+
+	def __save_report(self, report_id, report):
+		self.__write_report(report_id, report)
+
+
 	def __get_dates_times(self, report_data, schedule):
 		pattern  = [[], [], [], [], [], [],
 					[], [], [], [], [], []]
@@ -110,56 +128,88 @@ class RM():
 
 	def __get_thead(self, report_data):
 		report_type = report_data["report_type"]
-		templates = self.__read_templates(report_type)
-		thead_scheme = templates[report_type]
+		template = RP_TEMPLATES[report_type]
+
+		cur_data = dates.get_cur_date()
+		cur_col  = -1;
 
 		thead = []
-		for h in thead_scheme:
-			if h == "dates":
+		for h in template:
+			if h["name"] == "Dates":
 				with DB() as db:
 					teacher_id = db.get_teacher_id(report_data["teacher_name"])
 					schedule = db.get_schedule(teacher_id)["data"]
-				dates_times = self.__get_dates_times(report_data, schedule)
-				thead.extend(dates_times)
+				dt_list = self.__get_dates_times(report_data, schedule)
+				
+				for dt in dt_list:
+					date_h = h.copy()
+					date_h["name"] = dt
+					thead.append(date_h)
 			else:
 				thead.append(h)
 
 		return thead
 
 
-	def __get_rows(self, report_data, thead):
+	def __get_meta(self, report_data, thead):
+		report_type = report_data["report_type"]
+		meta = RP_METAS[report_type]
+		
+
+
+
+		if (report_type == "att") or (report_type == "score"):
+			cur_data = dates.get_cur_date()
+			cur_col = -1
+			first_col = meta["firstCol"]
+
+			for th in thead[first_col:]:
+				if (th["name"][:10] > cur_data[:10]):
+					cur_col = thead.index(th) - 1
+					break
+			if cur_col == -1:
+				cur_col = len(thead) - 1
+			elif cur_col < first_col:
+				cur_col = first_col
+
+			meta["curCol"] = cur_col
+
+		return meta
+
+
+	def __get_xlsx(self, report_data, thead):
 		with DB() as db:
 			students = db.get_students(report_data["group_name"])["data"]
 
-		rows = []
-		rows.extend([ [] for i in range(0, len(students))])
+				
+		heads = [th["name"] for th in thead]
+		rows = [ [ "" for j in range(0, len(heads))] for i in range(0, len(students))]
+		for i in range(0, len(students)):
+			rows[i][0] = students[i]["id"]
+			rows[i][1] = students[i]["name"]
 
-		for h in thead:
-			if h == "№":
-				for i, s in enumerate(students):
-					rows[i].append(s["id"])
-			elif h == "ФИО":
-				for i, s in enumerate(students):
-					rows[i].append(s["name"])
-			else:
-				for i, s in enumerate(students):
-					rows[i].append("")
+		df = pd.DataFrame(rows, columns=heads)
+		xlsx = json.loads(df.to_json(orient="split"))
 
-		return rows
+		return xlsx
 
 
 	def __create_report(self, report_data):
 		thead = self.__get_thead(report_data)
-		data = self.__get_rows(report_data, thead)
-
-		front_report_data = self.__convert_report_data(report_data, convert_to="front")
+		meta  = self.__get_meta(report_data, thead)
+		xlsx  = self.__get_xlsx(report_data, thead)
+		
 		report = {
-			"thead" : thead,
-			"data"  : data
+			"report_data" : self.__convert_report_data(report_data, convert_to="front"),
+			"thead": thead,
+			"meta" : meta,
+			"xlsx" : xlsx
 		}
-		report.update(front_report_data)
 
-		print_json(report)
+		with DB() as db:
+			report_id = db.get_report_id(report_data) # dont't use SCOPE_IDENTITY (synchronization)
+		self.__save_report(report_id, report)
+
 		return report
 
 
@@ -172,22 +222,19 @@ class RM():
 			report_id = db.get_report_id(report_data)
 
 		if report_id:
-			report = self.__read_report(report_id)
+			report = self.__load_report(report_id)
 			if not report:
 				report = self.__create_report(report_data)
-				self.__write_report(report_id, report)
 
-			return report
 		else:
-			report = self.__create_report(report_data)
-
 			with DB() as db:
 				db.insert_report(report_data)
-				report_id = db.get_report_id(report_data) # dont't use SCOPE_IDENTITY (synchronization)
+			report = self.__create_report(report_data)
 
-			self.__write_report(report_id, report)
 
-			return report
+		report["meta"].update(self.__get_meta(report_data, report["thead"]))
+
+		return report
 
 
 
@@ -198,7 +245,7 @@ class RM():
 			report_id = db.get_report_id(report_data)
 
 		if report_id:
-			self.__write_report(report_id, report)
+			self.__save_report(report_id, report)
 			return True
 		else:
 			return None

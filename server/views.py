@@ -42,14 +42,14 @@ def __get_students():
 def __get_report():
 	data = request.json
 
-	print("[INFO] Sent from frontend:\n")
-	print_json(data)
+	# print("[INFO] Sent from frontend:\n")
+	# print_json(data)
 
 	with RM() as rm:
 		result = rm.get(data)
 
-	print("[INFO] Sent from backend:\n")
-	print_json(result)
+	# print("[INFO] Sent from backend:\n")
+	# print_json(result)
 
 	if result:
 		return jsonify(result)
@@ -62,7 +62,7 @@ def __get_report():
 @app.route('/__set_report', methods=['POST'])
 def __set_report():
 	data = request.json
-	print_json(data)
+	# print_json(data)
 	
 
 	with RM() as rm:

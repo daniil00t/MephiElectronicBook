@@ -34,6 +34,11 @@ def parse_time(time):
 	return result
 
 
+def get_cur_date():
+	cur_date = str(date.today())[:10]
+	return cur_date
+
+
 def get_dates_times(pattern, duration):
 	# [FEATURE] also return current positon (+ 2 weeks)
 

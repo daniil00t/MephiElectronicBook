@@ -37,9 +37,7 @@ DB_CACHE_FOLDER = './server/cache/parser/'
 #----------------------/ REPORTS /-------------------------------
 
 # PATHES
-RP_FOLDER = './server/data/reports/'
-RP_TEMPLATES_FOLDER = './server/data/reports/templates/'
-
+RP_REPORTS_FOLDER = './server/data/reports/'
 
 #----------------------------------------------------------------------------------
 #------------------------------/ OVERWRITTEN /-------------------------------------
