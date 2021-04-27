@@ -132,7 +132,7 @@ class ItemTable extends Component {
 				}
 				return
 			case "score":
-				if(this.props.col >= enableEditScore && !this.props.repedit.isEdit){
+				if(this.props.col <= 100 && !this.props.repedit.isEdit){
 					this.setState({ activeState: true })
 					this.props.activate()
 				}

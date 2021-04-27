@@ -49,10 +49,8 @@ const compileFormula = (formula, curCol) => {
 		case "summ": 				alias = SUMM_RANGE;break
 		case "summ_separate": 	alias = SUMM_SEPARATE;break
 		case "procents": 			alias = PROCENTS;break
-		// case "percent": 			alias = PROCENTS;break
 		case "count": 				alias = COUNT;break
 		case "average": 			alias = AVERAGE;break
-		// case "avarage": 			alias = AVERAGE;break
 		case "convert": 			alias = CONVERT;break
 		case "trashold": 			alias = TRASHOLD;break
 		case "ratio": 				alias = RATIO;break
@@ -186,7 +184,11 @@ const compileAndMake = (formula, curCol) => {
 			console.log(cmp)
 			return (table, i) => {
 				const length = +cmp.arg2 - cmp.arg1 + 1
-				const count =  table[i].filter((el, index) => !!el && index <= cmp.arg2).length
+				// const count =  table[i].filter((el, index) => !!el && index <= cmp.arg2).length
+				let count = 0
+				for (let index = +cmp.arg1; index <= +cmp.arg2; index++) {
+					if(!!table[i][index]) count++
+				}
 				return `${count}/${length}`
 			}
 		case DEFAULT:

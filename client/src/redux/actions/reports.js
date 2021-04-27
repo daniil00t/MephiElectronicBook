@@ -66,9 +66,9 @@ export const addChangeToReport = change => ({
 	type: REPORT_EDIT_ADD_CHANGE,
 	payload: change
 })
-export const fullUpdate = table => ({
+export const fullUpdate = row => ({
 	type: REPORT_FULLUPDATE_DATA,
-	payload: table
+	payload: row
 })
 
 

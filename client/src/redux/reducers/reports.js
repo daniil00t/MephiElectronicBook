@@ -208,7 +208,7 @@ export const reports = (state = {
 				changes[indexCol].value = !!changes[indexCol].value? "": "+"
 			else
 				changes.push(action.payload)
-			action.asyncDispatch(fullUpdate())
+			action.asyncDispatch(fullUpdate(action.payload.row))
 			return{
 				...state,
 				edit: {
@@ -237,17 +237,30 @@ export const reports = (state = {
 				}
 				return state.data.xlsx.data[row][col]
 			}
-			let _table = []
-			state.data.xlsx.data.map((row, Irow) => {
-				_table[Irow] = []
-				row.map((col, Icol) => _table[Irow].push(concatChanges(Irow, Icol)))
-			})
+			// without optimise
+
+			// let _table = []
+			// state.data.xlsx.data.map((row, Irow) => {
+			// 	_table[Irow] = []
+			// 	row.map((col, Icol) => _table[Irow].push(concatChanges(Irow, Icol)))
+			// })
+
+			// thead.map((th, Icol) => {
+			// 	if(!!th.formula){
+			// 		_table.map((row, Irow) => {
+			// 			_table[Irow][Icol] = compileAndMake(th.formula, curCol)(_table, Irow)
+			// 			console.log(_table, Irow, Icol, compileAndMake(th.formula, curCol)(_table, Irow))
+			// 		})
+			// 	}
+			// })
+
+			// with optimise
+			let _table = [].concat(state.data.xlsx.data)
+			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = concatChanges(action.payload, Icol))
 
 			thead.map((th, Icol) => {
 				if(!!th.formula){
-					_table.map((row, Irow) => {
-						_table[Irow][Icol] = compileAndMake(th.formula, curCol)(_table, Irow)
-					})
+						_table[action.payload][Icol] = compileAndMake(th.formula, curCol)(_table, action.payload)
 				}
 			})
 			return {

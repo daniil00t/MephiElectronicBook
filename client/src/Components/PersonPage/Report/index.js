@@ -82,7 +82,7 @@ class Report extends React.Component {
 	filterTime(element, index){
 		let result = ""
 		const filter = res => res.slice(5, 10)
-		if(index > 4){
+		if(index > this.props.report.data.meta.firstCol){
 			if(this.lastTime == element.slice(10)){
 				result = filter(element)
 			}
@@ -90,7 +90,7 @@ class Report extends React.Component {
 				result = element
 			}
 		}
-		else if(index == 4){
+		else if(index == this.props.report.data.meta.firstCol){
 			this.lastTime = element.slice(10)
 			result = filter(element)
 		}
@@ -209,7 +209,7 @@ class Report extends React.Component {
 						  		<tr>
 							  		{
 							  			row.map((el, Icol) => 
-										  <ItemTable row={Irow} col={Icol} value={this.concatChanges(Irow, Icol)} maxValue={this.state.valuesScores[Icol]}/>
+										  <ItemTable row={Irow} col={Icol} value={this.concatChanges(Irow, Icol)} enable={this.props.report.data.thead[Icol].enable} maxValue={this.state.valuesScores[Icol]}/>
 										)
 							  		}
 						  		</tr>
