@@ -8,7 +8,6 @@ const sendRequestGET = (url, data, callbackSuccess, callbackError) => {
 		.catch(error => callbackError(error.response))
 };
 const sendRequestPOST = (url, data, callbackSuccess, callbackError) => {
-	console.log(data, url);
 	axios.post(url, data)
 		.then(res => {
 			callbackSuccess(res.data)
@@ -36,7 +35,6 @@ const getListLearners = (callbackSuccess, callbackError) => {
 };
 
 const getListTeachers = (callbackSuccess, callbackError) => {
-	console.log(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers);
 	sendRequestGET(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers, {
 		code: 200
 	}, callbackSuccess, callbackError);

@@ -130,7 +130,6 @@ const compileAndMake = (formula, curCol) => {
 				return summ
 			}
 		case SUMM_SEPARATE:
-			console.log(cmp)
 			return (table, i) => {
 				let summ = 0
 				cmp.separateCols.length != 0?
@@ -139,7 +138,6 @@ const compileAndMake = (formula, curCol) => {
 				return summ
 			}
 		case PROCENTS:
-			console.log(cmp)
 			return (table, i) => {
 				let countCommon = +cmp.arg2 - cmp.arg1 + 1
 				let count = 0
@@ -157,12 +155,10 @@ const compileAndMake = (formula, curCol) => {
 				return count
 			}
 		case AVERAGE:
-			console.log(cmp)
 			return (table, i) => {
 				let count = table[i].filter((el, index) => index >= cmp.separateCols[0] && !!el).length
 				let summ = table[i].filter((el, index) => index >= cmp.separateCols[0] && !!el).reduce((acc, cur) => acc + (+cur), 0)
 
-				console.log(count, summ)
 				// for (let index = cmp.separateCols[0]; index < table[i].length; index++) {
 				// 	if(!!table[i][index]) summ += +table[i][index]
 				// }
@@ -181,7 +177,6 @@ const compileAndMake = (formula, curCol) => {
 				return +table[i][+cmp.separateCols[0]] >= +cmp.separateCols[1]? cmp.separateCols[2] : cmp.separateCols[3]
 			}
 		case RATIO:
-			console.log(cmp)
 			return (table, i) => {
 				const length = +cmp.arg2 - cmp.arg1 + 1
 				// const count =  table[i].filter((el, index) => !!el && index <= cmp.arg2).length

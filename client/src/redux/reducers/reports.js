@@ -12,13 +12,13 @@ import {
 	REPORT_EDIT_CHANGE_STATE,
 	REPORT_EDIT_ADD_CHANGE,
 	REPORT_EDIT_TO_BACK,
+	REPORT_FULLUPDATE_DATA,
 	TEMPLATE_TOGGLE_EDIT,
 	TEMPLATE_ADD_PART,
-	TEMPLATE_ADD_STUDENT,
-	REPORT_FULLUPDATE_DATA
+	TEMPLATE_ADD_STUDENT
 } from "./types"
 
-import { renderReport, getReport as actionGetReport, showNotification, fullUpdate } from "../actions"
+import { renderReport, showNotification, fullUpdate } from "../actions"
 import compileAndMake from "../../Components/PersonPage/Report/compile"
 
 import { getReport, setReport } from "../../api"
@@ -36,14 +36,13 @@ var isValidGetRequest = (req) => {
 			typeof req.subject 		            !== "undefined" && req.subject		            != "" &&
 			typeof req.duration 	               !== "undefined" && req.duration 	               != "" &&
 			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            != "" &&
-			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            != "undefined" || req.typeSubject != "-1")
+			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            != "undefined" && req.typeSubject != "-1")
 	){
 		access = true;
 	}
-	console.log("It's not valid")
 	return access;
 }
-var getRequestWithAccess = (req, accessCB, errorCB) => {
+var getRequestWithAccess = (req, accessCB, errorCB, noRequest) => {
 	if(isValidGetRequest(req)){
 		getReport({
 			nameTeacher:      req.nameTeacher,
@@ -53,13 +52,15 @@ var getRequestWithAccess = (req, accessCB, errorCB) => {
 			typeSubject: 		req.typeSubject,
 			durationSubject: 	req.duration
 		}, accessCB, errorCB)
+	}else{
+		noRequest()
 	}
 }
 
 export const reports = (state = {
 	subject: "",
 	group: "",
-	typeSubject: "NONE_TYPE",
+	typeSubject: "undefined",
 	typeReport: "att",
 	priority: "subjects",
 	duration: "ALL_SEMESTER",
@@ -127,7 +128,7 @@ export const reports = (state = {
 				priority: action.payload
 			}
 		case REPORT_GET_DATA:
-			getRequestWithAccess({...state, nameTeacher: action.payload}, (data)=>{
+			getRequestWithAccess({...state, nameTeacher: action.payload}, (data) => {
 				// action.asyncDispatch(renderReport({data: [], thead:[]}))
 				action.asyncDispatch(renderReport(data))
 			}, error => {
@@ -137,22 +138,25 @@ export const reports = (state = {
 					content: "Не удалось загрузить ведомость",
 					type: "error"
 				}))
+			}, () => {
+				action.asyncDispatch(showNotification({
+					title: "Недостаточно данных",
+					content: "Вы ввели недостаточно количество данных для определения ведомости",
+					type: "warning",
+					autohide: true
+				}))
 			})
 			return state
 		case REPORT_RENDER_DATA:
-			console.log(action.payload)
 			return {
 				...state,
 				data: action.payload
 			}
 
 		case REPORT_SAVE_DATA:
-			console.log(action.payload)
 			let table = state.data.xlsx.data
 			action.payload.changes.map(change => {
-				console.log(!!change.allCol)
 				if(!!change.allCol){
-					console.log(change, table)
 					for (let i = 0; i < table.length; i++)
 						table[i][change.col] = change.value
 				}
@@ -231,7 +235,7 @@ export const reports = (state = {
 				if(state.edit.changes.length > 0){
 					for (let i = state.edit.changes.length - 1; i >= 0; i--) {
 						let item = state.edit.changes[i]
-						// if(!!item.allCol && item.col == col) return item.value // for all col
+						if(!!item.allCol && item.col == col) return item.value // for all col
 						if(item.row == row && item.col == col) return item.value
 					}
 				}

@@ -3,12 +3,18 @@ import { connect } from 'react-redux';
 import { addChangeToReport, changeStateEdit, showNotification } from '../../../redux/actions';
 
 const AttItem = (props) => {
+	const defaultStyles = {
+		width: "40px",
+		backgroundColor: !!props.color? props.color.color: "transparent",
+		textAlign: "center", 
+		cursor: "pointer"
+	}
 	return(
 		<td 
 			className="main" 
 			style={props.col == 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
-				{width: "40px", textAlign: "center", cursor: "pointer"}
+				defaultStyles
 			} 
 			onClick={props.activeItemTable}
 		>
@@ -24,12 +30,16 @@ const AttItem = (props) => {
 
 
 const ScoreItem = props => {
+	const defaultStyles = {
+		width: "50px",
+		backgroundColor: !!props.color? props.color.color: "transparent"
+	}
 	if(!props.activeState){
 		return (<td 
 			className={props.col > 2? "main time" : "main"} 
 			style={props.col == 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
-				{width: "50px"}} 
+				defaultStyles} 
 			onClick={props.activeItemTable}
 		>
 			<span>
@@ -44,7 +54,7 @@ const ScoreItem = props => {
 				<input 
 					autoFocus 
 					ref={input => props.textInput(input)} 
-					type="text" 
+					type={props.type}
 					onKeyDown={props.pressKey} 
 					defaultValue={props.value} 
 					className="item-data"
@@ -57,12 +67,16 @@ const ScoreItem = props => {
 
 
 const ChItem = props => {
+	const defaultStyles = {
+		width: "50px",
+		backgroundColor: !!props.color? props.color.color: "transparent"
+	}
 	if(!props.activeState){
 		return (<td 
 			className={props.col > 1? "main time" : "main"} 
 			style={props.col == 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
-				{width: "50px"}} 
+				defaultStyles} 
 			onClick={props.activeItemTable}
 		>
 			<span>
@@ -77,7 +91,7 @@ const ChItem = props => {
 				<input 
 					autoFocus 
 					ref={input => props.textInput(input)} 
-					type="text" 
+					type={props.type} 
 					onKeyDown={props.pressKey} 
 					defaultValue={props.value} 
 					className="item-data"
@@ -117,39 +131,41 @@ class ItemTable extends Component {
 		const enableEditScore 	= 3
 		const enableEditCh 		= 2
 
-		switch(this.props.report.typeReport){
-			case "att":
-				// Заглушка пока что, потому что не приходят мета данные, которые бы помогали понимать, что столбец можно радактировать
-				// считаем, что editColMin: 3 (col > 3 - можно редактировать)
-				if(this.props.col >= enableEditAtt){
-					// if this field is empty then we can put uniquely value -> "+"
-					if(this.props.value == ""){
-						this.setValue("+")
+		if(this.props.enable){
+			switch(this.props.report.typeReport){
+				case "att":
+					// Заглушка пока что, потому что не приходят мета данные, которые бы помогали понимать, что столбец можно радактировать
+					// считаем, что editColMin: 3 (col > 3 - можно редактировать)
+					if(this.props.col >= enableEditAtt){
+						// if this field is empty then we can put uniquely value -> "+"
+						if(this.props.value == ""){
+							this.setValue("+")
+						}
+						else{
+							this.setValue("")
+						}
 					}
-					else{
-						this.setValue("")
+					return
+				case "score":
+					if(this.props.col <= 100 && !this.props.repedit.isEdit){
+						this.setState({ activeState: true })
+						this.props.activate()
 					}
-				}
-				return
-			case "score":
-				if(this.props.col <= 100 && !this.props.repedit.isEdit){
-					this.setState({ activeState: true })
-					this.props.activate()
-				}
-				return
-			case "ch":
-				if(this.props.col >= enableEditCh && !this.props.repedit.isEdit){
-					this.setState({ activeState: true })
-					this.props.activate()
-				}
-				return
+					return
+				case "ch":
+					if(this.props.col >= enableEditCh && !this.props.repedit.isEdit){
+						this.setState({ activeState: true })
+						this.props.activate()
+					}
+					return
+			}
 		}
 	}
 	pressKey(e){
-		if(e.key == "Enter"){
+		if(e.key == "Enter" && this.props.enable){
 			if(!!e.target.value){
 				if(Number.isInteger(+e.target.value)){
-					if(+e.target.value > this.props.maxValue || +e.target.value < 0){
+					if((+e.target.value > this.props.maxValue && this.props.report.typeReport == "ch") || +e.target.value < 0){
 						this.setState({ errorValue: true })
 						this.onError()
 					}
@@ -202,7 +218,7 @@ class ItemTable extends Component {
    render() {
 		switch(this.props.typeReport){
 			case "att":
-				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} />;
+				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} color={this.props.indication[0]}/>;
 			case "score":
 				return <ScoreItem 
 					activeState={this.state.activeState}
@@ -212,6 +228,8 @@ class ItemTable extends Component {
 					activeItemTable={this.activeItemTable.bind(this)}
 					pressKey={this.pressKey.bind(this)}
 					exitLabel={this.exitLabel.bind(this)}
+					color={this.props.indication[0]}
+					type={this.props.type}
 				/>
 			case "ch":
 				return <ChItem 
@@ -224,6 +242,8 @@ class ItemTable extends Component {
 					pressKey={this.pressKey.bind(this)}
 					exitLabel={this.exitLabel.bind(this)}
 					onError={this.onError.bind(this)}
+					color={this.props.indication[0]}
+					type={this.props.type}
 				/>
 		}
 		

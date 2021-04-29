@@ -22,6 +22,11 @@ class Notification extends Component {
                backgroundColor: "red",
                color: "white"
             }
+         case "warning":
+            return {
+               backgroundColor: "#baba14",
+               color: "white"
+            }
          default:
             return {}
       }

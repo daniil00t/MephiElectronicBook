@@ -25,7 +25,6 @@ const App = (props) => {
 			<Switch>
 				<Route path="/auth">
 					<AuthPanel/>
-					{console.log(props.notification)}
 					<Notification 
 						type={props.notification.type}
 						title={props.notification.title} 

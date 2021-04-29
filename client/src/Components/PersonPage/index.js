@@ -103,7 +103,6 @@ class PersonPage extends React.Component {
 		};
 	}
 	componentDidMount(){
-		console.log(this.props)
 		if(this.state.id != -1){
 			let id = this.state.id;
 			getScheduleTeacher(id, data => {
@@ -148,7 +147,6 @@ class PersonPage extends React.Component {
 
 
 	Switcher(self){
-		console.log(self.props)
 		switch(this.props.match){
 			case "main": {
 				return (
@@ -256,7 +254,6 @@ class PersonPage extends React.Component {
 		);
 	}
 	onKeyDown(){
-		console.log("back")
 		this.props.backChange()
 	}
 	render() {

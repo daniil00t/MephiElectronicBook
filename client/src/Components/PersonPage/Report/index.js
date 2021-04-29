@@ -2,7 +2,6 @@ import React from 'react';
 import { Table, Overlay, Popover } from "react-bootstrap";
 import ItemTable from "./ItemTable.jsx";
 import PanelReport from "./PanelReport"
-import compileAndMake from "./compile"
 import "../../../styles/Report.css";
 
 // Redux is used
@@ -15,10 +14,7 @@ class Report extends React.Component {
 	constructor(props) {
 		super(props);
 
-		function* putScoresTHead(n){
-			for (let index = 0; index < n; index++)
-				yield 50
-		}
+		
 		// Idea: i think that it will be able to better recieve from server to client 
 		// not string, but needed return object which exist the next parametres:
 		// thead = [
@@ -64,12 +60,30 @@ class Report extends React.Component {
 			showTT: false,	// state show pop-up
 			targets: [],	// linked <th /> for pop-up
 			activeTarget: -1,	// active index <th />
-			valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 20)], // default value = 50 and count elements = 20
+			valuesScores: [], // default value = 50 and count elements = 20
 
 			editNewStudent: false,
 			editNewPart: false,
 		};
 		this.lastTime = ""
+		this.colors = {
+			greyWhite: {
+				color: "#888",
+				priority: 3
+			},
+			greyBlack: {
+				color: "#333",
+				priority: 2
+			},
+			green: {
+				color: "green",
+				priority: 1
+			},
+			red: {
+				color: "red",
+				priority: 0
+			}
+		}
 	}
 	toggleTypeTable(type){
 		this.props.changeTypeReport(type)
@@ -110,13 +124,22 @@ class Report extends React.Component {
 		// console.log(e)
 		let arr = this.state.valuesScores
 		arr[this.state.activeTarget+2] = e.target.valueAsNumber
-		console.log(arr[this.state.activeTarget], this.state.activeTarget)
+		this.functionReallocation(this.state.activeTarget+2, e.target.valueAsNumber)
 		this.setState({
 			valuesScores: arr
 		})
 	}
-	componentDidMount(){
-		console.log(this.props.edit)
+	
+	componentDidUpdate(){
+		const self = this
+		function* putScoresTHead(n){
+			for (let index = 0; index < n; index++){
+				console.log(self.props.report.data.thead[index].max)
+				yield self.props.report.data.thead[index].max || null
+			}
+		}
+		if(this.state.valuesScores.length == 0 && this.props.report.data.thead.length != 0 && this.props.report.typeReport == "ch")
+			this.setState({valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 0)]})
 	}
 	concatChanges(row, col){
 		if(this.props.changes.length > 0){
@@ -128,8 +151,61 @@ class Report extends React.Component {
 		}
 		return this.props.report.data.xlsx.data[row][col]
 	}
+
+	functionReallocation(index, value){
+		const MAX_VALUE 	= 100
+		const indexPart1 	= 2
+		const indexPart2 	= 3
+		const indexExam 	= 6
+
+		let dataPart1 = this.state.valuesScores[indexPart1]
+		let dataPart2 = this.state.valuesScores[indexPart2]
+		let dataExam = this.state.valuesScores[indexExam]
+		switch(index){
+			case indexPart1:
+				var values = this.state.valuesScores
+				values[indexPart2] = MAX_VALUE - values[indexExam] - value
+				return this.setState({valuesScores: values})
+			
+			case indexPart2:
+				var values = this.state.valuesScores
+				values[indexPart1] = MAX_VALUE - values[indexExam] - value
+				return this.setState({valuesScores: values})
+
+			case indexExam:
+				var values = this.state.valuesScores
+				if(value % 10 != 0)
+					values[indexPart1] = MAX_VALUE - values[indexPart2] - value
+				else
+					values[indexPart2] = MAX_VALUE - values[indexPart1] - value
+				return this.setState({valuesScores: values})
+		}
+	}
+	indicationItem(row, col, value){
+		const color = []
+		const curCol = this.props.report.data.meta.curCol
+		function sortByThenBy(arr, props) {
+			// apply custom sort function on array
+			return arr.sort(function(a, b) {
+			  // generate compare function return value by 
+			  // iterating over the properties array
+			  return props.reduce(function(bool, k) {
+				 // if previous compare result is `0` then compare
+				 // with the next property value and return result
+				 return bool || (a[k] - b[k]);
+				 // set initial value as 0
+			  }, 0);
+			})
+		}
+		
+		if(col == curCol && col > 1) color.push(this.colors.greyBlack)
+		if(col < curCol && col > 1) color.push(this.colors.greyWhite)
+		if(value < 10 && value != 0 && col > 1) color.push(this.colors.red)
+		if(value > 80) color.push(this.colors.green)
+
+		return sortByThenBy(color, ["priority"])
+	}
 	render() {
-		console.log("render")
 		return (
 			<div className="table-wrap">
 				<Overlay
@@ -142,7 +218,7 @@ class Report extends React.Component {
 					<Popover id="popover-contained" onMouseEnter={e => this.setState({ showTT: true })} onMouseLeave={e => this.setState({ showTT: false })}>
 						<Popover.Title as="h3">Изменение границы оценок</Popover.Title>
 						<Popover.Content>
-							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" min="0" max="100" step="5" onChange={e => this.changeRange(e)}/>
+							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" min="0" max="50" step="5" onChange={e => this.changeRange(e)}/>
 						</Popover.Content>
 					</Popover>
 				</Overlay>
@@ -179,10 +255,10 @@ class Report extends React.Component {
 												if(index < 2)
 													return <th><span className="itemTH">{el}</span></th>
 												else
-													return <th onMouseEnter={e => this.setState({ activeTarget: index-2, showTT: true })} onMouseLeave={e => this.setState({ showTT: false })} ref={el => this.state.targets[index-2] = el}>
+													return <th onMouseEnter={e => !!this.state.valuesScores[index] ? this.setState({ activeTarget: index-2, showTT: true }): console.log()} onMouseLeave={e => !!this.state.valuesScores[index] ? this.setState({ showTT: false }): console.log()} ref={el => this.state.targets[index-2] = el}>
 																<div className="wrapTd" style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
 																	{this.props.template.isEdit ? <button>x</button>: <></>}
-																	<span className="itemTH">{el}<span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span></span>
+																	<span className="itemTH">{el}{!!this.state.valuesScores[index] ? <span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span> : <></>}</span>
 																</div>
 														</th>
 										}
@@ -208,8 +284,16 @@ class Report extends React.Component {
 						  	this.props.report.data.xlsx.data.map((row, Irow) => 
 						  		<tr>
 							  		{
-							  			row.map((el, Icol) => 
-										  <ItemTable row={Irow} col={Icol} value={this.concatChanges(Irow, Icol)} enable={this.props.report.data.thead[Icol].enable} maxValue={this.state.valuesScores[Icol]}/>
+							  			row.map((col, Icol) => 
+										  <ItemTable 
+												row={Irow} 
+												col={Icol} 
+												value={this.concatChanges(Irow, Icol)} 
+												type={this.props.report.data.thead[Icol].type || "string"}
+												enable={this.props.report.data.thead[Icol].enable} 
+												maxValue={this.state.valuesScores[Icol]}
+												indication={this.indicationItem(Irow, Icol, this.concatChanges(Irow, Icol))}
+											/>
 										)
 							  		}
 						  		</tr>
