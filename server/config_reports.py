@@ -36,7 +36,7 @@ RP_TEMPLATES = {
 			"type" 	: "number",
 			"enable": False,
 
-			"formula" : "percent(4, #curCol)" #?
+			"formula" : "procents(4, #curCol)" #?
 		},
 		{
 			"name" 	: "Dates",
@@ -60,7 +60,7 @@ RP_TEMPLATES = {
 			"type" 	: "number",
 			"enable": False,
 
-			"formula" : "avarage(3, #curCol)" #?
+			"formula" : "average(3)" #?
 		},
 		{
 			"name" 	: "Dates",

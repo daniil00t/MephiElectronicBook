@@ -99,9 +99,11 @@ class RM():
 		pattern  = [[], [], [], [], [], [],
 					[], [], [], [], [], []]
 
+		print(report_data)
 		for day in schedule:
 			for lesson in day:
 				#[FEATURE] add type
+				print(lesson)
 				if  (lesson["name"] == report_data["subject_name"]) and \
 					(lesson["duration"] == report_data["subject_duration"]) and \
 					(lesson["type"] == report_data["subject_type"]) and \
@@ -239,7 +241,7 @@ class RM():
 
 
 	def set(self, report):
-		report_data = self.__convert_report_data(report, convert_to="back")
+		report_data = self.__convert_report_data(report["report_data"], convert_to="back")
 
 		with DB() as db:
 			report_id = db.get_report_id(report_data)
