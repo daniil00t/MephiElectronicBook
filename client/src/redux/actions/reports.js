@@ -11,7 +11,9 @@ import {
 	REPORT_EDIT_ADD_CHANGE,
 	REPORT_EDIT_TO_BACK,
 	REPORT_FULLUPDATE_DATA,
+
 	TEMPLATE_TOGGLE_EDIT,
+	TEMPLATE_CHANGE_MAX_THEAD,
 	TEMPLATE_ADD_PART,
 	TEMPLATE_ADD_STUDENT,
 } from "../reducers/types"
@@ -83,6 +85,11 @@ export const backChange = () => ({
 
 export const toggleTemplateEdit = () => ({
 	type: TEMPLATE_TOGGLE_EDIT
+})
+
+export const changeMaxThead = (col, value) => ({
+	type: TEMPLATE_CHANGE_MAX_THEAD,
+	payload: {col, value}
 })
 
 export const template__addPart = name => ({

@@ -14,6 +14,7 @@ import {
 	REPORT_EDIT_TO_BACK,
 	REPORT_FULLUPDATE_DATA,
 	TEMPLATE_TOGGLE_EDIT,
+	TEMPLATE_CHANGE_MAX_THEAD,
 	TEMPLATE_ADD_PART,
 	TEMPLATE_ADD_STUDENT
 } from "./types"
@@ -31,11 +32,11 @@ function* filler(count, defaultValue){
 
 var isValidGetRequest = (req) => {
 	let access = false;
-	if(   typeof req.nameTeacher 	            !== "undefined" && req.nameTeacher 	            != "" &&
-			typeof req.group 			            !== "undefined" && req.group			            != "" &&
-			typeof req.subject 		            !== "undefined" && req.subject		            != "" &&
-			typeof req.duration 	               !== "undefined" && req.duration 	               != "" &&
-			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            != "" &&
+	if(   typeof req.nameTeacher 	            !== "undefined" && req.nameTeacher 	            != "" && !!req.nameTeacher &&
+			typeof req.group 			            !== "undefined" && req.group			            != "" && !!req.group &&
+			typeof req.subject 		            !== "undefined" && req.subject		            != "" && !!req.subject &&
+			typeof req.duration 	               !== "undefined" && req.duration 	               != "" && !!req.duration &&
+			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            != "" && !!req.typeReport &&
 			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            != "undefined" && req.typeSubject != "-1")
 	){
 		access = true;
@@ -288,6 +289,21 @@ export const reports = (state = {
 					isEdit: !state.template.isEdit
 				}
 			}
+		case TEMPLATE_CHANGE_MAX_THEAD:
+			// var thead = state.data.thead
+			{
+				let thead = state.data.thead
+				thead[action.payload.col] = {...thead[action.payload.col], max: action.payload.value}
+				return {
+					...state,
+					data: {
+						...state.data,
+
+						thead
+					}
+				}
+			}
+			
 		case TEMPLATE_ADD_PART:
 			return {
 				...state,

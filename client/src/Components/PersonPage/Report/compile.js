@@ -80,7 +80,7 @@ const compileAndMake = (formula, curCol) => {
 		{
 			ECTS: "A",
 			five: 5,
-			hundred: 100
+			hundred: 101
 		},
 		{
 			ECTS: "A",
@@ -98,9 +98,14 @@ const compileAndMake = (formula, curCol) => {
 			hundred: 75
 		},
 		{
-			ECTS: "D",
+			ECTS: "D4",
 			five: 4,
 			hundred: 70
+		},
+		{
+			ECTS: "D3",
+			five: 3,
+			hundred: 65
 		},
 		{
 			ECTS: "E",

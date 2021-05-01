@@ -35,7 +35,7 @@ const SubjectToGroup = (props) => {
    return (
       <div className="subjectToGroup">
          <select className="form-control subjects" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}>
-            <option value={-1}>Выберете предмет</option>
+            <option value="">Выберете предмет</option>
             {
                subjects.map((el, index) => 
                   index == indexSubject ?
@@ -48,7 +48,7 @@ const SubjectToGroup = (props) => {
             typesRender.length != 0 ?
                (
                   <select className="form-control types" onChange={e => props.dispatcher.changeTypeSubject(e.target.value)}>
-                     <option value="undefined">Тип</option>
+                     <option value="">Тип</option>
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
@@ -62,7 +62,7 @@ const SubjectToGroup = (props) => {
          }
          
          <select className="form-control groups" onChange={e => props.dispatcher.changeGroup(e.target.value)}>
-            <option value={-1}>Выберите группу</option>
+            <option value="">Выберите группу</option>
             {
                groups.map((el, index) => 
                   el == props.report.group ?
@@ -98,7 +98,7 @@ const GroupToSubject = (props) => {
    return (
       <div className="subjectToGroup">
          <select className="form-control subjects" onChange={e => props.dispatcher.changeGroup(e.target.value)}>
-         <option value={-1}>Выберите группу</option>
+         <option value={undefined}>Выберите группу</option>
             {
                groups.map((el, index) => 
                   index == indexGroup ?
@@ -111,7 +111,7 @@ const GroupToSubject = (props) => {
             typesRender.length != 0 ?
                (
                   <select className="form-control types" onChange={e => props.dispatcher.changeTypeSubject(e.target.value)}>
-                     <option value="undefined">Тип</option>
+                     <option value={undefined}>Тип</option>
                      {
                         typesRender.map((type, index) => 
                            type == props.report.typeSubject ? 
@@ -124,7 +124,7 @@ const GroupToSubject = (props) => {
                (<></>)
          }
          <select className="form-control groups" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}> 
-            <option value={-1}>Выберете предмет</option>
+            <option value={undefined}>Выберете предмет</option>
             {
                subjects.map((el, index) => 
                   index == indexGroup ?

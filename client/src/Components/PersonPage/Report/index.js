@@ -6,7 +6,7 @@ import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate, changeMaxThead } from "../../../redux/actions"
 
 
 
@@ -14,39 +14,8 @@ class Report extends React.Component {
 	constructor(props) {
 		super(props);
 
-		
 		// Idea: i think that it will be able to better recieve from server to client 
-		// not string, but needed return object which exist the next parametres:
-		// thead = [
-		// 	{
-		// 		name: "ФИО",
-		// 		type: "string",
-		// 		enable: false
-		// 	},
-		// 	...
-		// 	{
-		// 		name: "Раздел 1",
-		// 		type: "number",
-		// 		enable: true,
-		// 		maxValue?: 50
-		// 	},
-		// 	{
-		// 		name: "Аттестация",
-		// 		type: "choose",
-		// 		enable: true,
-		// 		choosers: "а/н"
-		// 	}
-		// 	...
-		// 	{
-		// 		{
-		// 			name: "Сумма",
-		// 			type: "number",
-		// 			enable: false,
-		//				maxValue: 100,
-		// 			formula: "summ(#1, #2)" -> where #1 - start col, #2 - end col
-		// 		}
-		// 	}
-		// ]
+		// not string, but needed return object which exist the next parametres
 		this.state = {
 			// Schedule
 			table: {
@@ -67,6 +36,10 @@ class Report extends React.Component {
 		};
 		this.lastTime = ""
 		this.colors = {
+			transparent: {
+				color: "transparent",
+				priority: 4
+			},
 			greyWhite: {
 				color: "#888",
 				priority: 3
@@ -84,14 +57,6 @@ class Report extends React.Component {
 				priority: 0
 			}
 		}
-	}
-	toggleTypeTable(type){
-		this.props.changeTypeReport(type)
-	}
-	replaceChar(el){
-		if(el === true) return "+";
-		else if(el === false) return "-";
-		else return el;
 	}
 	filterTime(element, index){
 		let result = ""
@@ -125,6 +90,7 @@ class Report extends React.Component {
 		let arr = this.state.valuesScores
 		arr[this.state.activeTarget+2] = e.target.valueAsNumber
 		this.functionReallocation(this.state.activeTarget+2, e.target.valueAsNumber)
+		this.props.changeMaxThead(this.state.activeTarget+2, e.target.valueAsNumber)
 		this.setState({
 			valuesScores: arr
 		})
@@ -161,29 +127,61 @@ class Report extends React.Component {
 		let dataPart1 = this.state.valuesScores[indexPart1]
 		let dataPart2 = this.state.valuesScores[indexPart2]
 		let dataExam = this.state.valuesScores[indexExam]
+		var values = this.state.valuesScores
 		switch(index){
 			case indexPart1:
-				var values = this.state.valuesScores
 				values[indexPart2] = MAX_VALUE - values[indexExam] - value
+				this.props.changeMaxThead(indexPart2, MAX_VALUE - values[indexExam] - value)
 				return this.setState({valuesScores: values})
 			
 			case indexPart2:
-				var values = this.state.valuesScores
 				values[indexPart1] = MAX_VALUE - values[indexExam] - value
+				this.props.changeMaxThead(indexPart1, MAX_VALUE - values[indexExam] - value)
 				return this.setState({valuesScores: values})
 
 			case indexExam:
-				var values = this.state.valuesScores
-				if(value % 10 != 0)
+				if(value % 10 != 0){
 					values[indexPart1] = MAX_VALUE - values[indexPart2] - value
-				else
+					this.props.changeMaxThead(indexPart1, MAX_VALUE - values[indexPart2] - value)
+				}
+				else{
 					values[indexPart2] = MAX_VALUE - values[indexPart1] - value
+					this.props.changeMaxThead(indexPart2, MAX_VALUE - values[indexPart1] - value)
+				}
 				return this.setState({valuesScores: values})
 		}
 	}
 	indicationItem(row, col, value){
 		const color = []
 		const curCol = this.props.report.data.meta.curCol
+		const firstCol = this.props.report.data.meta.firstCol 
+		const thead = this.props.report.data.thead
+		const MAX_VALUE = 100
+		const coff = 0.6
+		// default consts for types report
+
+		// Att type
+		const minProcent = MAX_VALUE * coff
+		const procentIndex = 3
+
+		// Score type
+		const averageIndex = 2
+		const minScore = MAX_VALUE * coff
+
+		// Ch type -> chain indexed counts
+		const indexesParts = [2, 3]
+		const indexSummParts = indexesParts[indexesParts.length - 1] + 1
+		const indexAtt = indexSummParts + 1
+		const indexExam = indexAtt + 1
+		const indexEnd = indexExam + 1
+		const indexECTS = indexEnd + 1
+
+		const minSummParts = indexesParts.reduce((acc, cur) => acc += thead[cur].max, 0) * coff
+		const minExam = thead[indexExam].max * coff
+		const minEnd = minSummParts + minExam
+
+
+
 		function sortByThenBy(arr, props) {
 			// apply custom sort function on array
 			return arr.sort(function(a, b) {
@@ -197,13 +195,75 @@ class Report extends React.Component {
 			  }, 0);
 			})
 		}
-		
-		if(col == curCol && col > 1) color.push(this.colors.greyBlack)
-		if(col < curCol && col > 1) color.push(this.colors.greyWhite)
-		if(value < 10 && value != 0 && col > 1) color.push(this.colors.red)
-		if(value > 80) color.push(this.colors.green)
 
+		switch(this.props.report.typeReport){
+			case "score":
+				if(col < curCol && col >= firstCol) color.push(this.colors.greyWhite)
+				if(col == curCol) color.push(this.colors.greyBlack)
+				if(col == averageIndex && +value >= minScore) color.push(this.colors.green)
+				if(col == averageIndex && +value < minScore) color.push(this.colors.red)
+				break
+			case "att":
+				if(col < curCol && col >= firstCol) color.push(this.colors.greyWhite)
+				if(col == curCol) color.push(this.colors.greyBlack)
+				if(col == procentIndex && +value >= minProcent) color.push(this.colors.green)
+				if(col == procentIndex && +value < minProcent) color.push(this.colors.red)
+				break
+			// case "ch":
+			case "ch":
+				for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
+					switch(col){
+						case indexesParts[indexPart]:
+							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
+							if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
+							break
+						case indexSummParts:
+							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value < minSummParts) color.push(this.colors.red)
+							if(+value >= minSummParts) color.push(this.colors.green)
+							break
+						case indexExam:
+							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value < minExam) color.push(this.colors.red)
+							if(+value >= minExam) color.push(this.colors.green)
+							break
+						case indexEnd:
+							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value < minEnd) color.push(this.colors.red)
+							if(+value >= minEnd) color.push(this.colors.green)
+							break
+					}
+				}
+				
+		}
 		return sortByThenBy(color, ["priority"])
+	}
+	calcMaxValue(col){
+		const thead = this.props.report.data.thead
+
+		const MAX_VALUE = 100
+		const indexesParts = [2, 3]
+		const indexSummParts = indexesParts[indexesParts.length - 1] + 1
+		const indexAtt = indexSummParts + 1
+		const indexExam = indexAtt + 1
+		const indexEnd = indexExam + 1
+		const indexECTS = indexEnd + 1
+
+		for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
+			switch(col){
+				case indexSummParts:
+					return indexesParts.reduce((acc, cur) => acc += thead[cur].max, 0)
+				case indexEnd:
+					return MAX_VALUE
+				case indexAtt:
+					return "ch"
+				case indexECTS:
+					return "F-A"
+				default:
+					return null
+			}
+		}
 	}
 	render() {
 		return (
@@ -258,7 +318,10 @@ class Report extends React.Component {
 													return <th onMouseEnter={e => !!this.state.valuesScores[index] ? this.setState({ activeTarget: index-2, showTT: true }): console.log()} onMouseLeave={e => !!this.state.valuesScores[index] ? this.setState({ showTT: false }): console.log()} ref={el => this.state.targets[index-2] = el}>
 																<div className="wrapTd" style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
 																	{this.props.template.isEdit ? <button>x</button>: <></>}
-																	<span className="itemTH">{el}{!!this.state.valuesScores[index] ? <span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span> : <></>}</span>
+																	<span className="itemTH">
+																		{el}
+																		{!!this.state.valuesScores[index] ? <span style={{color: "#007bff"}}> ({this.state.valuesScores[index]})</span> : <span style={{color: "#333"}}> {`(${!!this.calcMaxValue(index)? this.calcMaxValue(index) : ""})`}</span>}
+																	</span>
 																</div>
 														</th>
 										}
@@ -333,7 +396,8 @@ const mapDispatchToProps = dispatch => ({
 	backChange: () => dispatch(backChange()),
 
 	addPart: name => dispatch(template__addPart(name)),
-	addStudent: name => dispatch(template__addStudent(name))
+	addStudent: name => dispatch(template__addStudent(name)),
+	changeMaxThead: (col, value) => dispatch(changeMaxThead(col, value))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Report)

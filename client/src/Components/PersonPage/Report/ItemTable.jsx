@@ -218,7 +218,7 @@ class ItemTable extends Component {
    render() {
 		switch(this.props.typeReport){
 			case "att":
-				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} color={this.props.indication[0]}/>;
+				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} color={this.props.indication[0] || {color: "transparent"}}/>;
 			case "score":
 				return <ScoreItem 
 					activeState={this.state.activeState}
@@ -228,7 +228,7 @@ class ItemTable extends Component {
 					activeItemTable={this.activeItemTable.bind(this)}
 					pressKey={this.pressKey.bind(this)}
 					exitLabel={this.exitLabel.bind(this)}
-					color={this.props.indication[0]}
+					color={this.props.indication[0] || {color: "transparent"}}
 					type={this.props.type}
 				/>
 			case "ch":
