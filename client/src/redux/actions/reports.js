@@ -17,6 +17,8 @@ import {
 	TEMPLATE_ADD_PART,
 	TEMPLATE_ADD_STUDENT,
 	TEMPLATE_DELETE_ROW,
+	REPORT_INDICATE_TOGGLE,
+	TEMPLATE_MARK_AS_HEADMAN,
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -78,6 +80,9 @@ export const fullUpdate = row => ({
 export const backChange = () => ({
 	type: REPORT_EDIT_TO_BACK
 })
+export const toggleIndicate = () => ({
+	type: REPORT_INDICATE_TOGGLE
+})
 
 
 /*
@@ -103,5 +108,9 @@ export const template__addStudent = name => ({
 })
 export const template__deleteStudent = row => ({
 	type: TEMPLATE_DELETE_ROW,
-	paylaod: row
+	payload: row
+})
+export const template__markAsHeadman = row => ({
+	type: TEMPLATE_MARK_AS_HEADMAN,
+	payload: row
 })

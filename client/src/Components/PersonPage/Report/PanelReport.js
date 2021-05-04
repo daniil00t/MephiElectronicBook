@@ -11,7 +11,8 @@ import {
    getReport,
    saveReport,
    addChangeToReport,
-   toggleTemplateEdit
+   toggleTemplateEdit,
+   toggleIndicate
 } from "../../../redux/actions"
 
 const SubjectToGroup = (props) => {
@@ -179,6 +180,12 @@ class PanelReport extends React.Component{
                      </ToggleButton>
                   ))}
                </ButtonGroup>
+               <label className="switch" title="Переключить индикацию">
+                  <input type="checkbox" checked={this.props.report.edit.indicate} onChange={e => this.props.toggleIndicate()}/>
+                  <span className="slider round"></span>
+               </label>
+
+               
                {
                   this.props.report.typeReport == "ch"?
                      <label className="switch" title="Редактирование">
@@ -189,6 +196,7 @@ class PanelReport extends React.Component{
                }
                
                
+              
                <Button className="reportButton loadReport" onClick={e => this.loadReport(e)}>Load</Button>
                <Button className="reportButton saveReport" onClick={e => this.props.saveReport(this.props.report.data, this.props.report.edit.changes)}>Save</Button>
             </div>
@@ -211,7 +219,7 @@ const mapDispatchToProps = dispatch => ({
    changeTypeSubject: type => dispatch(changeTypeSubject(type)),
    getReport: nameTeacher => dispatch(getReport(nameTeacher)),
    saveReport: (report, changes) => dispatch(saveReport(report, changes)),
-
+   toggleIndicate: () => dispatch(toggleIndicate()),
    // template
    toggleTemplateEdit: () => dispatch(toggleTemplateEdit())
 })

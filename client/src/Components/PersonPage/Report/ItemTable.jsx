@@ -4,9 +4,9 @@ import { addChangeToReport, changeStateEdit, showNotification } from '../../../r
 
 const AttItem = (props) => {
 	const defaultStyles = {
-		width: "40px",
+		// width: "40px",
 		backgroundColor: !!props.color? props.color.color: "transparent",
-		textAlign: "center", 
+		// textAlign: "center", 
 		cursor: "pointer"
 	}
 	// var hover = false;
@@ -14,7 +14,7 @@ const AttItem = (props) => {
 		<td 
 			className="main" 
 			style={props.col == 1 ? 
-				{width: "320px", display: "block", height: "100%"}: 
+				{width: "330px", display: "block", height: "100%", ...defaultStyles}: 
 				defaultStyles
 			} 
 			onMouseEnter={e => props.onHoverAdditional(props.row)}
@@ -26,16 +26,16 @@ const AttItem = (props) => {
 			{
 				props.col != 1?
 					<span 
-						className="item-data" 
 						style={props.col > 3 ? {color: "green"} : {}}
 					>
 						{props.value}
 					</span>:
 					<span 
-						className="item-data" 
+						
 						style={props.col > 3 ? {color: "green"} : {}}
 					>
-						{props.value} <span className="additionalButton" style={props.hover? {display: "flex"}: {display: "none"}} onClick={e => props.onShowPopUp(props.row)}><img src="/media/images/icon-ui-1-options-512.png" alt=""/></span>
+						<span className="item-data">{props.value}</span> <span className="headman" title="Староста" style={props.headman? {display: "block"}: {display: "none"}}>Ст</span>
+						<span className="additionalButton" style={props.hover? {display: "flex"}: {display: "none"}} onClick={e => props.onShowPopUp(props.row)}><img src="/media/images/icon-ui-1-options-512.png" alt=""/></span>
 					</span>
 			}
 			
@@ -241,6 +241,7 @@ class ItemTable extends Component {
 					activeItemTable={this.activeItemTable.bind(this)}
 					onHoverAdditional={this.onHoverAdditional.bind(this)}
 					onShowPopUp={this.props.onShowPopUp}
+					headman={this.props.headman}
 					_ref={el => this.props._ref(el)}
 					col={this.props.col} 
 					row={this.props.row} 

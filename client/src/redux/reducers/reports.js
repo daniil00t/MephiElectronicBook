@@ -17,7 +17,9 @@ import {
 	TEMPLATE_CHANGE_MAX_THEAD,
 	TEMPLATE_ADD_PART,
 	TEMPLATE_ADD_STUDENT,
-	TEMPLATE_DELETE_ROW
+	TEMPLATE_DELETE_ROW,
+	REPORT_INDICATE_TOGGLE,
+	TEMPLATE_MARK_AS_HEADMAN
 } from "./types"
 
 import { renderReport, showNotification, fullUpdate } from "../actions"
@@ -87,7 +89,8 @@ export const reports = (state = {
 		active: {
 			row: -1,
 			col: -1
-		}
+		},
+		indicate: false
 	}
 }, action) => {
 
@@ -296,7 +299,14 @@ export const reports = (state = {
 					}
 				}
 			}
-
+		case REPORT_INDICATE_TOGGLE:
+			return {
+				...state,
+				edit: {
+					...state.edit,
+					indicate: !state.edit.indicate
+				}
+			}
 		// TEMPLATE
 
 		case TEMPLATE_TOGGLE_EDIT:
@@ -346,11 +356,11 @@ export const reports = (state = {
 			}
 		case TEMPLATE_DELETE_ROW:
 			let __table = state.data.xlsx.data
-			__table = __table.filter((item, index) => index !== action.payload)
-			console.log(__table)
-			// for (let i = action.payload+1; i < __table.length; i++) {
-			// 	__table[i][0] = +__table[i][0] - 1
-			// }
+			__table = __table.filter((item, index) => index != action.payload)
+			console.log(action.payload)
+			for (let i = action.payload; i < __table.length; i++) {
+				__table[i][0] = +__table[i][0] - 1
+			}
 			return {
 				...state,
 				data: {
@@ -358,6 +368,17 @@ export const reports = (state = {
 					xlsx: {
 						...state.data.xlsx,
 						data: __table
+					}
+				}
+			}
+		case TEMPLATE_MARK_AS_HEADMAN:
+			return {
+				...state,
+				data: {
+					...state.data,
+					meta: {
+						...state.data.meta,
+						headmanRow: action.payload
 					}
 				}
 			}

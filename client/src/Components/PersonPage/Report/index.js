@@ -1,12 +1,21 @@
 import React from 'react';
-import { Table, Overlay, Popover } from "react-bootstrap";
+import { Table, Overlay, Popover, Button } from "react-bootstrap";
 import ItemTable from "./ItemTable.jsx";
 import PanelReport from "./PanelReport"
 import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate, changeMaxThead, template__deleteStudent } from "../../../redux/actions"
+import { changeTypeReport, 
+			addChangeToReport, 
+			backChange, 
+			template__addPart, 
+			template__addStudent, 
+			fullUpdate, 
+			changeMaxThead, 
+			template__deleteStudent, 
+			template__markAsHeadman
+} from "../../../redux/actions"
 
 
 
@@ -17,14 +26,6 @@ class Report extends React.Component {
 		// Idea: i think that it will be able to better recieve from server to client 
 		// not string, but needed return object which exist the next parametres
 		this.state = {
-			// Schedule
-			table: {
-				group: "",
-				name: "",
-				thead: [],
-				meta: {},
-				data: []
-			},
 			// state vars for ch report
 			showTT: false,	// state show pop-up
 			targetsThead: [],	// linked <th /> for pop-up
@@ -41,6 +42,10 @@ class Report extends React.Component {
 		this.colors = {
 			transparent: {
 				color: "transparent",
+				priority: 99
+			},
+			blue: {
+				color: "blue",
 				priority: 4
 			},
 			greyWhite: {
@@ -109,6 +114,7 @@ class Report extends React.Component {
 		}
 		if(this.state.valuesScores.length == 0 && this.props.report.data.thead.length != 0 && this.props.report.typeReport == "ch")
 			this.setState({valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 0)]})
+		this.state.targetsNames = Array(this.props.report.data.xlsx.data.length).fill(null)
 		
 	}
 	concatChanges(row, col){
@@ -158,7 +164,8 @@ class Report extends React.Component {
 	indicationItem(row, col, value){
 		const color = []
 		const curCol = this.props.report.data.meta.curCol
-		const firstCol = this.props.report.data.meta.firstCol 
+		const firstCol = this.props.report.data.meta.firstCol
+		const headmanRowIndex = this.props.report.data.meta.headmanRow || 0
 		const thead = this.props.report.data.thead
 		const MAX_VALUE = 100
 		const coff = 0.6
@@ -183,7 +190,6 @@ class Report extends React.Component {
 		const minSummParts = indexesParts.reduce((acc, cur) => acc += thead[cur].max, 0) * coff
 		const minExam = thead[indexExam].max * coff
 		const minEnd = minSummParts + minExam
-
 
 
 		function sortByThenBy(arr, props) {
@@ -241,7 +247,7 @@ class Report extends React.Component {
 				}
 				
 		}
-		return sortByThenBy(color, ["priority"])
+		return this.props.report.edit.indicate? sortByThenBy(color, ["priority"]) : []
 	}
 	calcMaxValue(col){
 		const thead = this.props.report.data.thead
@@ -270,13 +276,14 @@ class Report extends React.Component {
 		}
 	}
 	onShowPopUp(row){
-		// if(this.state.hoverAdditional)
-		// 	this.setState({ hoverAdditional: false })
-		// else
-		this.setState({ activeName: row, hoverAdditional: true })
+		if(this.state.hoverAdditional && this.state.activeName == row)
+			this.setState({ hoverAdditional: false })
+		else
+			this.setState({ activeName: row, hoverAdditional: true })
 	}
 	deleteStudent(){
 		this.props.deleteStudent(this.state.activeName)
+		console.log(this.state.activeName)
 	}
 	render() {
 		return (
@@ -307,9 +314,11 @@ class Report extends React.Component {
 					<Popover id="popover-contained" onMouseLeave={e => this.setState({ hoverAdditional: false })}>
 						<Popover.Title as="h3">Actions</Popover.Title>
 						<Popover.Content>
-							<button onClick={this.deleteStudent.bind(this)}>Delete row</button>
-							<button onClick={e => console.log(this.state.activeName)}>Mark as main</button>
+							<div className="wrap-body-popup">
+								<Button variant="danger" onClick={e => this.props.deleteStudent(this.state.activeName)}>Delete row</Button>
+								<Button variant="info" onClick={e => this.props.markAsHeadman(this.state.activeName)}>Mark as headman</Button>
 
+							</div>
 						</Popover.Content>
 					</Popover>
 				</Overlay>
@@ -383,7 +392,8 @@ class Report extends React.Component {
 												row={Irow} 
 												col={Icol}
 												onShowPopUp={this.onShowPopUp.bind(this)}
-												_ref={el => Icol == 1? this.state.targetsNames.push(el): null}
+												headman={Irow == this.props.report.data.meta.headmanRow}
+												_ref={el => Icol == 1? this.state.targetsNames[Irow] = el: null}
 												value={this.concatChanges(Irow, Icol)} 
 												type={this.props.report.data.thead[Icol].type || "string"}
 												enable={this.props.report.data.thead[Icol].enable} 
@@ -431,6 +441,7 @@ const mapDispatchToProps = dispatch => ({
 	addPart: name => dispatch(template__addPart(name)),
 	addStudent: name => dispatch(template__addStudent(name)),
 	deleteStudent: row => dispatch(template__deleteStudent(row)),
+	markAsHeadman: row => dispatch(template__markAsHeadman(row)),
 	changeMaxThead: (col, value) => dispatch(changeMaxThead(col, value))
 })
 

@@ -114,7 +114,9 @@
  }
  
  input:checked + .slider {
-	background-color: #2196F3;
+	/* background-color: #2196F3; */
+	background: rgb(185,0,0);
+	background: linear-gradient(90deg, rgba(185,0,0,1) 0%, rgba(179,189,15,1) 46%, rgba(40,169,196,1) 76%);
  }
  
  input:focus + .slider {
@@ -156,4 +158,33 @@
 	 width: 70%;
 	 height: auto;
 	 cursor: pointer;
+ }
+ .wrap-body-popup{
+	 display: flex;
+	 flex-direction: column;
+ }
+ .wrap-body-popup button {
+	 margin-bottom: 8px;
+	 /* height: 30 */
+ }
+
+ /* .button-delete-row{
+	 margin-bottom: 8px;
+	 border-radius: 3px;
+	 border: 2px solid rgb(155, 15, 15);
+	 background-color: rgb(189, 10, 10);
+	 height: 30px;
+	 color: #fff;
+ } */
+ .item-data{
+	 float: left;
+ }
+ .headman{
+	 background-color: rgb(221, 217, 9);
+	 color: #fff;
+	 padding: 3px 5px;
+	 border-radius: 3px;
+	width: 30px;
+	float: left;
+	margin-left: 5px;
  }
