@@ -9,6 +9,7 @@ const AttItem = (props) => {
 		textAlign: "center", 
 		cursor: "pointer"
 	}
+	// var hover = false;
 	return(
 		<td 
 			className="main" 
@@ -16,14 +17,28 @@ const AttItem = (props) => {
 				{width: "320px", display: "block", height: "100%"}: 
 				defaultStyles
 			} 
+			onMouseEnter={e => props.onHoverAdditional(props.row)}
+			onMouseLeave={e => props.onHoverAdditional(props.row)}
+
+			ref={td => props._ref(td)}
 			onClick={props.activeItemTable}
 		>
-			<span 
-				className="item-data" 
-				style={props.col > 3 ? (props.value == "+"? {color: "green"} : {color: "red"}) : {}}
-			>
-				{props.value}
-			</span>
+			{
+				props.col != 1?
+					<span 
+						className="item-data" 
+						style={props.col > 3 ? {color: "green"} : {}}
+					>
+						{props.value}
+					</span>:
+					<span 
+						className="item-data" 
+						style={props.col > 3 ? {color: "green"} : {}}
+					>
+						{props.value} <span className="additionalButton" style={props.hover? {display: "flex"}: {display: "none"}} onClick={e => props.onShowPopUp(props.row)}><img src="/media/images/icon-ui-1-options-512.png" alt=""/></span>
+					</span>
+			}
+			
 		</td>
 	)
 }
@@ -112,7 +127,8 @@ class ItemTable extends Component {
 			activeRow: this.props.row,
 			activeCol: this.props.col,  
 			activeState: false,
-			errorValue: false
+			errorValue: false,
+			hoverAdditional: false
 		};
 		// new Ref for extraction value from input and focus on that
 		this.textInput = React.createRef();
@@ -215,10 +231,23 @@ class ItemTable extends Component {
 			autohide: true
 		})
 	}
+	onHoverAdditional(){
+		this.setState({ hoverAdditional: !this.state.hoverAdditional })
+	}
    render() {
 		switch(this.props.typeReport){
 			case "att":
-				return <AttItem activeItemTable={this.activeItemTable.bind(this)} col={this.props.col} value={this.props.value} color={this.props.indication[0] || {color: "transparent"}}/>;
+				return <AttItem 
+					activeItemTable={this.activeItemTable.bind(this)}
+					onHoverAdditional={this.onHoverAdditional.bind(this)}
+					onShowPopUp={this.props.onShowPopUp}
+					_ref={el => this.props._ref(el)}
+					col={this.props.col} 
+					row={this.props.row} 
+					value={this.props.value} 
+					color={this.props.indication[0] || {color: "transparent"}}
+					hover={this.state.hoverAdditional}
+					/>;
 			case "score":
 				return <ScoreItem 
 					activeState={this.state.activeState}

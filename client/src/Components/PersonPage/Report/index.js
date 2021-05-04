@@ -6,7 +6,7 @@ import "../../../styles/Report.css";
 
 // Redux is used
 import { connect } from "react-redux"
-import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate, changeMaxThead } from "../../../redux/actions"
+import { changeTypeReport, addChangeToReport, backChange, template__addPart, template__addStudent, fullUpdate, changeMaxThead, template__deleteStudent } from "../../../redux/actions"
 
 
 
@@ -27,12 +27,15 @@ class Report extends React.Component {
 			},
 			// state vars for ch report
 			showTT: false,	// state show pop-up
-			targets: [],	// linked <th /> for pop-up
+			targetsThead: [],	// linked <th /> for pop-up
+			targetsNames: [], // targets for pop-up [names...T]
 			activeTarget: -1,	// active index <th />
+			activeName: -1, // active index for name pop-up
 			valuesScores: [], // default value = 50 and count elements = 20
 
 			editNewStudent: false,
 			editNewPart: false,
+			hoverAdditional: false
 		};
 		this.lastTime = ""
 		this.colors = {
@@ -106,6 +109,7 @@ class Report extends React.Component {
 		}
 		if(this.state.valuesScores.length == 0 && this.props.report.data.thead.length != 0 && this.props.report.typeReport == "ch")
 			this.setState({valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 0)]})
+		
 	}
 	concatChanges(row, col){
 		if(this.props.changes.length > 0){
@@ -265,12 +269,21 @@ class Report extends React.Component {
 			}
 		}
 	}
+	onShowPopUp(row){
+		// if(this.state.hoverAdditional)
+		// 	this.setState({ hoverAdditional: false })
+		// else
+		this.setState({ activeName: row, hoverAdditional: true })
+	}
+	deleteStudent(){
+		this.props.deleteStudent(this.state.activeName)
+	}
 	render() {
 		return (
 			<div className="table-wrap">
 				<Overlay
 					show={this.state.showTT}
-					target={this.state.targets[this.state.activeTarget]}
+					target={this.state.targetsThead[this.state.activeTarget]}
 					placement="bottom"
 					containerPadding={20}
 					
@@ -279,6 +292,24 @@ class Report extends React.Component {
 						<Popover.Title as="h3">Изменение границы оценок</Popover.Title>
 						<Popover.Content>
 							<input type="range" value={this.state.valuesScores[this.state.activeTarget+2]} class="form-control-range" id="formControlRange" min="0" max="50" step="5" onChange={e => this.changeRange(e)}/>
+						</Popover.Content>
+					</Popover>
+				</Overlay>
+
+
+				<Overlay
+					show={this.state.hoverAdditional}
+					target={this.state.targetsNames[this.state.activeName]}
+					placement="right"
+					containerPadding={20}
+					
+					>
+					<Popover id="popover-contained" onMouseLeave={e => this.setState({ hoverAdditional: false })}>
+						<Popover.Title as="h3">Actions</Popover.Title>
+						<Popover.Content>
+							<button onClick={this.deleteStudent.bind(this)}>Delete row</button>
+							<button onClick={e => console.log(this.state.activeName)}>Mark as main</button>
+
 						</Popover.Content>
 					</Popover>
 				</Overlay>
@@ -315,7 +346,7 @@ class Report extends React.Component {
 												if(index < 2)
 													return <th><span className="itemTH">{el}</span></th>
 												else
-													return <th onMouseEnter={e => !!this.state.valuesScores[index] ? this.setState({ activeTarget: index-2, showTT: true }): console.log()} onMouseLeave={e => !!this.state.valuesScores[index] ? this.setState({ showTT: false }): console.log()} ref={el => this.state.targets[index-2] = el}>
+													return <th onMouseEnter={e => !!this.state.valuesScores[index] ? this.setState({ activeTarget: index-2, showTT: true }): console.log()} onMouseLeave={e => !!this.state.valuesScores[index] ? this.setState({ showTT: false }): console.log()} ref={el => this.state.targetsThead[index-2] = el}>
 																<div className="wrapTd" style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
 																	{this.props.template.isEdit ? <button>x</button>: <></>}
 																	<span className="itemTH">
@@ -350,7 +381,9 @@ class Report extends React.Component {
 							  			row.map((col, Icol) => 
 										  <ItemTable 
 												row={Irow} 
-												col={Icol} 
+												col={Icol}
+												onShowPopUp={this.onShowPopUp.bind(this)}
+												_ref={el => Icol == 1? this.state.targetsNames.push(el): null}
 												value={this.concatChanges(Irow, Icol)} 
 												type={this.props.report.data.thead[Icol].type || "string"}
 												enable={this.props.report.data.thead[Icol].enable} 
@@ -397,6 +430,7 @@ const mapDispatchToProps = dispatch => ({
 
 	addPart: name => dispatch(template__addPart(name)),
 	addStudent: name => dispatch(template__addStudent(name)),
+	deleteStudent: row => dispatch(template__deleteStudent(row)),
 	changeMaxThead: (col, value) => dispatch(changeMaxThead(col, value))
 })
 

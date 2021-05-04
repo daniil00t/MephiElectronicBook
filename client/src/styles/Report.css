@@ -135,3 +135,25 @@
  .slider.round:before {
 	border-radius: 50%;
  }
+
+ .additionalButton{
+	 /* display: block; */
+	 width: 25px;
+	 height: 25px;
+	 background-color: rgb(175, 175, 175);
+	 /* float: right; */
+	 position: absolute;
+	 border-radius: 50%;
+	 right: 8.8px;
+	 top: 5px;
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+	 /* background-image: url("/media/images/icon-ui-1-options-512.png"); */
+	 cursor: pointer;
+ }
+ .additionalButton img{
+	 width: 70%;
+	 height: auto;
+	 cursor: pointer;
+ }

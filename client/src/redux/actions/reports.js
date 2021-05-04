@@ -16,6 +16,7 @@ import {
 	TEMPLATE_CHANGE_MAX_THEAD,
 	TEMPLATE_ADD_PART,
 	TEMPLATE_ADD_STUDENT,
+	TEMPLATE_DELETE_ROW,
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -99,4 +100,8 @@ export const template__addPart = name => ({
 export const template__addStudent = name => ({
 	type: TEMPLATE_ADD_STUDENT,
 	payload: name
+})
+export const template__deleteStudent = row => ({
+	type: TEMPLATE_DELETE_ROW,
+	paylaod: row
 })

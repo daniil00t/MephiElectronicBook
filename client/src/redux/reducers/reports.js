@@ -16,7 +16,8 @@ import {
 	TEMPLATE_TOGGLE_EDIT,
 	TEMPLATE_CHANGE_MAX_THEAD,
 	TEMPLATE_ADD_PART,
-	TEMPLATE_ADD_STUDENT
+	TEMPLATE_ADD_STUDENT,
+	TEMPLATE_DELETE_ROW
 } from "./types"
 
 import { renderReport, showNotification, fullUpdate } from "../actions"
@@ -209,11 +210,16 @@ export const reports = (state = {
 			changes.map((item, index) => {
 				if(item.col == action.payload.col && !!item.allCol) indexCol = index
 			})
-			if(~indexCol)
+			if(~indexCol && !changes[indexCol].allCol)
 				changes[indexCol].value = !!changes[indexCol].value? "": "+"
 			else
 				changes.push(action.payload)
-			action.asyncDispatch(fullUpdate(action.payload.row))
+			if(!!action.payload.allCol){
+				for (let row = 0; row < state.data.xlsx.data.length; row++) {
+					action.asyncDispatch(fullUpdate(row))
+				}
+			}
+			else action.asyncDispatch(fullUpdate(action.payload.row))
 			return{
 				...state,
 				edit: {
@@ -222,6 +228,15 @@ export const reports = (state = {
 				}
 			}
 		case REPORT_EDIT_TO_BACK:
+			if(state.edit.changes.length != 0){
+				if(!!state.edit.changes[state.edit.changes.length - 1].allCol){
+					for (let row = 0; row < state.data.xlsx.data.length; row++) {
+						action.asyncDispatch(fullUpdate(row))
+					}
+				}
+				else action.asyncDispatch(fullUpdate(state.edit.changes[state.edit.changes.length - 1].row))
+			}
+
 			return {
 				...state,
 				edit: {
@@ -262,12 +277,15 @@ export const reports = (state = {
 			// with optimise
 			let _table = [].concat(state.data.xlsx.data)
 			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = concatChanges(action.payload, Icol))
-
+			
 			thead.map((th, Icol) => {
 				if(!!th.formula){
-						_table[action.payload][Icol] = compileAndMake(th.formula, curCol)(_table, action.payload)
+					_table[action.payload][Icol] = compileAndMake(th.formula, curCol)(_table, action.payload)
 				}
 			})
+			
+			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = state.data.xlsx.data[action.payload][Icol])
+
 			return {
 				...state,
 				data: {
@@ -324,6 +342,23 @@ export const reports = (state = {
 						...state.data.data,
 						[state.data.data.length+1, action.payload, ...filler(state.data.data[0].length-2, "")]
 					]
+				}
+			}
+		case TEMPLATE_DELETE_ROW:
+			let __table = state.data.xlsx.data
+			__table = __table.filter((item, index) => index !== action.payload)
+			console.log(__table)
+			// for (let i = action.payload+1; i < __table.length; i++) {
+			// 	__table[i][0] = +__table[i][0] - 1
+			// }
+			return {
+				...state,
+				data: {
+					...state.data,
+					xlsx: {
+						...state.data.xlsx,
+						data: __table
+					}
 				}
 			}
 		default: 
