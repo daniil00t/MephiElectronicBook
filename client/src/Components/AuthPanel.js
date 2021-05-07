@@ -47,7 +47,7 @@ class AuthPanel extends React.Component {
 		console.dir(+e.target.value)
 		this.setState({id: e.target.value});
 
-		(+e.target.value != -1) ?
+		(+e.target.value !== -1) ?
 			this.props.changeNameTeacher(this.state.listTeachers[+e.target.value - 1][1]):
 			this.props.changeNameTeacher("")
 	}
@@ -63,7 +63,7 @@ class AuthPanel extends React.Component {
 					</select>
 					<Link
 						to="/personalPage" 
-						style={this.state.id == -1 ? {pointerEvents: "none"} : {}} 
+						style={this.state.id === -1 ? {pointerEvents: "none"} : {}} 
 						className="btn btn-primary go" 
 						onClick={e => this.handleLogin(e)}
 					>

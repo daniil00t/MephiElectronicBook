@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 import { closeNotification } from "../../redux/actions"
 
 class Notification extends Component {
+   // eslint-disable-next-line no-useless-constructor
    constructor(props){
       super(props);
    }

@@ -22,7 +22,6 @@ import {
 	showNotification,
 	backChange
  } from "../../redux/actions"
-import Constructor from './Report/Constructor'
 
 
 
@@ -45,7 +44,7 @@ class PersonPage extends React.Component {
 	}
 
 	addUniqueItem(items, arr){
-		items.map(item => { if(arr.indexOf(item) === -1) arr.push(item) });
+		items.map(item => { if(arr.indexOf(item) === -1) arr.push(item); return item });
 		return arr;
 	}
 	solveCounts(schedule){
@@ -56,14 +55,14 @@ class PersonPage extends React.Component {
 		
 
 		schedule.map(day => {
-			day.map((lesson, index) => {
+			day.map(lesson => {
 				// Add compact array subject -> (name, groups, durations, types)
 				let tmpNames = compacts.reduce((acc, cur) => {
 					return [...acc, cur.name];
 				}, []);
 
 				let indexName = tmpNames.indexOf(lesson.name);
-				if(indexName != -1){
+				if(indexName !== -1){
 					compacts[indexName].groups = this.addUniqueItem(lesson.groups, compacts[indexName].groups);
 					compacts[indexName].durations = this.addUniqueItem([lesson.duration], compacts[indexName].durations);
 					compacts[indexName].types = this.addUniqueItem([lesson.type], compacts[indexName].types);
@@ -79,7 +78,7 @@ class PersonPage extends React.Component {
 				if(!(arraySubjects.includes(lesson.name))){
 					let indexDuration = arraySubjects.indexOf(lesson.name);
 					let itemDuration = arrayDurations[indexDuration];
-					if(lesson.duration != itemDuration){
+					if(lesson.duration !== itemDuration){
 						if(Array.isArray(itemDuration)){
 							arrayDurations[indexDuration] = [arrayDurations[indexDuration], itemDuration];
 						}
@@ -91,9 +90,12 @@ class PersonPage extends React.Component {
 					arraySubjects.push(lesson.name);
 				}
 				lesson.groups.map(group => {
-					if(!(arrayGroups.includes(group))) arrayGroups.push(group);		
+					if(!(arrayGroups.includes(group))) arrayGroups.push(group);
+					return group
 				})
+				return lesson
 			})
+			return day
 		});
 		return {
 			subjects: arraySubjects,
@@ -103,13 +105,13 @@ class PersonPage extends React.Component {
 		};
 	}
 	componentDidMount(){
-		if(this.state.id != -1){
+		if(this.state.id !== -1){
 			let id = this.state.id;
 			getScheduleTeacher(id, data => {
 				let name = data.name;
 				let schedule = data.data;
 
-				if(Cookies.get("id") == -1){
+				if(Cookies.get("id") === -1){
 					Cookies.set("id", this.props.id);
 				}
 
@@ -127,7 +129,7 @@ class PersonPage extends React.Component {
 				// Init global data redux
 				this.props.initGlobal({
 					nameTeacher: name,
-					isLogged: Cookies.get("id") != -1,
+					isLogged: Cookies.get("id") !== -1,
 					countSubject: this.solveCounts(schedule).subjects.length,
 					countGroups:  this.solveCounts(schedule).groups.length
 				})
@@ -180,23 +182,6 @@ class PersonPage extends React.Component {
 					</main>
 				)
 			}
-			case "constructor":
-				return (
-					<main>
-						<PanelTeacher 
-							countSubject={this.props.countSubjects} 
-							countGroups={this.props.countGroups} 
-							name={this.props.nameTeacher}
-							link={this.props.linkOnHomeMephi}
-						/>
-						<Constructor 
-							groups={this.state.groups}
-							subjects={this.state.subjects}
-							durations={this.state.durations}
-							name={this.state.name}
-						/>
-					</main>
-				)
 			default:
 				return "Not Found Match";
 		}

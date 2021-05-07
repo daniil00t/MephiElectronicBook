@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, NavDropdown, Form, FormControl, Button, DropdownButton, ButtonGroup, Dropdown } from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown, Form, FormControl, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 
 // Redux is used
@@ -11,7 +11,7 @@ const ItemDropdownSubjects = (props) => {
 		props.changeSubject(subject)
 		props.changeGroup(group)
 		props.changePriority("subjects")
-		props.typeSubject.length == 1 ? 
+		props.typeSubject.length === 1 ? 
 			props.changeTypeSubject(props.typeSubject[0]):
 			props.changeTypeSubject("undefined")
 	}
@@ -40,7 +40,7 @@ const ItemDropdownGroups = (props) => {
 		props.changeSubject(subject)
 		props.changeGroup(group)
 		props.changePriority("groups")
-		props.typeSubject.length == 1 ? 
+		props.typeSubject.length === 1 ? 
 			props.changeTypeSubject(props.typeSubject[0]):
 			props.changeTypeSubject("undefined")
 	}
@@ -122,7 +122,6 @@ const Header = (props) => {
 					<Link onClick={e => changeTypeTable("score")} to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
 					<Link onClick={e => changeTypeTable("ch")} to="/personalPage/tables/score" className="dropdown-item">Итоговая ведомость</Link>
 					<NavDropdown.Divider />
-					<Link to="/personalPage/constructor" className="dropdown-item" style={{pointerEvents: "none", cursor: "default"}}>Конструктор</Link>
 				</NavDropdown>
 				
 				<Nav.Link href="#home">Помощь</Nav.Link>

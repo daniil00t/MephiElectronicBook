@@ -2,7 +2,6 @@ import React from "react"
 import { ButtonGroup, ToggleButton, Button } from "react-bootstrap"
 import { connect } from "react-redux"
 import * as CONFIG from "../../../config.json"
-import { getReport as _getReport, setReport } from "../../../api"
 import { 
    changeTypeReport, 
    changeSubject, 
@@ -10,7 +9,6 @@ import {
    changeTypeSubject,
    getReport,
    saveReport,
-   addChangeToReport,
    toggleTemplateEdit,
    toggleIndicate
 } from "../../../redux/actions"
@@ -24,14 +22,14 @@ const SubjectToGroup = (props) => {
    }, [])
    var typesRender = []
 
-   if (props.report.subject != ""){
+   if (props.report.subject !== ""){
       var indexSubject = subjects.indexOf(props.report.subject)
       var groups = props.schedule.subjectToGroup[indexSubject].groups
       typesRender = types[indexSubject]
    }
    else{
-      var indexSubject = -1
-      var groups = []
+      indexSubject = -1
+      groups = []
    }
    return (
       <div className="subjectToGroup">
@@ -39,22 +37,22 @@ const SubjectToGroup = (props) => {
             <option value="">Выберете предмет</option>
             {
                subjects.map((el, index) => 
-                  index == indexSubject ?
-                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
+                  index === indexSubject ?
+                  <option selected value={index}>{`${el} [${types[index] === "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] === "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )
             }
          </select>
          {
-            typesRender.length != 0 ?
+            typesRender.length !== 0 ?
                (
                   <select className="form-control types" onChange={e => props.dispatcher.changeTypeSubject(e.target.value)}>
                      <option value="">Тип</option>
                      {
                         typesRender.map((type, index) => 
-                           type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
-                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
+                           type === props.report.typeSubject ? 
+                              (<option selected value={type}>{type === "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type === "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
@@ -66,7 +64,7 @@ const SubjectToGroup = (props) => {
             <option value="">Выберите группу</option>
             {
                groups.map((el, index) => 
-                  el == props.report.group ?
+                  el === props.report.group ?
                   <option selected value={el}>{el}</option> :
                   <option value={el}>{el}</option>
                )
@@ -85,15 +83,15 @@ const GroupToSubject = (props) => {
 
    var typesRender = []
 
-   if (props.report.group != ""){
+   if (props.report.group !== ""){
       var indexGroup = groups.indexOf(props.report.group)
       var subjects = props.schedule.groupToSubject[indexGroup].subjects
       
       typesRender = types[indexGroup]
    }
    else{
-      var indexGroup = -1
-      var subjects = []
+      indexGroup = -1
+      subjects = []
    }
 
    return (
@@ -102,22 +100,22 @@ const GroupToSubject = (props) => {
          <option value={undefined}>Выберите группу</option>
             {
                groups.map((el, index) => 
-                  index == indexGroup ?
+                  index === indexGroup ?
                   <option selected value={el}>{el}</option> :
                   <option value={el}>{el}</option>
                )
             }
          </select>
          {
-            typesRender.length != 0 ?
+            typesRender.length !== 0 ?
                (
                   <select className="form-control types" onChange={e => props.dispatcher.changeTypeSubject(e.target.value)}>
                      <option value={undefined}>Тип</option>
                      {
                         typesRender.map((type, index) => 
-                           type == props.report.typeSubject ? 
-                              (<option selected value={type}>{type == "NONE_TYPE"? "Доп": type}</option>):
-                              (<option value={type}>{type == "NONE_TYPE"? "Доп": type}</option>)
+                           type === props.report.typeSubject ? 
+                              (<option selected value={type}>{type === "NONE_TYPE"? "Доп": type}</option>):
+                              (<option value={type}>{type === "NONE_TYPE"? "Доп": type}</option>)
                         )
                      }
                   </select>
@@ -128,9 +126,9 @@ const GroupToSubject = (props) => {
             <option value={undefined}>Выберете предмет</option>
             {
                subjects.map((el, index) => 
-                  index == indexGroup ?
-                  <option selected value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option> :
-                  <option value={index}>{`${el} [${types[index] == "NONE_TYPE"? "Доп": types[index]}]`}</option>
+                  index === indexGroup ?
+                  <option selected value={index}>{`${el} [${types[index] === "NONE_TYPE"? "Доп": types[index]}]`}</option> :
+                  <option value={index}>{`${el} [${types[index] === "NONE_TYPE"? "Доп": types[index]}]`}</option>
                )   
             }
          </select>
@@ -139,6 +137,7 @@ const GroupToSubject = (props) => {
 }
 
 class PanelReport extends React.Component{
+   // eslint-disable-next-line no-useless-constructor
    constructor(props){
       super(props)
    }
@@ -150,7 +149,7 @@ class PanelReport extends React.Component{
          <div className="panelHeadTable">
             <div className="tableWrap">
                {
-                  this.props.report.priority == "subjects" ? 
+                  this.props.report.priority === "subjects" ? 
                      (<SubjectToGroup 
                         report={this.props.report} 
                         schedule={this.props.schedule} 
@@ -187,7 +186,7 @@ class PanelReport extends React.Component{
 
                
                {
-                  this.props.report.typeReport == "ch"?
+                  this.props.report.typeReport === "ch"?
                      <label className="switch" title="Редактирование">
                         <input type="checkbox" checked={this.props.template.isEdit} onChange={e => this.props.toggleTemplateEdit()}/>
                         <span className="slider round"></span>

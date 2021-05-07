@@ -44,24 +44,20 @@ class Report extends React.Component {
 				color: "transparent",
 				priority: 99
 			},
-			blue: {
-				color: "blue",
-				priority: 4
-			},
 			greyWhite: {
-				color: "#888",
+				color: "var(--global-color-grey-white)",
 				priority: 3
 			},
 			greyBlack: {
-				color: "#333",
+				color: "var(--global-color-grey-black)",
 				priority: 2
 			},
 			green: {
-				color: "green",
+				color: "var(--global-color-green)",
 				priority: 1
 			},
 			red: {
-				color: "red",
+				color: "var(--global-color-red)",
 				priority: 0
 			}
 		}
@@ -70,14 +66,14 @@ class Report extends React.Component {
 		let result = ""
 		const filter = res => res.slice(5, 10)
 		if(index > this.props.report.data.meta.firstCol){
-			if(this.lastTime == element.slice(10)){
+			if(this.lastTime === element.slice(10)){
 				result = filter(element)
 			}
 			else{
 				result = element
 			}
 		}
-		else if(index == this.props.report.data.meta.firstCol){
+		else if(index === this.props.report.data.meta.firstCol){
 			this.lastTime = element.slice(10)
 			result = filter(element)
 		}
@@ -112,8 +108,9 @@ class Report extends React.Component {
 				yield self.props.report.data.thead[index].max || null
 			}
 		}
-		if(this.state.valuesScores.length == 0 && this.props.report.data.thead.length != 0 && this.props.report.typeReport == "ch")
+		if(this.state.valuesScores.length === 0 && this.props.report.data.thead.length !== 0 && this.props.report.typeReport === "ch")
 			this.setState({valuesScores: [...putScoresTHead(this.props.report.data.xlsx.columns.length || 0)]})
+		// eslint-disable-next-line react/no-direct-mutation-state
 		this.state.targetsNames = Array(this.props.report.data.xlsx.data.length).fill(null)
 		
 	}
@@ -122,7 +119,7 @@ class Report extends React.Component {
 			for (let i = this.props.changes.length - 1; i >= 0; i--) {
 				let item = this.props.changes[i]
 				// if(!!item.allCol && item.col == col) return item.value // for all col
-				if(item.row == row && item.col == col) return item.value
+				if(item.row === row && item.col === col) return item.value
 			}
 		}
 		return this.props.report.data.xlsx.data[row][col]
@@ -134,9 +131,9 @@ class Report extends React.Component {
 		const indexPart2 	= 3
 		const indexExam 	= 6
 
-		let dataPart1 = this.state.valuesScores[indexPart1]
-		let dataPart2 = this.state.valuesScores[indexPart2]
-		let dataExam = this.state.valuesScores[indexExam]
+		// let dataPart1 = this.state.valuesScores[indexPart1]
+		// let dataPart2 = this.state.valuesScores[indexPart2]
+		// let dataExam = this.state.valuesScores[indexExam]
 		var values = this.state.valuesScores
 		switch(index){
 			case indexPart1:
@@ -150,7 +147,7 @@ class Report extends React.Component {
 				return this.setState({valuesScores: values})
 
 			case indexExam:
-				if(value % 10 != 0){
+				if(value % 10 !== 0){
 					values[indexPart1] = MAX_VALUE - values[indexPart2] - value
 					this.props.changeMaxThead(indexPart1, MAX_VALUE - values[indexPart2] - value)
 				}
@@ -159,13 +156,15 @@ class Report extends React.Component {
 					this.props.changeMaxThead(indexPart2, MAX_VALUE - values[indexPart1] - value)
 				}
 				return this.setState({valuesScores: values})
+			default:
+				break
 		}
 	}
 	indicationItem(row, col, value){
 		const color = []
 		const curCol = this.props.report.data.meta.curCol
 		const firstCol = this.props.report.data.meta.firstCol
-		const headmanRowIndex = this.props.report.data.meta.headmanRow || 0
+		// const headmanRowIndex = this.props.report.data.meta.headmanRow || 0
 		const thead = this.props.report.data.thead
 		const MAX_VALUE = 100
 		const coff = 0.6
@@ -185,7 +184,6 @@ class Report extends React.Component {
 		const indexAtt = indexSummParts + 1
 		const indexExam = indexAtt + 1
 		const indexEnd = indexExam + 1
-		const indexECTS = indexEnd + 1
 
 		const minSummParts = indexesParts.reduce((acc, cur) => acc += thead[cur].max, 0) * coff
 		const minExam = thead[indexExam].max * coff
@@ -209,43 +207,46 @@ class Report extends React.Component {
 		switch(this.props.report.typeReport){
 			case "score":
 				if(col < curCol && col >= firstCol) color.push(this.colors.greyWhite)
-				if(col == curCol) color.push(this.colors.greyBlack)
-				if(col == averageIndex && +value >= minScore) color.push(this.colors.green)
-				if(col == averageIndex && +value < minScore) color.push(this.colors.red)
+				if(col === curCol) color.push(this.colors.greyBlack)
+				if(col === averageIndex && +value >= minScore) color.push(this.colors.green)
+				if(col === averageIndex && +value < minScore) color.push(this.colors.red)
 				break
 			case "att":
 				if(col < curCol && col >= firstCol) color.push(this.colors.greyWhite)
-				if(col == curCol) color.push(this.colors.greyBlack)
-				if(col == procentIndex && +value >= minProcent) color.push(this.colors.green)
-				if(col == procentIndex && +value < minProcent) color.push(this.colors.red)
+				if(col === curCol) color.push(this.colors.greyBlack)
+				if(col === procentIndex && +value >= minProcent) color.push(this.colors.green)
+				if(col === procentIndex && +value < minProcent) color.push(this.colors.red)
 				break
 			// case "ch":
 			case "ch":
 				for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
 					switch(col){
 						case indexesParts[indexPart]:
-							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value === 0){color.push(this.colors.transparent); break;}
 							if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
 							if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
 							break
 						case indexSummParts:
-							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value === 0){color.push(this.colors.transparent); break;}
 							if(+value < minSummParts) color.push(this.colors.red)
 							if(+value >= minSummParts) color.push(this.colors.green)
 							break
 						case indexExam:
-							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value === 0){color.push(this.colors.transparent); break;}
 							if(+value < minExam) color.push(this.colors.red)
 							if(+value >= minExam) color.push(this.colors.green)
 							break
 						case indexEnd:
-							if(+value == 0){color.push(this.colors.transparent); break;}
+							if(+value === 0){color.push(this.colors.transparent); break;}
 							if(+value < minEnd) color.push(this.colors.red)
 							if(+value >= minEnd) color.push(this.colors.green)
 							break
+						default:
+							break
 					}
-				}
-				
+				};break
+			default:
+				break
 		}
 		return this.props.report.edit.indicate? sortByThenBy(color, ["priority"]) : []
 	}
@@ -276,14 +277,13 @@ class Report extends React.Component {
 		}
 	}
 	onShowPopUp(row){
-		if(this.state.hoverAdditional && this.state.activeName == row)
+		if(this.state.hoverAdditional && this.state.activeName === row)
 			this.setState({ hoverAdditional: false })
 		else
 			this.setState({ activeName: row, hoverAdditional: true })
 	}
 	deleteStudent(){
-		this.props.deleteStudent(this.state.activeName)
-		console.log(this.state.activeName)
+		if(window.confirm("Вы уверены? Данные о студенте будут утеряны.")) this.props.deleteStudent(this.state.activeName)
 	}
 	render() {
 		return (
@@ -315,7 +315,7 @@ class Report extends React.Component {
 						<Popover.Title as="h3">Actions</Popover.Title>
 						<Popover.Content>
 							<div className="wrap-body-popup">
-								<Button variant="danger" onClick={e => this.props.deleteStudent(this.state.activeName)}>Delete row</Button>
+								<Button variant="danger" onClick={e => this.deleteStudent()}>Delete row</Button>
 								<Button variant="info" onClick={e => this.props.markAsHeadman(this.state.activeName)}>Mark as headman</Button>
 
 							</div>
@@ -355,6 +355,7 @@ class Report extends React.Component {
 												if(index < 2)
 													return <th><span className="itemTH">{el}</span></th>
 												else
+													// eslint-disable-next-line react/no-direct-mutation-state
 													return <th onMouseEnter={e => !!this.state.valuesScores[index] ? this.setState({ activeTarget: index-2, showTT: true }): console.log()} onMouseLeave={e => !!this.state.valuesScores[index] ? this.setState({ showTT: false }): console.log()} ref={el => this.state.targetsThead[index-2] = el}>
 																<div className="wrapTd" style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
 																	{this.props.template.isEdit ? <button>x</button>: <></>}
@@ -364,7 +365,10 @@ class Report extends React.Component {
 																	</span>
 																</div>
 														</th>
+											default:
+												break
 										}
+										return (<></>)
 									}
 								)
 					    	}
@@ -374,7 +378,7 @@ class Report extends React.Component {
 										<button onClick={e => this.setState({ editNewPart: !this.state.editNewPart })}>New Part</button>
 										{
 										this.state.editNewPart?
-											<div><input type="text" onKeyPress={e => e.key == "Enter"? this.props.addPart(e.target.value): console.log('f')}/><button>add</button></div>:
+											<div><input type="text" onKeyPress={e => e.key === "Enter"? this.props.addPart(e.target.value): console.log('f')}/><button>add</button></div>:
 											<></>
 										}
 									</th>:
@@ -392,8 +396,9 @@ class Report extends React.Component {
 												row={Irow} 
 												col={Icol}
 												onShowPopUp={this.onShowPopUp.bind(this)}
-												headman={Irow == this.props.report.data.meta.headmanRow}
-												_ref={el => Icol == 1? this.state.targetsNames[Irow] = el: null}
+												headman={Irow === this.props.report.data.meta.headmanRow}
+												// eslint-disable-next-line react/no-direct-mutation-state
+												_ref={el => Icol === 1? this.state.targetsNames[Irow] = el: null}
 												value={this.concatChanges(Irow, Icol)} 
 												type={this.props.report.data.thead[Icol].type || "string"}
 												enable={this.props.report.data.thead[Icol].enable} 
@@ -411,7 +416,7 @@ class Report extends React.Component {
 										<td><button onClick={e => this.setState({ editNewStudent: !this.state.editNewStudent })}>+</button></td>
 										{
 											this.state.editNewStudent?
-												<td><input type="text" onKeyPress={e => e.key == "Enter"? this.props.addStudent(e.target.value): console.log('f')}/></td>:
+												<td><input type="text" onKeyPress={e => e.key === "Enter"? this.props.addStudent(e.target.value): console.log('f')}/></td>:
 												<></>
 										}
 									</tr>:

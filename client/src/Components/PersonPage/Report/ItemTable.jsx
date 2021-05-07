@@ -13,7 +13,7 @@ const AttItem = (props) => {
 	return(
 		<td 
 			className="main" 
-			style={props.col == 1 ? 
+			style={props.col === 1 ? 
 				{width: "330px", display: "block", height: "100%", ...defaultStyles}: 
 				defaultStyles
 			} 
@@ -24,7 +24,7 @@ const AttItem = (props) => {
 			onClick={props.activeItemTable}
 		>
 			{
-				props.col != 1?
+				props.col !== 1?
 					<span 
 						style={props.col > 3 ? {color: "green"} : {}}
 					>
@@ -52,7 +52,7 @@ const ScoreItem = props => {
 	if(!props.activeState){
 		return (<td 
 			className={props.col > 2? "main time" : "main"} 
-			style={props.col == 1 ? 
+			style={props.col === 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
 				defaultStyles} 
 			onClick={props.activeItemTable}
@@ -89,7 +89,7 @@ const ChItem = props => {
 	if(!props.activeState){
 		return (<td 
 			className={props.col > 1? "main time" : "main"} 
-			style={props.col == 1 ? 
+			style={props.col === 1 ? 
 				{width: "320px", display: "block", height: "100%"}: 
 				defaultStyles} 
 			onClick={props.activeItemTable}
@@ -144,7 +144,6 @@ class ItemTable extends Component {
 	activeItemTable(e){
 		// Опять же задаем вручную константы значений, которые показывают с какого столбца возможно редактирование
 		const enableEditAtt 		= 3
-		const enableEditScore 	= 3
 		const enableEditCh 		= 2
 
 		if(this.props.enable){
@@ -154,7 +153,7 @@ class ItemTable extends Component {
 					// считаем, что editColMin: 3 (col > 3 - можно редактировать)
 					if(this.props.col >= enableEditAtt){
 						// if this field is empty then we can put uniquely value -> "+"
-						if(this.props.value == ""){
+						if(this.props.value === ""){
 							this.setValue("+")
 						}
 						else{
@@ -174,14 +173,16 @@ class ItemTable extends Component {
 						this.props.activate()
 					}
 					return
+				default:
+					break
 			}
 		}
 	}
 	pressKey(e){
-		if(e.key == "Enter" && this.props.enable){
+		if(e.key === "Enter" && this.props.enable){
 			if(!!e.target.value){
 				if(Number.isInteger(+e.target.value)){
-					if((+e.target.value > this.props.maxValue && this.props.report.typeReport == "ch") || +e.target.value < 0){
+					if((+e.target.value > this.props.maxValue && this.props.report.typeReport === "ch") || +e.target.value < 0){
 						this.setState({ errorValue: true })
 						this.onError()
 					}
@@ -275,6 +276,8 @@ class ItemTable extends Component {
 					color={this.props.indication[0]}
 					type={this.props.type}
 				/>
+			default:
+				return <></>
 		}
 		
    }

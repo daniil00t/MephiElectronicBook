@@ -44,16 +44,6 @@ const App = (props) => {
 						visible={props.notification.visible}
 					/>
 				</Route>
-				<Route path="/personalPage/constructor">
-					<PersonPage match={"constructor"}/>
-					<Notification 
-						type={props.notification.type}
-						title={props.notification.title} 
-						time="1 second ago" 
-						description={props.notification.content} 
-						visible={props.notification.visible}
-					/>
-				</Route>
 				<Route path="/personalPage">
 					<PersonPage match={"main"}/>
 					<Notification 

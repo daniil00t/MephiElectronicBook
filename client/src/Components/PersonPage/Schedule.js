@@ -8,11 +8,12 @@ class Schedule extends React.Component {
 	constructor(props) {
 		super(props);
 	}
+
 	getType(type){
 		switch(type){
-			case "Лаб": return <div className="type type-lab">{type}</div>;break;
-			case "Пр": 	return <div className="type type-practice">{type}</div>;break;
-			case "Лек": return <div className="type type-lecture">{type}</div>;break;
+			case "Лаб": return <div className="type type-lab">{type}</div>
+			case "Пр": 	return <div className="type type-practice">{type}</div>
+			case "Лек": return <div className="type type-lecture">{type}</div>
 			default: 	return <div className="type type-none">Доп</div>;
 		}
 	}
@@ -60,8 +61,7 @@ class Schedule extends React.Component {
 			"Пятница",
 			"Суббота"
 		];
-		let self = this;
-		if(props.data.length != 0){
+		if(props.data.length !== 0){
 			return (
 				<div className="schedule-day">
 					<h5 className="schedule-day-name">{wday[props.wday]}</h5>
@@ -93,6 +93,7 @@ class Schedule extends React.Component {
 	sortScheduleByTime(schedule){
 		schedule.map((day, iterZ0) => {
 			day.sort(this.dynamicSort("time"));
+			return day
 		})
 		return schedule;
 	}

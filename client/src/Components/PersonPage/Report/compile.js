@@ -34,6 +34,7 @@ const UNDEFINED		= "UNDEFINED"
 
 
 if(typeof(String.prototype.trim) === "undefined"){
+	// eslint-disable-next-line no-extend-native
 	String.prototype.trim = function(){
 		return String(this).replace(/^\s+|\s+$/g, '');
 	}
@@ -63,7 +64,7 @@ const compileFormula = (formula, curCol) => {
 	}
 	else{
 		arg1 = _arguments[0]
-		arg2 = _arguments[1] == "#curCol"? curCol: _arguments[1]
+		arg2 = _arguments[1] === "#curCol"? curCol: _arguments[1]
 	}
 
 	return {
@@ -123,8 +124,6 @@ const compileAndMake = (formula, curCol) => {
 			hundred: 0
 		}
 	]
-	const success = "a"
-	const notSuccess = "н/а"
 	switch(cmp.alias){
 		case SUMM_RANGE:
 			return (table, i) => {
@@ -137,7 +136,7 @@ const compileAndMake = (formula, curCol) => {
 		case SUMM_SEPARATE:
 			return (table, i) => {
 				let summ = 0
-				cmp.separateCols.length != 0?
+				cmp.separateCols.length !== 0?
 					cmp.separateCols.map(col => summ += +table[i][col]):
 					summ = +table[i][+cmp.arg1] + (+table[i][+cmp.arg2])
 				return summ

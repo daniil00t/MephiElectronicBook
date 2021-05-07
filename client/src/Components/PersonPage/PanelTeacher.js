@@ -4,18 +4,19 @@ import { Link } from "react-router-dom";
 
 
 export class PanelTeacher extends React.Component {
+	// eslint-disable-next-line no-useless-constructor
 	constructor(props) {
 		super(props);
 	}
 
 	validNameGroups(count){
 		switch(count % 10){
-			case 1: return "Группа";
+			case 1: return "Группа"
 			case 2:
 			case 3:
-			case 4: return "Группы";
+			case 4: return "Группы"
 			default:
-				return "Групп";
+				return "Групп"
 		}
 	}
 	validNameSubjects(count){

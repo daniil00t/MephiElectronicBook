@@ -4,17 +4,12 @@ import {
 	Button, 
 	Card} 			from "react-bootstrap"
 import Cookies		from "js-cookie"
-import Tooltip 	from "./Tooltip"
 
 import "../styles/Home.css"
 
 export default class Home extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
 	switcher(){
-		if(Cookies.get("id") != -1){
+		if(Cookies.get("id") !== -1){
 			return (
 					<Link to="/personalPage" className="button_links">
 						<Button variant="primary">

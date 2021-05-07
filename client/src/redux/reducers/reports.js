@@ -35,12 +35,12 @@ function* filler(count, defaultValue){
 
 var isValidGetRequest = (req) => {
 	let access = false;
-	if(   typeof req.nameTeacher 	            !== "undefined" && req.nameTeacher 	            != "" && !!req.nameTeacher &&
-			typeof req.group 			            !== "undefined" && req.group			            != "" && !!req.group &&
-			typeof req.subject 		            !== "undefined" && req.subject		            != "" && !!req.subject &&
-			typeof req.duration 	               !== "undefined" && req.duration 	               != "" && !!req.duration &&
-			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            != "" && !!req.typeReport &&
-			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            != "undefined" && req.typeSubject != "-1")
+	if(   typeof req.nameTeacher 	            !== "undefined" && req.nameTeacher 	            !== "" && !!req.nameTeacher &&
+			typeof req.group 			            !== "undefined" && req.group			            !== "" && !!req.group &&
+			typeof req.subject 		            !== "undefined" && req.subject		            !== "" && !!req.subject &&
+			typeof req.duration 	               !== "undefined" && req.duration 	               !== "" && !!req.duration &&
+			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            !== "" && !!req.typeReport &&
+			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            !== "undefined" && req.typeSubject !== "-1")
 	){
 		access = true;
 	}
@@ -168,6 +168,7 @@ export const reports = (state = {
 				else{
 					table[change.row][change.col] = change.value
 				}
+				return change
 			})
 			setReport({
 				...state.data.report_data,
@@ -211,7 +212,8 @@ export const reports = (state = {
 			const changes = state.edit.changes
 			let indexCol = -1
 			changes.map((item, index) => {
-				if(item.col == action.payload.col && !!item.allCol) indexCol = index
+				if(item.col === action.payload.col && !!item.allCol) indexCol = index
+				return item
 			})
 			if(~indexCol && !changes[indexCol].allCol)
 				changes[indexCol].value = !!changes[indexCol].value? "": "+"
@@ -231,7 +233,7 @@ export const reports = (state = {
 				}
 			}
 		case REPORT_EDIT_TO_BACK:
-			if(state.edit.changes.length != 0){
+			if(state.edit.changes.length !== 0){
 				if(!!state.edit.changes[state.edit.changes.length - 1].allCol){
 					for (let row = 0; row < state.data.xlsx.data.length; row++) {
 						action.asyncDispatch(fullUpdate(row))
@@ -254,8 +256,8 @@ export const reports = (state = {
 				if(state.edit.changes.length > 0){
 					for (let i = state.edit.changes.length - 1; i >= 0; i--) {
 						let item = state.edit.changes[i]
-						if(!!item.allCol && item.col == col) return item.value // for all col
-						if(item.row == row && item.col == col) return item.value
+						if(!!item.allCol && item.col === col) return item.value // for all col
+						if(item.row === row && item.col === col) return item.value
 					}
 				}
 				return state.data.xlsx.data[row][col]
@@ -285,6 +287,7 @@ export const reports = (state = {
 				if(!!th.formula){
 					_table[action.payload][Icol] = compileAndMake(th.formula, curCol)(_table, action.payload)
 				}
+				return th
 			})
 			
 			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = state.data.xlsx.data[action.payload][Icol])
@@ -356,7 +359,7 @@ export const reports = (state = {
 			}
 		case TEMPLATE_DELETE_ROW:
 			let __table = state.data.xlsx.data
-			__table = __table.filter((item, index) => index != action.payload)
+			__table = __table.filter((item, index) => index !== action.payload)
 			console.log(action.payload)
 			for (let i = action.payload; i < __table.length; i++) {
 				__table[i][0] = +__table[i][0] - 1
