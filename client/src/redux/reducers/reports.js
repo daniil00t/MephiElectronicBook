@@ -35,12 +35,12 @@ function* filler(count, defaultValue){
 
 var isValidGetRequest = (req) => {
 	let access = false;
-	if(   typeof req.nameTeacher 	            !== "undefined" && req.nameTeacher 	            !== "" && !!req.nameTeacher &&
-			typeof req.group 			            !== "undefined" && req.group			            !== "" && !!req.group &&
-			typeof req.subject 		            !== "undefined" && req.subject		            !== "" && !!req.subject &&
-			typeof req.duration 	               !== "undefined" && req.duration 	               !== "" && !!req.duration &&
-			typeof req.typeReport 	            !== "undefined" && req.typeReport 	            !== "" && !!req.typeReport &&
-			typeof req.typeSubject 	            !== "undefined" && (req.typeSubject	            !== "undefined" && req.typeSubject !== "-1")
+	if(   typeof req.nameTeacher 	!== "undefined" && req.nameTeacher 	 !== "" && !!req.nameTeacher &&
+			typeof req.group 			!== "undefined" && req.group			 !== "" && !!req.group &&
+			typeof req.subject 		!== "undefined" && req.subject		 !== "" && !!req.subject &&
+			typeof req.duration 	   !== "undefined" && req.duration 	    !== "" && !!req.duration &&
+			typeof req.typeReport 	!== "undefined" && req.typeReport 	 !== "" && !!req.typeReport &&
+			typeof req.typeSubject 	!== "undefined" && (req.typeSubject	 !== "undefined" && req.typeSubject !== "-1")
 	){
 		access = true;
 	}
@@ -61,38 +61,41 @@ var getRequestWithAccess = (req, accessCB, errorCB, noRequest) => {
 	}
 }
 
-export const reports = (state = {
-	subject: "",
-	group: "",
-	typeSubject: "undefined",
-	typeReport: "att",
-	priority: "subjects",
-	duration: "ALL_SEMESTER",
-	template: {
-		isEdit: false,
-		data: [],
-		lastColIndex: 3
-	},
-	data: {
-		thead: [],
-		meta: {
-			curCol: 0
-		},
-		xlsx: {
+export const reports = (
+	state = {
+		subject: "",
+		group: "",
+		typeSubject: "undefined",
+		typeReport: "att",
+		priority: "subjects",
+		duration: "ALL_SEMESTER",
+		template: {
+			isEdit: false,
 			data: [],
-			columns: []
-		}
-	},
-	edit: {
-		changes: [],
-		isEdit: false,
-		active: {
-			row: -1,
-			col: -1
+			lastColIndex: 3
 		},
-		indicate: false
-	}
-}, action) => {
+		data: {
+			thead: [],
+			meta: {
+				curCol: 0,
+				countParts: 2,
+				startParts: 2
+			},
+			xlsx: {
+				data: [],
+				columns: []
+			}
+		},
+		edit: {
+			changes: [],
+			isEdit: false,
+			active: {
+				row: -1,
+				col: -1
+			},
+			indicate: false
+		}
+	}, action) => {
 
 	switch(action.type){
 		case REPORT_CHANGE_TYPE:
@@ -109,29 +112,34 @@ export const reports = (state = {
 						col: -1
 					}
 				}
-			}
+		}
+
 		case REPORT_CHANGE_SUBJECT:
 			return{
 				...state,
 				subject: action.payload.subject,
 				duration: action.payload.duration,
 				// group: ""
-			}
+		}
+
 		case REPORT_CHANGE_TYPE_SUBJECT:
 				return {
 					...state,
 					typeSubject: action.payload
-				}
+		}
+
 		case REPORT_CHANGE_GROUP: 
 				return{
 					...state,
 					group: action.payload
-				}
+		}
+
 		case REPORT_CHANGE_PRIORITY:
 			return{
 				...state,
 				priority: action.payload
-			}
+		}
+
 		case REPORT_GET_DATA:
 			getRequestWithAccess({...state, nameTeacher: action.payload}, (data) => {
 				// action.asyncDispatch(renderReport({data: [], thead:[]}))
@@ -152,11 +160,12 @@ export const reports = (state = {
 				}))
 			})
 			return state
+		
 		case REPORT_RENDER_DATA:
 			return {
 				...state,
 				data: action.payload
-			}
+		}
 
 		case REPORT_SAVE_DATA:
 			let table = state.data.xlsx.data
@@ -197,7 +206,8 @@ export const reports = (state = {
 					...state.edit,
 					changes: []
 				}
-			}
+		}
+
 		// edit report and sending it on server
 		case REPORT_EDIT_CHANGE_STATE:
 			return {
@@ -207,7 +217,8 @@ export const reports = (state = {
 					...state.edit,
 					isEdit: !state.edit.isEdit
 				}
-			}
+		}
+
 		case REPORT_EDIT_ADD_CHANGE:
 			const changes = state.edit.changes
 			let indexCol = -1
@@ -231,7 +242,8 @@ export const reports = (state = {
 					...state.edit,
 					changes: changes
 				}
-			}
+		}
+
 		case REPORT_EDIT_TO_BACK:
 			if(state.edit.changes.length !== 0){
 				if(!!state.edit.changes[state.edit.changes.length - 1].allCol){
@@ -248,7 +260,8 @@ export const reports = (state = {
 					...state.edit,
 					changes: state.edit.changes.slice(0, state.edit.changes.length-1)
 				}
-			}
+		}
+
 		case REPORT_FULLUPDATE_DATA:
 			const thead = state.data.thead
 			const curCol = state.data.meta.curCol
@@ -301,7 +314,8 @@ export const reports = (state = {
 						data: _table
 					}
 				}
-			}
+		}
+
 		case REPORT_INDICATE_TOGGLE:
 			return {
 				...state,
@@ -309,9 +323,9 @@ export const reports = (state = {
 					...state.edit,
 					indicate: !state.edit.indicate
 				}
-			}
-		// TEMPLATE
+		}
 
+		// TEMPLATE
 		case TEMPLATE_TOGGLE_EDIT:
 			return {
 				...state,
@@ -319,7 +333,7 @@ export const reports = (state = {
 					...state.template,
 					isEdit: !state.template.isEdit
 				}
-			}
+		}
 		case TEMPLATE_CHANGE_MAX_THEAD:
 			// var thead = state.data.thead
 			{
@@ -333,7 +347,7 @@ export const reports = (state = {
 						thead
 					}
 				}
-			}
+		}
 			
 		case TEMPLATE_ADD_PART: {
 			const countParts = state.data.meta.countParts
@@ -348,7 +362,7 @@ export const reports = (state = {
 			_columns.splice(indexColPart, 0, `Раздел ${countParts + 1}`)
 			_thead.splice(indexColPart, 0, {
 				enable: true,
-				max: 25,
+				max: 0,
 				name: `Раздел ${countParts + 1}`,
 				type: "number",
 				keyName: "part"
@@ -382,7 +396,8 @@ export const reports = (state = {
 						]
 					}
 				}
-			}
+		}
+
 		case TEMPLATE_DELETE_ROW:
 			let __table = state.data.xlsx.data
 			__table = __table.filter((item, index) => index !== action.payload)
@@ -399,7 +414,8 @@ export const reports = (state = {
 						data: __table
 					}
 				}
-			}
+		}
+
 		case TEMPLATE_MARK_AS_HEADMAN:
 			return {
 				...state,
@@ -410,7 +426,7 @@ export const reports = (state = {
 						headmanRow: action.payload
 					}
 				}
-			}
+		}
 		default: 
 			return state
 	}

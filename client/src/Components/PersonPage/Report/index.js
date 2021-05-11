@@ -111,24 +111,51 @@ class Report extends React.Component {
 	}
 
 	// for change state after update component
-	componentDidUpdate(){
-		const self = this
+
+	static getDerivedStateFromProps(nextProps, prevState){
 		function* putScoresTHead(n){
 			for (let index = 0; index < n; index++){
-				yield self.props.report.data.thead[index].max || null
+				if(typeof(nextProps.report.data.thead[index].max) == "number")
+					yield nextProps.report.data.thead[index].max
+				else
+					yield null
 			}
 		}
-		if(this.state.valuesScores.length === 0 &&
-			this.props.report.data.thead.length !== 0 &&
-			this.props.report.typeReport === "ch")
-			this.setState({valuesScores: [...putScoresTHead(
-					this.props.report.data.xlsx.columns.length || 0
+		if(nextProps.report.data.thead.length !== prevState.valuesScores.length)
+			return {valuesScores: [...putScoresTHead(
+					nextProps.report.data.xlsx.columns.length || 0
 				)]
-			})
+			}
+	}
+
+	componentDidUpdate(prev){
+
+		/*
+		*
+		* This is old aproach
+		* but new way - static getDerivedStateFromProps
+		*
+		*/
+
+		// const self = this
+
+		// function* putScoresTHead(n){
+		// 	for (let index = 0; index < n; index++){
+		// 		yield self.props.report.data.thead[index].max || null
+		// 	}
+		// }
+		// if(this.state.valuesScores.length === 0 &&
+		// 	this.props.report.data.thead.length !== 0 &&
+		// 	this.props.report.typeReport === "ch")
+		// 	this.setState({valuesScores: [...putScoresTHead(
+		// 			this.props.report.data.xlsx.columns.length || 0
+		// 		)]
+		// 	})
+		// console.log(prev, this.props)
+
 		// eslint-disable-next-line react/no-direct-mutation-state
 		this.state.targetsNames = 
 			Array(this.props.report.data.xlsx.data.length).fill(null)
-		
 	}
 
 	// This function is required for concat two arrays 
@@ -147,40 +174,42 @@ class Report extends React.Component {
 	// The next code is required for reallocation scores between parts and other
 	// cols, which contains "max" key in their object
 	functionReallocation(index, value){
-		// const MAX_VALUE 	= 100
-		// const countParts = this.props.report.data.meta.countParts
-		// const startParts = this.props.report.data.meta.startParts
-		// const indexPart1 	= 2
-		// const indexPart2 	= 3
-		// const indexesParts = [...Array(countParts + startParts).keys()]
-		// 	.filter(item => item >= startParts)
-		// const indexExam 	= 6
+		const MAX_VALUE 	= 100
+		const STEP 			= 5
+		const thead = this.props.report.data.thead
+		const countParts = this.props.report.data.meta.countParts
+		const startParts = this.props.report.data.meta.startParts
+		const indexesParts = [...Array(countParts + startParts).keys()]
+			.filter(item => item >= startParts && item !== index)
 
-		// var values = this.state.valuesScores
-		// switch(index){
-		// 	case indexPart1:
-		// 		values[indexPart2] = MAX_VALUE - values[indexExam] - value
-		// 		this.props.changeMaxThead(indexPart2, MAX_VALUE - values[indexExam] - value)
-		// 		return this.setState({valuesScores: values})
-			
-		// 	case indexPart2:
-		// 		values[indexPart1] = MAX_VALUE - values[indexExam] - value
-		// 		this.props.changeMaxThead(indexPart1, MAX_VALUE - values[indexExam] - value)
-		// 		return this.setState({valuesScores: values})
+		const indexExam 	=  indexesParts[indexesParts.length - 1] + 3
 
-		// 	case indexExam:
-		// 		if(value % (countParts * 5) !== 0){
-		// 			values[indexPart1] = MAX_VALUE - values[indexPart2] - value
-		// 			this.props.changeMaxThead(indexPart1, MAX_VALUE - values[indexPart2] - value)
-		// 		}
-		// 		else{
-		// 			values[indexPart2] = MAX_VALUE - values[indexPart1] - value
-		// 			this.props.changeMaxThead(indexPart2, MAX_VALUE - values[indexPart1] - value)
-		// 		}
-		// 		return this.setState({valuesScores: values})
-		// 	default:
-		// 		break
-		// }
+		var values = this.state.valuesScores
+
+		if (index === indexExam){
+			let localIndexFixed = Math.floor(value / STEP) % countParts
+			let localValueFixed = MAX_VALUE - 
+			indexesParts
+				.filter(item => item !== indexesParts[localIndexFixed])
+				.reduce((acc, cur) => acc += thead[cur].max, 0) - value
+	
+			values[indexesParts[localIndexFixed]] = localValueFixed
+			this.props.changeMaxThead(indexesParts[localIndexFixed], localValueFixed)
+	
+			this.setState({valuesScores: values})
+		} else {
+			let localIndexFixed = Math.floor(value / STEP) % (countParts - 1)
+			let localValueFixed = MAX_VALUE - values[indexExam] - 
+			indexesParts
+				.filter(item => item !== indexesParts[localIndexFixed])
+				.reduce((acc, cur) => acc += thead[cur].max, 0) - value
+	
+			values[indexesParts[localIndexFixed]] = localValueFixed
+			this.props.changeMaxThead(indexesParts[localIndexFixed], localValueFixed)
+	
+			this.setState({valuesScores: values})
+		}
+		
 	}
 
 	// Return array with colors (and contains priority colors) depending on the
@@ -192,6 +221,8 @@ class Report extends React.Component {
 		const firstCol = this.props.report.data.meta.firstCol
 		// const headmanRowIndex = this.props.report.data.meta.headmanRow || 0
 		const thead = this.props.report.data.thead
+		const countParts = this.props.report.data.meta.countParts || 2
+		const startParts = this.props.report.data.meta.startParts || 2
 		const MAX_VALUE = 100
 		const coff = 0.6
 		// default consts for types report
@@ -205,7 +236,9 @@ class Report extends React.Component {
 		const minScore = MAX_VALUE * coff
 
 		// Ch type -> chain indexed counts
-		const indexesParts = [2, 3]
+		const indexesParts = [...Array(countParts + startParts).keys()]
+			.filter(item => item >= startParts)
+
 		const indexSummParts = indexesParts[indexesParts.length - 1] + 1
 		const indexAtt = indexSummParts + 1
 		const indexExam = indexAtt + 1
@@ -246,31 +279,33 @@ class Report extends React.Component {
 				break
 			// case "ch":
 			case "ch":
-				for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
-					switch(col){
-						case indexesParts[indexPart]:
-							if(+value === 0){color.push(this.colors.transparent); break;}
-							if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
-							if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
-							break
-						case indexSummParts:
-							if(+value === 0){color.push(this.colors.transparent); break;}
-							if(+value < minSummParts) color.push(this.colors.red)
-							if(+value >= minSummParts) color.push(this.colors.green)
-							break
-						case indexExam:
-							if(+value === 0){color.push(this.colors.transparent); break;}
-							if(+value < minExam) color.push(this.colors.red)
-							if(+value >= minExam) color.push(this.colors.green)
-							break
-						case indexEnd:
-							if(+value === 0){color.push(this.colors.transparent); break;}
-							if(+value < minEnd) color.push(this.colors.red)
-							if(+value >= minEnd) color.push(this.colors.green)
-							break
-						default:
-							break
-					}
+				{
+					return []
+				// for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
+				// 	switch(col){
+				// 		case indexesParts[indexPart]:
+				// 			if(+value === 0){color.push(this.colors.transparent); break;}
+				// 			if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
+				// 			if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
+				// 			break
+				// 		case indexSummParts:
+				// 			if(+value === 0){color.push(this.colors.transparent); break;}
+				// 			if(+value < minSummParts) color.push(this.colors.red)
+				// 			if(+value >= minSummParts) color.push(this.colors.green)
+				// 			break
+				// 		case indexExam:
+				// 			if(+value === 0){color.push(this.colors.transparent); break;}
+				// 			if(+value < minExam) color.push(this.colors.red)
+				// 			if(+value >= minExam) color.push(this.colors.green)
+				// 			break
+				// 		case indexEnd:
+				// 			if(+value === 0){color.push(this.colors.transparent); break;}
+				// 			if(+value < minEnd) color.push(this.colors.red)
+				// 			if(+value >= minEnd) color.push(this.colors.green)
+				// 			break
+				// 		default:
+				// 			break
+				// 	}
 				};break
 			default:
 				break
@@ -282,8 +317,8 @@ class Report extends React.Component {
 	// cols, which contains "max" key
 	calcMaxValue(col){
 		const thead = this.props.report.data.thead
-		const countParts = this.props.report.data.meta.countParts
-		const startParts = this.props.report.data.meta.startParts
+		const countParts = this.props.report.data.meta.countParts || 2
+		const startParts = this.props.report.data.meta.startParts || 2
 
 		const MAX_VALUE = 100
 		const indexesParts = [...Array(countParts + startParts).keys()]
@@ -293,6 +328,7 @@ class Report extends React.Component {
 		const indexExam = indexAtt + 1
 		const indexEnd = indexExam + 1
 		const indexECTS = indexEnd + 1
+
 		switch(col){
 			case indexSummParts:
 				return indexesParts.reduce((acc, cur) => acc += thead[cur].max, 0)
@@ -320,6 +356,12 @@ class Report extends React.Component {
 	addStudent(name){
 		this.props.addStudent(name)
 		this.inputAddStudent.value = ""
+	}
+	initTd(ref, index, maxValue){
+		// eslint-disable-next-line react/no-direct-mutation-state
+		this.state.targetsThead[index-2] = ref
+		// eslint-disable-next-line react/no-direct-mutation-state
+		// this.state.valuesScores[index-2] = maxValue
 	}
 	render() {
 		return (
@@ -406,16 +448,16 @@ class Report extends React.Component {
 													return <th><span className="itemTH">{el.name}</span></th>
 												else
 													return <th 	onMouseEnter={e => 
-																		!!this.state.valuesScores[index] && this.setState(
+																		typeof(this.state.valuesScores[index]) === "number"  && this.setState(
 																			{ activeTarget: index-2, showTT: true }
 																		)
 																	}
 																	onMouseLeave={e => 
-																		!!this.state.valuesScores[index] && 
+																		typeof(this.state.valuesScores[index]) === "number" && 
 																		this.setState({ showTT: false })
 																	} 
-																	// eslint-disable-next-line react/no-direct-mutation-state
-																	ref={th => this.state.targetsThead[index-2] = th}>
+																	
+																	ref={th => this.initTd(th, index, el.max)}>
 																<div 	className="wrapTd" 
 																		style={
 																			{display: "flex", 
@@ -428,7 +470,7 @@ class Report extends React.Component {
 
 																	<span className="itemTH">
 																		{el.name}
-																		{!!this.state.valuesScores[index] ?
+																		{typeof(this.state.valuesScores[index]) !== "object" ?
 																			<span style={{color: "#007bff"}}>
 																				({this.state.valuesScores[index]})
 																			</span>: 
