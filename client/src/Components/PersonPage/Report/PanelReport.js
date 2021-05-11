@@ -181,18 +181,14 @@ class PanelReport extends React.Component{
                </ButtonGroup>
                <label className="switch" title="Переключить индикацию">
                   <input type="checkbox" checked={this.props.report.edit.indicate} onChange={e => this.props.toggleIndicate()}/>
-                  <span className="slider round"></span>
+                  <span className="slider round toggleIndicate"></span>
                </label>
 
                
-               {
-                  this.props.report.typeReport === "ch"?
-                     <label className="switch" title="Редактирование">
-                        <input type="checkbox" checked={this.props.template.isEdit} onChange={e => this.props.toggleTemplateEdit()}/>
-                        <span className="slider round"></span>
-                     </label>:
-                     <></>
-               }
+               <label className="switch" title="Редактирование">
+                  <input type="checkbox" checked={this.props.template.isEdit} onChange={e => this.props.toggleTemplateEdit()}/>
+                  <span className="slider round toggleEdit"></span>
+               </label>
                
                
               

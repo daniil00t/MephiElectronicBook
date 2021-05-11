@@ -113,10 +113,14 @@
 	transition: .4s;
  }
  
- input:checked + .slider {
+ input:checked + .slider.toggleIndicate {
 	/* background-color: #2196F3; */
 	background: rgb(185,0,0);
 	background: linear-gradient(90deg, rgba(185,0,0,1) 0%, rgba(179,189,15,1) 46%, rgba(40,169,196,1) 76%);
+ }
+ input:checked + .slider.toggleEdit {
+	/* background-color: #2196F3; */
+	background: var(--global-color-blue);
  }
  
  input:focus + .slider {

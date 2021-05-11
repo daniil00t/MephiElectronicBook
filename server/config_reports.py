@@ -8,7 +8,8 @@ RP_METAS = {
 		"firstCol" : 3
 	},
 	"ch" : {
-		"numParts" : 2
+		"startParts" : 2,
+		"countParts": 2
 	}
 }
 
@@ -82,6 +83,7 @@ RP_TEMPLATES = {
 		{
 			"name"  : "Раздел 1",
 			"type"  : "number",
+			"keyName": "part",
 			"enable": True,
 
 			"max"   : 25
@@ -89,6 +91,7 @@ RP_TEMPLATES = {
 		{
 			"name"  : "Раздел 2",
 			"type"  : "number",
+			"keyName": "part",
 			"enable": True,
 
 			"max"   : 25

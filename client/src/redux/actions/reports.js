@@ -98,9 +98,8 @@ export const changeMaxThead = (col, value) => ({
 	payload: {col, value}
 })
 
-export const template__addPart = name => ({
-	type: TEMPLATE_ADD_PART,
-	payload: name
+export const template__addPart = () => ({
+	type: TEMPLATE_ADD_PART
 })
 export const template__addStudent = name => ({
 	type: TEMPLATE_ADD_STUDENT,

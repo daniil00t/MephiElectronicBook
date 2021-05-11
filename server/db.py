@@ -364,7 +364,7 @@ class DB:
 			if self.__cache_exists("teachers_linkers") and not DB_DOWNLOAD_TEACHERS_LINKERS:
 				teachers_linkers = self.__cache_use("teachers_linkers")
 			else:
-				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT, debug=False)
+				teachers_linkers = parser.linkers.getLinkersListTeacher(endProccess=DB_TEACHERS_LIMIT, debug=True)
 				self.__cache_save("teachers_linkers", teachers_linkers)
 				print("[INFO] teachers_linkers:\n")
 				print_json(teachers_linkers)

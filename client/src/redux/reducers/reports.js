@@ -335,26 +335,52 @@ export const reports = (state = {
 				}
 			}
 			
-		case TEMPLATE_ADD_PART:
+		case TEMPLATE_ADD_PART: {
+			const countParts = state.data.meta.countParts
+			const _table = state.data.xlsx.data
+			const _thead = state.data.thead
+			const _columns = state.data.xlsx.columns
+			const _meta = state.data.meta
+
+			const indexColPart = state.data.meta.startParts + countParts
+			for (let row = 0; row < _table.length; row++)
+				_table[row].splice(indexColPart, 0, "")
+			_columns.splice(indexColPart, 0, `Раздел ${countParts + 1}`)
+			_thead.splice(indexColPart, 0, {
+				enable: true,
+				max: 25,
+				name: `Раздел ${countParts + 1}`,
+				type: "number",
+				keyName: "part"
+			})
+			_meta.countParts = countParts + 1
 			return {
 				...state,
-				template: {
-					...state.template,
-					data: [...state.template.data, {
-						name: action.payload,
-						enable: false
-					}]
+				data: {
+					...state.data,
+					thead: _thead,
+					meta: _meta,
+					xlsx: {
+						...state.data.xlsx,
+						data: _table,
+						columns: _columns
+					}
 				}
 			}
+		}
+			
 		case TEMPLATE_ADD_STUDENT:
 			return {
 				...state,
 				data: {
 					...state.data,
-					data: [
-						...state.data.data,
-						[state.data.data.length+1, action.payload, ...filler(state.data.data[0].length-2, "")]
-					]
+					xlsx: {
+						...state.data.xlsx,
+						data: [
+							...state.data.xlsx.data,
+							[state.data.xlsx.data.length+1, action.payload, ...filler(state.data.xlsx.data[0].length-2, "")]
+						]
+					}
 				}
 			}
 		case TEMPLATE_DELETE_ROW:
