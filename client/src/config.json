@@ -5,7 +5,8 @@
 		"urlListTeachers": "__get_teachers",
 		"urlListLearners": "__getListLearners",
 		"urlGetReport": "__get_report",
-		"urlSendReport": "__set_report"
+		"urlSendReport": "__set_report",
+		"urlAuth": "__get_id_by_auth"
 	},
 	"TYPES_REPORTS": [
 		{

@@ -2,6 +2,7 @@
 import axios from 'axios'
 import * as CONFIG from "./config.json"
 
+
 const sendRequestGET = (url, data, callbackSuccess, callbackError) => {
 	axios.get(url, { params: data })
 		.then(res => callbackSuccess(res.data))
@@ -17,7 +18,16 @@ const sendRequestPOST = (url, data, callbackSuccess, callbackError) => {
 		});
 };
 
-const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
+export const getIdByAuth = (login, password, callbackSuccess, callbackError) => {
+	sendRequestPOST(CONFIG.HOST + CONFIG.URLS_API.urlAuth, {
+		login,
+		password,
+		code: 200,
+		encrypt: false
+	}, callbackSuccess, callbackError)
+}
+
+export const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
 	sendRequestGET(CONFIG.HOST + CONFIG.URLS_API.urlScheduleTeacher, {
 		id: id,
 		code: 200,
@@ -26,7 +36,7 @@ const getScheduleTeacher = (id, callbackSuccess, callbackError) => {
 	}, callbackSuccess, callbackError);
 };
 
-const getListLearners = (callbackSuccess, callbackError) => {
+export const getListLearners = (callbackSuccess, callbackError) => {
 	sendRequestGET(CONFIG.HOST + CONFIG.URLS_API.urlListLearners, {
 		code: 200,
 		type: "listLearners",
@@ -34,13 +44,13 @@ const getListLearners = (callbackSuccess, callbackError) => {
 	}, callbackSuccess, callbackError);
 };
 
-const getListTeachers = (callbackSuccess, callbackError) => {
+export const getListTeachers = (callbackSuccess, callbackError) => {
 	sendRequestGET(CONFIG.HOST + CONFIG.URLS_API.urlListTeachers, {
 		code: 200
 	}, callbackSuccess, callbackError);
 };
 
-const getReport = (data, callbackSuccess, callbackError) => {
+export const getReport = (data, callbackSuccess, callbackError) => {
 	let _data = Object.assign({}, data, {
 		code: 200,
 		msg: "This is your request! enjoy!"
@@ -48,12 +58,9 @@ const getReport = (data, callbackSuccess, callbackError) => {
 	sendRequestPOST(CONFIG.HOST + CONFIG.URLS_API.urlGetReport, _data, callbackSuccess, callbackError);
 };
 
-const setReport = (data, callbackSuccess, callbackError) => {
+export const setReport = (data, callbackSuccess, callbackError) => {
 	sendRequestPOST(CONFIG.HOST + CONFIG.URLS_API.urlSendReport, Object.assign({}, data, {
 		code: 200,
 		msg: "This is your request! enjoy!"
 	}), callbackSuccess, callbackError);
 };
-
-
-export { getScheduleTeacher, getListLearners, getListTeachers, getReport, setReport };

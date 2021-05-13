@@ -19,6 +19,7 @@ import {
 	TEMPLATE_DELETE_ROW,
 	REPORT_INDICATE_TOGGLE,
 	TEMPLATE_MARK_AS_HEADMAN,
+	TEMPLATE_DELETE_PART,
 } from "../reducers/types"
 
 export const changeTypeReport = (reportType) => {
@@ -100,6 +101,10 @@ export const changeMaxThead = (col, value) => ({
 
 export const template__addPart = () => ({
 	type: TEMPLATE_ADD_PART
+})
+export const template__deletePart = col => ({
+	type: TEMPLATE_DELETE_PART,
+	payload: col
 })
 export const template__addStudent = name => ({
 	type: TEMPLATE_ADD_STUDENT,

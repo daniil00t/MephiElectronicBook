@@ -32,7 +32,7 @@ const App = (props) => {
 						description={props.notification.content} 
 						visible={props.notification.visible}
 					/>
-					<Footer />
+					{/* <Footer /> */}
 				</Route>
 				<Route path="/personalPage/tables">
 					<PersonPage match={"table"}/>

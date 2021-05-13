@@ -61,7 +61,6 @@ ul.navbar-nav.ml-auto li a{
 }
 main{
   flex-direction: column;
-
 }
 
 main .teacher-panel{
@@ -98,10 +97,10 @@ main .teacher-panel .wrap-teacher-panel{
 }
 
 .techer-panel-mark.mark-subject{
-	background-color: #ef7c06;
+	background-color: var(--orange);
 }
 .techer-panel-mark.mark-groups{
-	background-color: #9323f9;
+	background-color: var(--purple);
 }
 /*----------------------------------------------------------------------------*/
 /*-------------------------------/ Schedule /---------------------------------*/

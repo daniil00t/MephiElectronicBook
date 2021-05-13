@@ -14,7 +14,8 @@ import { changeTypeReport,
 			fullUpdate, 
 			changeMaxThead, 
 			template__deleteStudent,
-			template__markAsHeadman
+			template__markAsHeadman,
+			template__deletePart
 } from "../../../redux/actions"
 
 
@@ -111,7 +112,6 @@ class Report extends React.Component {
 	}
 
 	// for change state after update component
-
 	static getDerivedStateFromProps(nextProps, prevState){
 		function* putScoresTHead(n){
 			for (let index = 0; index < n; index++){
@@ -128,6 +128,7 @@ class Report extends React.Component {
 			}
 	}
 
+	// this method calls when render() has called
 	componentDidUpdate(prev){
 
 		/*
@@ -136,7 +137,6 @@ class Report extends React.Component {
 		* but new way - static getDerivedStateFromProps
 		*
 		*/
-
 		// const self = this
 
 		// function* putScoresTHead(n){
@@ -181,8 +181,8 @@ class Report extends React.Component {
 		const startParts = this.props.report.data.meta.startParts
 		const indexesParts = [...Array(countParts + startParts).keys()]
 			.filter(item => item >= startParts && item !== index)
-
-		const indexExam 	=  indexesParts[indexesParts.length - 1] + 3
+		
+		const indexExam 	=  countParts + startParts + 2
 
 		var values = this.state.valuesScores
 
@@ -198,16 +198,39 @@ class Report extends React.Component {
 	
 			this.setState({valuesScores: values})
 		} else {
-			let localIndexFixed = Math.floor(value / STEP) % (countParts - 1)
-			let localValueFixed = MAX_VALUE - values[indexExam] - 
-			indexesParts
-				.filter(item => item !== indexesParts[localIndexFixed])
-				.reduce((acc, cur) => acc += thead[cur].max, 0) - value
-	
+
+			let getLocalIndexFixed = (val) => Math.floor(value / STEP) % (countParts - 1)
+			let getLocalValueFixed = (ind) => MAX_VALUE - values[indexExam] - 
+				indexesParts
+					.filter(item => item !== indexesParts[ind])
+					.reduce((acc, cur) => acc += thead[cur].max, 0) - value
+
+			let localIndexFixed = getLocalIndexFixed(value)
+			let localValueFixed = getLocalValueFixed(localIndexFixed)
+					
+			console.log(indexesParts[localIndexFixed], localValueFixed)
 			values[indexesParts[localIndexFixed]] = localValueFixed
 			this.props.changeMaxThead(indexesParts[localIndexFixed], localValueFixed)
 	
 			this.setState({valuesScores: values})
+			// while(localValueFixed < 0){
+			// 	localIndexFixed = getLocalIndexFixed(value)
+			// 	localValueFixed = getLocalValueFixed((localIndexFixed + 1) % (countParts - 1))
+			// }
+			// console.log(indexesParts[localIndexFixed], localValueFixed)
+			// console.log(countParts, startParts, indexesParts, localIndexFixed, localValueFixed)
+
+			// if(localValueFixed < 0){
+			// 	console.log("1. < 0", indexesParts[localIndexFixed])
+			// 	localIndexFixed = (localIndexFixed + 1) % indexesParts.length
+			// 	(indexesParts[localIndexFixed] === index) && (localIndexFixed = (localIndexFixed + 1) % indexesParts.length)
+			// 	console.log("2. < 0", indexesParts[localIndexFixed])
+			// }else{
+				
+			// }
+
+
+			
 		}
 		
 	}
@@ -215,7 +238,6 @@ class Report extends React.Component {
 	// Return array with colors (and contains priority colors) depending on the
 	// col, row and value
 	indicationItem(row, col, value){
-		return []
 		const color = []
 		const curCol = this.props.report.data.meta.curCol
 		const firstCol = this.props.report.data.meta.firstCol
@@ -279,34 +301,35 @@ class Report extends React.Component {
 				break
 			// case "ch":
 			case "ch":
-				{
-					return []
-				// for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
-				// 	switch(col){
-				// 		case indexesParts[indexPart]:
-				// 			if(+value === 0){color.push(this.colors.transparent); break;}
-				// 			if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
-				// 			if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
-				// 			break
-				// 		case indexSummParts:
-				// 			if(+value === 0){color.push(this.colors.transparent); break;}
-				// 			if(+value < minSummParts) color.push(this.colors.red)
-				// 			if(+value >= minSummParts) color.push(this.colors.green)
-				// 			break
-				// 		case indexExam:
-				// 			if(+value === 0){color.push(this.colors.transparent); break;}
-				// 			if(+value < minExam) color.push(this.colors.red)
-				// 			if(+value >= minExam) color.push(this.colors.green)
-				// 			break
-				// 		case indexEnd:
-				// 			if(+value === 0){color.push(this.colors.transparent); break;}
-				// 			if(+value < minEnd) color.push(this.colors.red)
-				// 			if(+value >= minEnd) color.push(this.colors.green)
-				// 			break
-				// 		default:
-				// 			break
-				// 	}
-				};break
+			// eslint-disable-next-line no-lone-blocks
+			{
+				for (var indexPart = 0; indexPart < indexesParts.length; indexPart++) {
+					switch(col){
+						case indexesParts[indexPart]:
+							if(+value === 0){color.push(this.colors.transparent); break;}
+							if(+value < thead[indexesParts[indexPart]].max * coff) color.push(this.colors.red)
+							if(+value >= thead[indexesParts[indexPart]].max * coff) color.push(this.colors.green)
+							break
+						case indexSummParts:
+							if(+value === 0){color.push(this.colors.transparent); break;}
+							if(+value < minSummParts) color.push(this.colors.red)
+							if(+value >= minSummParts) color.push(this.colors.green)
+							break
+						case indexExam:
+							if(+value === 0){color.push(this.colors.transparent); break;}
+							if(+value < minExam) color.push(this.colors.red)
+							if(+value >= minExam) color.push(this.colors.green)
+							break
+						case indexEnd:
+							if(+value === 0){color.push(this.colors.transparent); break;}
+							if(+value < minEnd) color.push(this.colors.red)
+							if(+value >= minEnd) color.push(this.colors.green)
+							break
+						default:
+							break
+					}
+				}
+			};break
 			default:
 				break
 		}
@@ -349,14 +372,17 @@ class Report extends React.Component {
 		else
 			this.setState({ activeName: row, hoverAdditional: true })
 	}
+
 	deleteStudent(){
 		if(window.confirm("Вы уверены? Данные о студенте будут утеряны.")) 
 			this.props.deleteStudent(this.state.activeName)
 	}
+
 	addStudent(name){
 		this.props.addStudent(name)
 		this.inputAddStudent.value = ""
 	}
+
 	initTd(ref, index, maxValue){
 		// eslint-disable-next-line react/no-direct-mutation-state
 		this.state.targetsThead[index-2] = ref
@@ -466,7 +492,7 @@ class Report extends React.Component {
 																		}}>
 
 																	{(this.props.template.isEdit && el.keyName === "part") && 
-																	<button>x</button>}
+																	<button className="btn btn-danger" onClick={e => this.props.deletePart(index)}>x</button>}
 
 																	<span className="itemTH">
 																		{el.name}
@@ -492,7 +518,7 @@ class Report extends React.Component {
 							{
 								(this.props.template.isEdit && this.props.report.typeReport === "ch") &&  <tr>
 									<td>
-										<button onClick={e => this.props.addPart()}>Add part</button>
+										<button className="btn btn-success" onClick={e => this.props.addPart()}>Add part</button>
 									</td>
 								</tr>
 						  }
@@ -525,16 +551,20 @@ class Report extends React.Component {
 						  {
 								this.props.template.isEdit?
 									<tr>
-										<td><button onClick={e => 
-											this.setState({ 
-												editNewStudent: !this.state.editNewStudent })
+										<td><button 
+												className="btn btn-primary button_newStudent"
+												onClick={e => 
+													this.setState({ 
+														editNewStudent: !this.state.editNewStudent })
 										}>{!this.state.editNewStudent? "+": "-"}</button></td>
 										{
 											this.state.editNewStudent?
-												<td><input 	type="text" 
-																ref={inp => this.inputAddStudent = inp}
-																onKeyPress={e => 
-																	e.key === "Enter" && this.addStudent(e.target.value)}/></td>:
+												<td><input 	
+														className="form-control"
+														type="text" 
+														ref={inp => this.inputAddStudent = inp}
+														onKeyPress={e => 
+															e.key === "Enter" && this.addStudent(e.target.value)}/></td>:
 												<></>
 										}
 									</tr>:
@@ -562,6 +592,7 @@ const mapDispatchToProps = dispatch => ({
 	backChange: () => dispatch(backChange()),
 
 	addPart: () => dispatch(template__addPart()),
+	deletePart: col => dispatch(template__deletePart(col)),
 	addStudent: name => dispatch(template__addStudent(name)),
 	deleteStudent: row => dispatch(template__deleteStudent(row)),
 	markAsHeadman: row => dispatch(template__markAsHeadman(row)),

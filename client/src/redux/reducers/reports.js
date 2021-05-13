@@ -19,7 +19,8 @@ import {
 	TEMPLATE_ADD_STUDENT,
 	TEMPLATE_DELETE_ROW,
 	REPORT_INDICATE_TOGGLE,
-	TEMPLATE_MARK_AS_HEADMAN
+	TEMPLATE_MARK_AS_HEADMAN,
+	TEMPLATE_DELETE_PART
 } from "./types"
 
 import { renderReport, showNotification, fullUpdate } from "../actions"
@@ -33,7 +34,7 @@ function* filler(count, defaultValue){
 	}
 }
 
-var isValidGetRequest = (req) => {
+const isValidGetRequest = (req) => {
 	let access = false;
 	if(   typeof req.nameTeacher 	!== "undefined" && req.nameTeacher 	 !== "" && !!req.nameTeacher &&
 			typeof req.group 			!== "undefined" && req.group			 !== "" && !!req.group &&
@@ -46,7 +47,7 @@ var isValidGetRequest = (req) => {
 	}
 	return access;
 }
-var getRequestWithAccess = (req, accessCB, errorCB, noRequest) => {
+const getRequestWithAccess = (req, accessCB, errorCB, noRequest) => {
 	if(isValidGetRequest(req)){
 		getReport({
 			nameTeacher:      req.nameTeacher,
@@ -60,6 +61,21 @@ var getRequestWithAccess = (req, accessCB, errorCB, noRequest) => {
 		noRequest()
 	}
 }
+
+const editFormula = (formula, firstOperand, secondOperand) => {
+	let newFormula = formula
+	const arrayMatches = newFormula.match(/\d+/g)
+	if(typeof firstOperand === "number"){
+		newFormula = newFormula.replace(arrayMatches[0], firstOperand)
+	}
+	if(typeof secondOperand === "number"){
+		newFormula = newFormula.replace(arrayMatches[1], secondOperand)
+	}
+	console.log(typeof firstOperand, typeof secondOperand, arrayMatches)
+	return newFormula
+}
+
+
 
 export const reports = (
 	state = {
@@ -141,7 +157,9 @@ export const reports = (
 		}
 
 		case REPORT_GET_DATA:
-			getRequestWithAccess({...state, nameTeacher: action.payload}, (data) => {
+			getRequestWithAccess(
+				{...state, nameTeacher: action.payload}, 
+				(data) => {
 				// action.asyncDispatch(renderReport({data: [], thead:[]}))
 				action.asyncDispatch(renderReport(data))
 			}, error => {
@@ -154,7 +172,8 @@ export const reports = (
 			}, () => {
 				action.asyncDispatch(showNotification({
 					title: "Недостаточно данных",
-					content: "Вы ввели недостаточно количество данных для определения ведомости",
+					content: "Вы ввели недостаточно количество " +
+						"данных для определения ведомости",
 					type: "warning",
 					autohide: true
 				}))
@@ -223,7 +242,8 @@ export const reports = (
 			const changes = state.edit.changes
 			let indexCol = -1
 			changes.map((item, index) => {
-				if(item.col === action.payload.col && !!item.allCol) indexCol = index
+				if(item.col === action.payload.col && !!item.allCol) 
+					indexCol = index
 				return item
 			})
 			if(~indexCol && !changes[indexCol].allCol)
@@ -251,7 +271,9 @@ export const reports = (
 						action.asyncDispatch(fullUpdate(row))
 					}
 				}
-				else action.asyncDispatch(fullUpdate(state.edit.changes[state.edit.changes.length - 1].row))
+				else action.asyncDispatch(
+					fullUpdate(state.edit.changes[state.edit.changes.length - 1].row)
+				)
 			}
 
 			return {
@@ -269,7 +291,9 @@ export const reports = (
 				if(state.edit.changes.length > 0){
 					for (let i = state.edit.changes.length - 1; i >= 0; i--) {
 						let item = state.edit.changes[i]
-						if(!!item.allCol && item.col === col) return item.value // for all col
+
+						 // for all col
+						if(!!item.allCol && item.col === col) return item.value
 						if(item.row === row && item.col === col) return item.value
 					}
 				}
@@ -280,30 +304,35 @@ export const reports = (
 			// let _table = []
 			// state.data.xlsx.data.map((row, Irow) => {
 			// 	_table[Irow] = []
-			// 	row.map((col, Icol) => _table[Irow].push(concatChanges(Irow, Icol)))
+			// 	row.map((col, Icol) => 
+			// 		_table[Irow].push(concatChanges(Irow, Icol)))
 			// })
 
 			// thead.map((th, Icol) => {
 			// 	if(!!th.formula){
 			// 		_table.map((row, Irow) => {
-			// 			_table[Irow][Icol] = compileAndMake(th.formula, curCol)(_table, Irow)
-			// 			console.log(_table, Irow, Icol, compileAndMake(th.formula, curCol)(_table, Irow))
+			// 			_table[Irow][Icol] = 
+			//					compileAndMake(th.formula, curCol)(_table, Irow)
 			// 		})
 			// 	}
 			// })
 
 			// with optimise
 			let _table = [].concat(state.data.xlsx.data)
-			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = concatChanges(action.payload, Icol))
+			state.data.xlsx.data[action.payload].map((col, Icol) => 
+				_table[action.payload][Icol] = concatChanges(action.payload, Icol))
 			
 			thead.map((th, Icol) => {
 				if(!!th.formula){
-					_table[action.payload][Icol] = compileAndMake(th.formula, curCol)(_table, action.payload)
+					_table[action.payload][Icol] = 
+						compileAndMake(th.formula, curCol)(_table, action.payload)
 				}
 				return th
 			})
 			
-			state.data.xlsx.data[action.payload].map((col, Icol) => _table[action.payload][Icol] = state.data.xlsx.data[action.payload][Icol])
+			state.data.xlsx.data[action.payload].map((col, Icol) => 
+				_table[action.payload][Icol] = 
+					state.data.xlsx.data[action.payload][Icol])
 
 			return {
 				...state,
@@ -334,11 +363,13 @@ export const reports = (
 					isEdit: !state.template.isEdit
 				}
 		}
+
 		case TEMPLATE_CHANGE_MAX_THEAD:
 			// var thead = state.data.thead
 			{
 				let thead = state.data.thead
-				thead[action.payload.col] = {...thead[action.payload.col], max: action.payload.value}
+				thead[action.payload.col] = 
+					{...thead[action.payload.col], max: action.payload.value}
 				return {
 					...state,
 					data: {
@@ -355,11 +386,16 @@ export const reports = (
 			const _thead = state.data.thead
 			const _columns = state.data.xlsx.columns
 			const _meta = state.data.meta
-
 			const indexColPart = state.data.meta.startParts + countParts
+
+			// edit data array
 			for (let row = 0; row < _table.length; row++)
 				_table[row].splice(indexColPart, 0, "")
+
+			// edit columns in xlsx cols
 			_columns.splice(indexColPart, 0, `Раздел ${countParts + 1}`)
+
+			// add new col to thead
 			_thead.splice(indexColPart, 0, {
 				enable: true,
 				max: 0,
@@ -367,7 +403,43 @@ export const reports = (
 				type: "number",
 				keyName: "part"
 			})
+
+			// edit formulas
+			_thead.map((thead, index) => {
+				switch(thead.keyName){
+					case "summParts": 
+						_thead[index].formula = 
+							editFormula(thead.formula, null, countParts + 2)
+						break
+					case "att":
+						_thead[index].formula = 
+							editFormula(thead.formula, indexColPart + 1, null)
+						break
+					case "end":
+						_thead[index].formula = 
+							editFormula(
+								thead.formula, 
+								indexColPart + 1, 
+								indexColPart + 3
+							)
+						break
+					case "ECTS":
+						_thead[index].formula = 
+							editFormula(
+								thead.formula, 
+								indexColPart + 4, 
+								null
+							)
+						break
+					default:
+						break
+				}
+				return thead
+			})
+
+			//edit thead
 			_meta.countParts = countParts + 1
+
 			return {
 				...state,
 				data: {
@@ -382,7 +454,78 @@ export const reports = (
 				}
 			}
 		}
+		
+		// there are some bugs when updating
+		case TEMPLATE_DELETE_PART: {
+			const countParts = state.data.meta.countParts
+			const _table = state.data.xlsx.data
+			const _thead = state.data.thead
+			const _columns = state.data.xlsx.columns
+			const _meta = state.data.meta
+			const indexColPart = state.data.meta.startParts + countParts
+
+			// edit data array
+			for (let row = 0; row < _table.length; row++)
+				_table[row].splice(action.payload, 1)
+
+			// edit columns in xlsx cols
+			_columns.splice(action.payload, 1)
+
+			// add new col to thead
+			_thead.splice(action.payload, 1)
+
+			// edit formulas
+			_thead.map((thead, index) => {
+				switch(thead.keyName){
+					case "summParts": 
+						_thead[index].formula = 
+							editFormula(thead.formula, null, countParts)
+						break
+					case "att":
+						_thead[index].formula = 
+							editFormula(thead.formula, indexColPart - 1, null)
+						break
+					case "end":
+						_thead[index].formula = 
+							editFormula(
+								thead.formula, 
+								indexColPart - 1, 
+								indexColPart + 1
+							)
+						break
+					case "ECTS":
+						_thead[index].formula = 
+							editFormula(
+								thead.formula, 
+								indexColPart + 2, 
+								null
+							)
+						break
+					default:
+						break
+				}
+				return thead
+			})
+
+			//edit thead
+			_meta.countParts = countParts - 1
+
+				return {
+					...state,
+					data: {
+						...state.data,
+						thead: _thead,
+						meta: _meta,
+						xlsx: {
+							...state.data.xlsx,
+							data: _table,
+							columns: _columns
+						}
+					}
+				}
 			
+		}
+
 		case TEMPLATE_ADD_STUDENT:
 			return {
 				...state,
@@ -392,7 +535,10 @@ export const reports = (
 						...state.data.xlsx,
 						data: [
 							...state.data.xlsx.data,
-							[state.data.xlsx.data.length+1, action.payload, ...filler(state.data.xlsx.data[0].length-2, "")]
+							[state.data.xlsx.data.length+1, 
+								action.payload, 
+								...filler(state.data.xlsx.data[0].length-2, "")
+							]
 						]
 					}
 				}

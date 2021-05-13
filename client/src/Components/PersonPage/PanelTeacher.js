@@ -46,7 +46,7 @@ export class PanelTeacher extends React.Component {
 
 					<span className="right-floating">
 						<a href={this.props.link} className="link-homemephi">На страницу home.mephi.ru</a>
-						<Link to="/auth"  className="logout" onClick={(e) => Cookies.set("id", -1)}>Выйти</Link>
+						<Link to="/auth"  className="btn btn-danger" onClick={(e) => Cookies.set("id", -1)}>Выйти</Link>
 					</span>
 				</div>
 			</div>
