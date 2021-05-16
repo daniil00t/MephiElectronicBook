@@ -33,7 +33,13 @@ const SubjectToGroup = (props) => {
    }
    return (
       <div className="subjectToGroup">
-         <select className="form-control subjects" onChange={e => props.dispatcher.changeSubject(subjects[+e.target.value], props.schedule.subjectToGroup[+e.target.value].durations[0])}>
+         <select 
+            className="form-control subjects" 
+            onChange={e => 
+               props.dispatcher.changeSubject(
+                  subjects[+e.target.value], 
+                  props.schedule.subjectToGroup[+e.target.value].durations[0]
+               )}>
             <option value="">Выберете предмет</option>
             {
                subjects.map((el, index) => 
@@ -167,7 +173,7 @@ class PanelReport extends React.Component{
                <ButtonGroup toggle>
                   {CONFIG.TYPES_REPORTS.map((radio, idx) => (
                      <ToggleButton
-                        variant="light"
+                        variant="dark"
                         key={idx}
                         type="radio"
                         name="radio"

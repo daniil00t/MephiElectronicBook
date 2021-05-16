@@ -1,11 +1,17 @@
 :root{
-  --global-color-blue: #007bff;
+  --global-color-blue: #1565c0;
+  --global-color-blue1: #3498db;
   --global-color-pink: #af08b2;
-  --global-color-red: #d71313;
-  --global-color-green: #4ebb2d;
+  --global-color-red: #b92b27;
+  --global-color-green-white: #2ecc71;
+  --global-color-green: #28a745;
   --global-color-yellow: #d3d03a;
   --global-color-grey-white: #adadad;
   --global-color-grey-black: #8b8b8b;
+  --global-color-grey: #161b22;
+  --global-color-black: #0d1117;
+  --global-color-border: #30363d;
+  --global-color-link: #58a6ff;
 }
 
 * {
@@ -20,11 +26,22 @@ html, body{
 }
 
 body{
-  background-color: rgb(223, 224, 235) !important;
+  background-color: var(--global-color-black) !important;
 }
 
 #root, .App{
 	width: 100%;
 	height: 100%;
 	position: relative;
+}
+
+body a{
+  color: var(--global-color-link);
+}
+body a:hover{
+  color: var(--global-color-link);
+}
+
+main{
+  padding-bottom: 50px;
 }

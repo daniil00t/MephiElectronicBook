@@ -27,7 +27,7 @@ const ItemDropdownSubjects = (props) => {
 			{
 				props.groups.map((group, index) => (
 					<Dropdown.Item eventKey={index} onClick={e => click(props.subject, group)}>
-						<Link to="/personalPage/tables/att" style={{color: "#000"}}>{group}</Link>
+						<Link to="/personalPage/tables/att">{group}</Link>
 					</Dropdown.Item>
 				))
 			}
@@ -56,7 +56,7 @@ const ItemDropdownGroups = (props) => {
 			{
 				props.subjects.map((subject, index) => (
 					<Dropdown.Item eventKey={index} onClick={e => click(subject, props.group)}>
-						<Link to="/personalPage/tables/att" style={{color: "#000"}}>{subject}</Link>
+						<Link to="/personalPage/tables/att">{subject}</Link>
 					</Dropdown.Item>
 					
 				))
@@ -121,7 +121,6 @@ const Header = (props) => {
 					<Link onClick={e => changeTypeTable("att")} to="/personalPage/tables/att" className="dropdown-item">Ведомость посещаемости</Link>
 					<Link onClick={e => changeTypeTable("score")} to="/personalPage/tables/score" className="dropdown-item">Ведомость оценок</Link>
 					<Link onClick={e => changeTypeTable("ch")} to="/personalPage/tables/score" className="dropdown-item">Итоговая ведомость</Link>
-					<NavDropdown.Divider />
 				</NavDropdown>
 				
 				<Nav.Link href="#home">Помощь</Nav.Link>

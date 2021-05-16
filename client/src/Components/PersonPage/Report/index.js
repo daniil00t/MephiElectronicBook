@@ -29,7 +29,7 @@ class Report extends React.Component {
 		// the next parametres
 		this.state = {
 			// state vars for ch report
-			showTT: false,	// state show pop-up
+			showTT: true,	// state show pop-up
 			targetsThead: [],	// linked <th /> for pop-up
 			targetsNames: [], // targets for pop-up [names...T]
 			activeTarget: -1,	// active index <th />
@@ -421,7 +421,7 @@ class Report extends React.Component {
 					target={this.state.targetsNames[this.state.activeName]}
 					placement="right"
 					containerPadding={20}
-					
+					variant="dark"
 					>
 					<Popover id="popover-contained" 
 						onMouseLeave={e => this.setState({ hoverAdditional: false })}>
@@ -449,7 +449,7 @@ class Report extends React.Component {
 						subjects={this.props.subjects}
 						compactSchedule={this.props.compactSchedule}
 					/>
-					<Table striped bordered hover style={{width: "100vw"}}>
+					<Table striped bordered hover style={{width: "100vw"}} variant="dark" >
 					  <thead>
 					    <tr>
 					    	{
@@ -500,7 +500,7 @@ class Report extends React.Component {
 																			<span style={{color: "#007bff"}}>
 																				({this.state.valuesScores[index]})
 																			</span>: 
-																			<span style={{color: "#333"}}> 
+																			<span style={{color: "var(--global-color-green)"}}> 
 																				{`(${!!this.calcMaxValue(index)?
 																					this.calcMaxValue(index):
 																					""})`}

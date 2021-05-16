@@ -1,6 +1,11 @@
 /*setting for bootstrap*/
-nav {
+
+nav.navbar.navbar-expand-lg.navbar-light.bg-light {
 	padding: 8px 30px !important;
+	background-color: var(--global-color-grey) !important;
+}
+a.navbar-brand{
+	color: #fff !important;
 }
 ul.navbar-nav.ml-auto{
 	margin-right: 50px;
@@ -8,7 +13,15 @@ ul.navbar-nav.ml-auto{
 ul.navbar-nav.ml-auto li a{
 	margin-right: 15px;
 }
-
+.ml-auto.navbar-nav a.nav-link{
+	color: rgb(228, 228, 228) !important;
+	font-weight: 100 !important;
+}
+.form-control{
+	background-color: black !important;
+	border: 1px solid var(--global-color-border) !important;
+	color: rgb(211, 211, 211) !important;
+}
 #dropdown-button-drop-left, #dropdown-button-drop-right{
 	width: 100%;
 	background-color: #fff;
@@ -31,7 +44,7 @@ ul.navbar-nav.ml-auto li a{
 /*Styles fot lk page*/
 
 .mark-span{
-	color: #159f46;
+	color: var(--global-color-green);
 }
 
 .right-floating{
@@ -41,13 +54,11 @@ ul.navbar-nav.ml-auto li a{
 
 .right-floating a{
 	margin-right: 10px;
+	color: #fff;
 }
 .right-floating a.logout{
-	background-color: #d71313;
-	color: white;
-	padding: 5px 10px;
-	border-radius: 3px;
-	text-decoration: none;
+	color: white !important;
+	margin: 0
 }
 .spanLikeLink{
 	color: #007bff;
@@ -71,11 +82,13 @@ main .teacher-panel{
 }
 main .teacher-panel .wrap-teacher-panel{
 	height: 70px;
-	background-color: #fff;
-	padding: 8px 20px;
-	border-radius: 8px;
+	background-color: var(--global-color-black);
+	padding: 8px 30px;
+	border-radius: 6px;
+	border: 1px solid var(--global-color-border);
 	display: flex;
 	flex-direction: row;
+	color: rgb(233, 233, 233);
 	align-items: center;
 	/*justify-content: space-between;*/
 }
@@ -84,6 +97,7 @@ main .teacher-panel .wrap-teacher-panel{
 }*/
 .wrap-teacher-panel .teacher-panel-name{
 	font-size: 1.4em;
+	font-family: RobotoBold;
 }
 /*.wrap-teacher-panel .link-homemephi{
 	margin-left: auto;
@@ -93,14 +107,44 @@ main .teacher-panel .wrap-teacher-panel{
 	padding: 3px 10px;
 	border-radius: 3px;
 	margin-left: 10px;
-	color: white;
+	color: rgb(230, 230, 230);
+	
 }
 
 .techer-panel-mark.mark-subject{
-	background-color: var(--orange);
+	background-color: var(--global-color-green);
+	font-weight: initial;
 }
 .techer-panel-mark.mark-groups{
-	background-color: var(--purple);
+	background-color: var(--global-color-blue);
+	font-weight: initial;
+}
+
+.dropdown-menu.show{
+	background-color: var(--global-color-black);
+	box-shadow: 0 0 12px rgb(23, 25, 31);
+}
+.dropdown-menu.show .dropright button,
+.dropdown-menu.show .dropleft button {
+	background-color: var(--global-color-black) !important;
+	border-bottom: 1px solid var(--global-color-border) !important;
+	color: rgb(218, 218, 218) !important;
+	transition: all 0.15s ease-in-out;
+}
+a.dropdown-item{
+	color: rgb(218, 218, 218) !important;
+	transition: all 0.15s ease-in-out;
+}
+a.dropdown-item:hover, a.dropdown-item:active, a.dropdown-item:focus{
+	background-color: var(--global-color-border);
+}
+a.dropdown-item.active{
+	background-color: var(--global-color-border) !important;
+}
+
+.dropdown-menu.show .dropright:last-child button,
+.dropdown-menu.show .dropleft:last-child button {
+	border: none !important;
 }
 /*----------------------------------------------------------------------------*/
 /*-------------------------------/ Schedule /---------------------------------*/
@@ -109,18 +153,22 @@ main .teacher-panel .wrap-teacher-panel{
 .schedule{
 	width: 100%;
 	padding: 15px 30px;
+	color: rgb(233, 233, 233);
 }
 
 
 .schedule-wrap{
-	background-color: #fff;
-	padding: 35px 30px;
-	border-radius: 8px;
+	background-color: var(--global-color-black);
+	border: 1px solid var(--global-color-border);
+	padding: 30px;
+	border-radius: 6px;
 	margin-bottom: 70px;
 }
 
 h4.schedule-name{
-	border-bottom: 2px solid #e9f0ff;
+	border-bottom: 2px solid var(--global-color-border);
+	font-family: RobotoBold;
+	line-height: 45px;
 }
 
 .schedule-days{
@@ -132,20 +180,19 @@ h4.schedule-name{
 	border-radius: 5px;
 	margin: 20px 0 40px 0;
 }
-.schedule-day-name{
-}
-.schedule-day .lessons{
-
-}
 .schedule-day .lessons .lesson{
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	border-radius: 5px;
 	/*box-shadow: 0px 0px 19px 0px rgb(66 66 66 / 29%);*/
-	border: 1px solid #0048a175;
+	border: 1px solid var(--global-color-border);
 	padding: 8px 15px;
 	margin-top: 10px;
+	transition: all .15s ease-in-out;
+}
+.schedule-day .lessons .lesson:hover{
+	background-color: var(--global-color-border);
 }
 .lessons .lesson .time{
 	margin-right: 5px;
@@ -226,13 +273,13 @@ h4.schedule-name{
 	margin-left: auto;
 	order: 2;
 	margin-right: 10px;
-	background-color: #f2992c;
+	border: 1px solid var(--global-color-border);
 	color: white;
-	padding: 0 6px;
+	padding: 2px 6px;
 	border-radius: 3px;
 	max-width: 70px;
 	text-align: center;
-	max-height: 25px;
+	/* max-height: 25px; */
 	overflow: hidden;
 }
 .schedule-day .lessons .lesson .duration{
@@ -241,8 +288,8 @@ h4.schedule-name{
 	/*order: 2;*/
 	margin-right: 10px;
 	/*background-color: red;*/
-	color: #333;
-	border: 1px solid #888;
+	color: rgb(238, 238, 238);
+	border: 1px solid var(--global-color-border);
 	padding: 2px 6px;
 	border-radius: 3px;
 	position: absolute;
@@ -282,22 +329,22 @@ footer {
 	position: fixed;
 	bottom: 0;
 	margin-top: 20px;
-	border-top: 1px solid #d5d5d5;
+	border-top: 1px solid var(--global-color-border);
 }
 
 footer .wrap-footer{
 	height: 100%;
-	background-color: #fff;
+	background-color: var(--global-color-grey);
 	/*border-radius: 8px;*/
 	padding: 10px 20px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
-
-footer p{
-
+footer .wrap-footer span{
+	color: rgb(160, 160, 160);
+	font-family: RobotoLight;
 }
 span.markFooterGray{
-	color: #999;
+	color: rgb(219, 219, 219) !important;
 }
