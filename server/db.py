@@ -9,6 +9,7 @@ import re
 import json
 import pickle
 import glob
+import hashlib
 
 def print_json(data):
 	print(json.dumps(data, ensure_ascii=False, indent=4))
@@ -38,6 +39,22 @@ class DB:
 
 		return type is None
 
+	#-------------------/ AUXILIARY /----------------------------------------------------------------------------------
+
+	def __hash(self, string):
+		m = hashlib.sha256()
+		m.update(string.encode("utf-8"))
+		return str(m.hexdigest())
+
+
+	def __create_password_by_name(self, name):
+		password = re.match(r"\w+", name).group(0)
+		#print("\"{}\"".format(password))
+		return password
+
+	def __create_login_by_name(self, name):
+		login = name
+		return login
 
 	#-------------------/ EXECUTION /----------------------------------------------------------------------------------
 
@@ -121,18 +138,39 @@ class DB:
 
 
 	def insert_teachers(self, teachers):
-		args = []
+		u_args = []
 		for t in teachers:
 			if t == "":
 				continue
-			args.append('''(\"{}\")'''.format(t))
-
-		if args == []:
+			login = self.__create_login_by_name(t)
+			phash = self.__hash(self.__create_password_by_name(t))
+			u_args.append('''(\"{}\", \"{}\")'''.format(login, phash))
+		
+		if u_args == []:
 			return
 
-		cmd   = '''INSERT IGNORE INTO teachers (name)''' \
-				'''VALUES {}'''.format(",".join(args))
+		cmd   = '''INSERT IGNORE INTO users (login, phash)''' \
+				'''VALUES {}'''.format(",".join(u_args))
 		self.__execute(cmd)
+
+
+		t_args = []
+		for t in teachers:
+			if t == "":
+				continue
+			login = self.__create_login_by_name(t)
+			t_args.append('''(\"{}\", {})'''.format(t, self.__get_user_id(login)))
+
+		if t_args == []:
+			return
+
+		cmd   = '''INSERT IGNORE INTO teachers (name, user_id)''' \
+				'''VALUES {}'''.format(",".join(t_args))
+		self.__execute(cmd)
+
+		cmd   = '''SELECT * FROM teachers WHERE NOT id = user_id'''
+		if len(self.__execute(cmd)) > 0:
+			print("[ERROR] Tables Users and Teachers are wrong, please try to update database again!")
 
 
 	def insert_subjects(self, subjects):
@@ -410,12 +448,18 @@ class DB:
 
 
 	#-------------------/ GET /----------------------------------------------------------------------------------------
+	def __get_user_id(self, login):
+		cmd = '''SELECT id FROM users WHERE login = \"{}\"'''.format(login)		
+		user_id = self.__execute(cmd)[0][0]
+
+		return user_id
+
 
 	def get_teacher_id(self, teacher_name):
 		cmd = '''SELECT id FROM teachers WHERE name = \"{}\"'''.format(teacher_name)		
-		teacher_name = self.__execute(cmd)[0][0]
+		teacher_id = self.__execute(cmd)[0][0]
 
-		return teacher_name
+		return teacher_id
 
 
 	def get_teachers(self):
@@ -428,6 +472,24 @@ class DB:
 		} for r in result]
 
 		return result
+
+	def get_id_by_auth(self, data):
+		login = data["login"]
+		phash = self.__hash(data["password"])
+
+		print(login)
+
+		cmd = '''SELECT teachers.id ''' \
+			  '''FROM users ''' \
+			  '''INNER JOIN teachers ON teachers.user_id = users.id ''' \
+			  '''WHERE users.login = \"{}\" AND ''' \
+			  '''users.phash = \"{}\" '''.format(login, phash)
+		result = self.__execute(cmd)
+		if len(result) == 0:
+			return -1
+		id = result[0][0]
+
+		return id
 
 
 	def get_schedule(self, teacher_id):
@@ -531,86 +593,3 @@ class DB:
 			return report_id
 		else:
 			return None
-
-	#----------------/ SET /-------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	# def __make_cacheable(self, filename, use, save, func):
-	# 	def wrapper(*args, **kwargs):
-	# 		path = DB_CACHE_FOLDER + filename + '.pkl'
-
-	# 		cache_used = False
-
-	# 		if (not DB_NOT_USE_CACHE) and (DB_USE_CACHE or use) and os.path.isfile(path):
-	# 			with open(path, 'rb') as f:
-	# 				result = pickle.load(f)
-	# 			cache_used = True
-	# 			print("[INFO] Using cached {}.".format(filename))
-	# 		else:
-	# 			result = func(*args, **kwargs)
-
-	# 		print("[INFO] RESULT FROM WRAPPER: \n") 
-	# 		print_json(result)
-
-	# 		if (not DB_NOT_SAVE_CACHE) and (DB_SAVE_CACHE or save) and not cache_used:
-	# 			with open(path, 'wb') as f:
-	# 				pickle.dump(result, f)
-
-	# 			print("[INFO] {} cached.".format(filename))
-
-	# 		return result
-
-	# 	return wrapper
-
-	# def __make_parser_cacheable(self):
-	# 	parser.linkers.getLinkersScheduleLearner = self.__make_cacheable(
-	# 		"groups_linkers", DB_USE_CACHE_LG, DB_SAVE_CACHE_LG,
-	# 		parser.linkers.getLinkersScheduleLearner)
-
-	# 	parser.linkers.getLinkersListTeacher = self.__make_cacheable(
-	# 		"teachers_linkers", DB_USE_CACHE_LT, DB_SAVE_CACHE_LT,
-	# 		parser.linkers.getLinkersListTeacher)
-
-	# 	parser.getScheduleLearner = self.__make_cacheable(
-	# 		"groups_schedules", DB_USE_CACHE_SG, DB_SAVE_CACHE_SG,
-	# 		parser.getScheduleLearner)
-
-	# 	parser.getScheduleTeacher = self.__make_cacheable(
-	# 		"teachers_schedules", DB_USE_CACHE_ST, DB_SAVE_CACHE_ST,
-	# 		parser.getScheduleTeacher)
-
-	# 	parser.getListLearners = self.__make_cacheable(
-	# 		"students_lists", DB_USE_CACHE_L, DB_SAVE_CACHE_L,
-	# 		parser.getListLearners)
-
-

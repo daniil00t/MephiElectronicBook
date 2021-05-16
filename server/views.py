@@ -6,6 +6,21 @@ from .reports import *
 # [FEATURE] change all to POST
 # [FEATURE] check if report exists
 
+
+@app.route('/__get_id_by_auth', methods=['POST'])
+def __get_id_by_auth():
+	data = request.json
+
+	# print("[INFO] Incoming auth data:")
+	# print(data)
+
+	with DB() as db:
+		result =  db.get_id_by_auth(data)
+
+	print("[INFO] Found id: {}".format(result))
+	return jsonify({ "id" : result }) # result is a list
+
+
 @app.route('/__get_teachers')
 def __get_teachers():
 	with DB() as db:

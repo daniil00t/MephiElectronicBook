@@ -16,7 +16,8 @@ DB_DATABASE = 'server_db'
 # UPDATE
 DB_CLEAR 		= False
 DB_FULL_UPDATE 	= False
-DB_CACHE_CLEAR 	= False
+
+DB_CACHE_CLEAR 	=  False # warning!
 
 DB_UPDATE_GROUPS 	= False
 DB_UPDATE_TEACHERS 	= False
@@ -48,3 +49,15 @@ RP_REPORTS_FOLDER = './server/data/reports/'
 #----------------------------------------------------------------------------------
 DEBUG = True
 #S_HOST  = "192.168.43.52"
+
+
+# DEBUG = False
+
+# DB_FULL_UPDATE 	= True
+# DB_CLEAR 		= True
+
+# DB_UPDATE_GROUPS 	= True
+# DB_UPDATE_TEACHERS 	= True
+# DB_UPDATE_SUBJECTS 	= True
+# DB_UPDATE_STUDENTS 	= True
+# DB_UPDATE_LESSONS 	= True

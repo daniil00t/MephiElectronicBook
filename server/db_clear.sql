@@ -5,8 +5,9 @@ USE server_db;
 CREATE TABLE users (
 	id INT NOT NULL AUTO_INCREMENT,
 	login VARCHAR(100) NOT NULL,
-	hash INT NOT NULL,
-	PRIMARY KEY (id)
+	phash VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (login)
 );
 
 CREATE TABLE teams (
