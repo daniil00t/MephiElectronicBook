@@ -234,7 +234,7 @@ class RM():
 			report = self.__create_report(report_data)
 
 
-		report["meta"].update(self.__get_meta(report_data, report["thead"]))
+		# report["meta"].update(self.__get_meta(report_data, report["thead"]))
 
 		return report
 

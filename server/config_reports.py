@@ -100,6 +100,7 @@ RP_TEMPLATES = {
 			"name" 	: "Σ",
 			"type" 	: "number",
 			"enable": False,
+			"keyName": "summParts",
 
 			"formula" : "summ(2, 3)"
 		},
@@ -107,6 +108,7 @@ RP_TEMPLATES = {
 			"name" 	: "Аттестация",
 			"type"	: "choose",
 			"enable": True,
+			"keyName": "att",
 
 			"formula" : "trashold(4, 30, а, н/а)"
 		},
@@ -114,6 +116,7 @@ RP_TEMPLATES = {
 			"name" 	: "Экзамен",
 			"type" 	: "number",
 			"enable": True,
+			"keyName": "exam",
 
 			"max"   : 50
 		},
@@ -121,6 +124,7 @@ RP_TEMPLATES = {
 			"name" 	: "Итог",
 			"type" 	: "number",
 			"enable": False,
+			"keyName": "end",
 
 			"formula" : "summ_separate(4, 6)"
 		},
@@ -128,6 +132,7 @@ RP_TEMPLATES = {
 			"name"  : "ECTS",
 			"type"  : "string",
 			"enable": False,
+			"keyName": "ECTS",
 
 			"formula" : "convert(7, ECTS)"
 		}
